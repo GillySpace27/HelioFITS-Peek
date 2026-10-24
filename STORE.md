@@ -13,12 +13,12 @@ generator; its job is teaching Finder a file type. (The Mac App Store build has 
 ## Name (30 char max)
 
 ```
-HelioFITS
+HelioFITS Peek
 ```
 
-> The live App Store name. The site calls the plugin HelioFITS Peek (2026-10-13);
-> the listing keeps HelioFITS until Gilly decides to rename it. Change it here,
-> then run `store_sync.py` (see the ship-heliofits skill).
+> The App Store name. Gilly chose HelioFITS Peek on 2026-10-24 (the site has used it
+> since 2026-10-13); the live listing reads HelioFITS until `store_sync.py` pushes this
+> (see the ship-heliofits skill). Change it here, then run `store_sync.py`.
 
 ## Subtitle (30 char max)
 

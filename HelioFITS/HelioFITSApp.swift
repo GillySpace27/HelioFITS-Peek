@@ -15,7 +15,7 @@ struct HelioFITSApp: App {
         // The first scene opens at launch: the viewer with no file in it. The
         // Welcome window rides alongside it (HomeWindowController), and the
         // preview settings are a standard Settings scene at ⌘,.
-        WindowGroup("HelioFITS") {
+        WindowGroup("HelioFITS Peek") {
             HomeView()
                 .background(WindowCapture { HomeWindowController.shared.capture($0) })
                 // SwiftUI delivers opened URLs here (not the AppDelegate).

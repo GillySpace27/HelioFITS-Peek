@@ -42,7 +42,7 @@ struct ContentView: View {
                     ViewerView(viewer: viewer, chooseCompare: { importForCompare = true; importing = true })
                 } else { welcome }
             }
-            .navigationTitle(folder?.url.lastPathComponent ?? viewer?.name ?? "HelioFITS")
+            .navigationTitle(folder?.url.lastPathComponent ?? viewer?.name ?? "HelioFITS Peek")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {

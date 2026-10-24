@@ -83,7 +83,7 @@ struct WelcomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 10) {
-                        Text("HelioFITS").font(.system(size: 20, weight: .semibold))
+                        Text("HelioFITS Peek").font(.system(size: 20, weight: .semibold))
                         Label("Installed", systemImage: "checkmark.seal.fill")
                             .font(.system(size: 13, weight: .medium)).foregroundStyle(.green)
                     }
