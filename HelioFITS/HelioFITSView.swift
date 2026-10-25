@@ -117,7 +117,7 @@ struct WelcomeView: View {
                             Label("Open in Viewer…", systemImage: "doc.text.magnifyingglass")
                         }
                         Button("Getting Started") {
-                            NSWorkspace.shared.open(URL(string: "https://github.com/GillySpace27/HelioFITS#readme")!)
+                            NSWorkspace.shared.open(URL(string: "https://github.com/GillySpace27/HelioFITS-Peek#readme")!)
                         }
                     }
                     .padding(.top, 2)

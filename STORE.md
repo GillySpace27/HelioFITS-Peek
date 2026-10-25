@@ -1,4 +1,4 @@
-# HelioFITS — App Store listing copy
+# HelioFITS Peek: App Store listing copy
 
 Paste-ready text for App Store Connect. Name **HelioFITS** (clear on the Mac App
 Store as of 2026‑07‑12 — only "QuickFits", CloudMakers' "FITS Preview", and the
@@ -46,7 +46,7 @@ Press Space on a FITS file and see the Sun, in the right colormap, with real hel
 ## Description
 
 ```
-HelioFITS teaches Finder to read solar FITS files.
+HelioFITS Peek teaches Finder to read solar FITS files.
 
 Press Space on any .fits file and it renders instantly — in the correct
 instrument colormap, drawn from the sunpy standard. SDO/AIA, HMI magnetograms,
@@ -82,11 +82,11 @@ BACK TO PYTHON IN ONE CLICK
 Copy a sunpy snippet that loads exactly the HDU you are looking at. Export any
 HDU to PNG for slides and papers, or convert a whole folder at once.
 
-Free. No account, no network, no telemetry — HelioFITS has no network
+Free. No account, no network, no telemetry. HelioFITS Peek has no network
 entitlement, so the macOS sandbox denies it all internet access. It only ever
 reads the files you point it at.
 
-HelioFITS previews solar FITS files in Finder and Quick Look. HelioFITS Studio,
+HelioFITS Peek previews solar FITS files in Finder and Quick Look. HelioFITS Studio,
 a separate free download, is the full desktop application for working with
 coronagraph and wide-field solar imagery.
 ```
@@ -105,13 +105,13 @@ First release.
 
 ## Support / Marketing URL
 
-- Support URL: https://github.com/GillySpace27/HelioFITS  (required — must resolve)
+- Support URL: https://github.com/GillySpace27/HelioFITS-Peek  (required; must resolve)
 - Marketing URL: optional, same is fine
 
 ## App Review notes
 
 ```
-HelioFITS is a Quick Look preview extension and thumbnail extension for FITS (Flexible Image Transport System) files, the standard data
+HelioFITS Peek is a Quick Look preview extension and thumbnail extension for FITS (Flexible Image Transport System) files, the standard data
 format in astronomy.
 
 To see it work, open any .fits file in Finder and press Space, or double-click it
