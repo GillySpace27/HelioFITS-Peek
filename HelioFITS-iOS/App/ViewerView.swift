@@ -196,6 +196,7 @@ struct ViewerView: View {
     /// one importer, because two .fileImporter modifiers in one hierarchy can conflict.
     var chooseCompare: () -> Void = {}
     @State private var showStretch = false
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var showHeader = false
     @State private var copied = false
     /// Where the swipe divider sits, as a fraction of the image width.
@@ -287,15 +288,20 @@ struct ViewerView: View {
         let m = viewer.model
         ToolbarItemGroup(placement: .bottomBar) {
             if m.count > 1 {
-                Button { viewer.step(-1) } label: { Image(systemName: "chevron.left") }
-                    .disabled(m.cur == 0).accessibilityLabel("Previous layer")
+                // iPhone: no arrows; a swipe or the layer menu steps instead.
+                if sizeClass != .compact {
+                    Button { viewer.step(-1) } label: { Image(systemName: "chevron.left") }
+                        .disabled(m.cur == 0).accessibilityLabel("Previous layer")
+                }
                 Menu("\(m.cur + 1) / \(m.count)") {
                     ForEach(0..<m.count, id: \.self) { i in
                         Button(pageTitle(i)) { viewer.select(page: i) }
                     }
                 }
-                Button { viewer.step(1) } label: { Image(systemName: "chevron.right") }
-                    .disabled(m.cur >= m.count - 1).accessibilityLabel("Next layer")
+                if sizeClass != .compact {
+                    Button { viewer.step(1) } label: { Image(systemName: "chevron.right") }
+                        .disabled(m.cur >= m.count - 1).accessibilityLabel("Next layer")
+                }
                 Button { viewer.togglePlay() } label: {
                     Image(systemName: viewer.playing ? "pause.fill" : "play.fill")
                 }
@@ -312,32 +318,14 @@ struct ViewerView: View {
             } label: {
                 Label(m.filter == .none ? "Filter" : m.filter.label, systemImage: "camera.filters")
             }
-            Toggle(isOn: Binding(get: { m.limbOn }, set: { if $0 != m.limbOn, m.toggleLimb() { viewer.refresh() } })) {
-                Label("Limb", systemImage: "circle.dashed")
+            // An iPhone is too narrow for every control (the bar clipped Filter and
+            // Share), so there the overlays, Header and Compare share one menu.
+            if sizeClass == .compact {
+                Menu { overlays } label: { Label("More", systemImage: "ellipsis.circle") }
+            } else {
+                overlays
             }
-            .disabled(!m.hasLimb)
-            Toggle(isOn: Binding(get: { m.ringsOn && m.hasRings },
-                                 set: { if $0 != m.ringsOn, m.toggleRings() { viewer.refresh() } })) {
-                Label("Rings", systemImage: "circle.circle")
-            }
-            .disabled(!m.hasRings)
-            Toggle(isOn: Binding(get: { m.mode == .diff }, set: { if $0 != (m.mode == .diff), m.toggleDiff() { viewer.refresh() } })) {
-                Label("Difference", systemImage: "minus.square")
-            }
-            .disabled(!m.canDiff)
             Button { showStretch = true } label: { Label("Stretch", systemImage: "slider.horizontal.3") }
-            Button { showHeader = true } label: { Label("Header", systemImage: "list.bullet.rectangle") }
-            Menu {
-                Button { chooseCompare() } label: {
-                    Label("Compare With File…", systemImage: "doc.on.doc")
-                }
-                if m.compareModel != nil {
-                    Button { viewer.stopComparing() } label: { Label("Stop Comparing", systemImage: "xmark") }
-                }
-            } label: {
-                Label("Compare", systemImage: "square.split.2x1")
-            }
-            .disabled(m.page?.wcs == nil || viewer.compareLoading)
             Menu {
                 if let img = viewer.image {
                     // The PNG carries the recipe of what is on screen (HF-16).
@@ -359,6 +347,36 @@ struct ViewerView: View {
                 } label: { Label("Copy Python", systemImage: "chevron.left.forwardslash.chevron.right") }
             } label: { Label("Share", systemImage: "square.and.arrow.up") }
         }
+    }
+
+    @ViewBuilder
+    private var overlays: some View {
+        let m = viewer.model
+            Toggle(isOn: Binding(get: { m.limbOn }, set: { if $0 != m.limbOn, m.toggleLimb() { viewer.refresh() } })) {
+                Label("Limb", systemImage: "circle.dashed")
+            }
+            .disabled(!m.hasLimb)
+            Toggle(isOn: Binding(get: { m.ringsOn && m.hasRings },
+                                 set: { if $0 != m.ringsOn, m.toggleRings() { viewer.refresh() } })) {
+                Label("Rings", systemImage: "circle.circle")
+            }
+            .disabled(!m.hasRings)
+            Toggle(isOn: Binding(get: { m.mode == .diff }, set: { if $0 != (m.mode == .diff), m.toggleDiff() { viewer.refresh() } })) {
+                Label("Difference", systemImage: "minus.square")
+            }
+            .disabled(!m.canDiff)
+            Button { showHeader = true } label: { Label("Header", systemImage: "list.bullet.rectangle") }
+            Menu {
+                Button { chooseCompare() } label: {
+                    Label("Compare With File…", systemImage: "doc.on.doc")
+                }
+                if m.compareModel != nil {
+                    Button { viewer.stopComparing() } label: { Label("Stop Comparing", systemImage: "xmark") }
+                }
+            } label: {
+                Label("Compare", systemImage: "square.split.2x1")
+            }
+            .disabled(m.page?.wcs == nil || viewer.compareLoading)
     }
 
     private func pageTitle(_ i: Int) -> String {
