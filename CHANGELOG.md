@@ -6,6 +6,15 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **A PUNCH unit read like a second number.** PUNCH L3 writes its scale factor
+  into the unit (`BUNIT = '2.009e+07 W/(m2 sr)'`: the data are multiples of
+  2.009e7 W m⁻² sr⁻¹), so the colour bar said "2.009e+07 W/(m2 sr) approx." over
+  ticks of 1e-13, and the readout showed two numbers side by side. A unit that
+  starts with a number now reads as a multiplier: "× 2.009e+07 W/(m2 sr)". The
+  values were always right.
+
 ## [1.5.0] - 2026-10-24
 
 ### Added

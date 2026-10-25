@@ -487,7 +487,7 @@ public final class FITSPreviewModel {
     /// (u,v) are 0…1 from the image's top-left.
     public func readout(u: Double, v: Double) -> String? {
         guard let p = page, let s = sample(u: u, v: v) else { return nil }
-        let unit = FITSRenderer.headerVal(p.res.header, "BUNIT").map { " \($0)" } ?? ""
+        let unit = FITSRenderer.unitLabel(p.res.header).map { " \($0)" } ?? ""
 
         // A BLANK/off-disk pixel is NaN — say so rather than print "nan Gauss".
         guard s.z.isFinite else { return "(\(s.fx), \(s.fy)) = no data" }
@@ -557,7 +557,7 @@ public final class FITSPreviewModel {
         // The box the header line names is exactly the box we summed.
         func fx(_ x: Int) -> Int { x + 1 }
         func fy(_ y: Int) -> Int { f.h - y }
-        let unit = FITSRenderer.headerVal(r.header, "BUNIT").map { " \($0)" } ?? ""
+        let unit = FITSRenderer.unitLabel(r.header).map { " \($0)" } ?? ""
 
         // BUNIT once, on its own line: repeating it after mean AND median made
         // those lines long enough to wrap off the card for PUNCH, whose BUNIT
@@ -585,7 +585,7 @@ public final class FITSPreviewModel {
         let clip = displayLimits()
         return RegionStats(text: text, region: hist, whole: whole,
                            axisMin: wLo, axisMax: wHi,
-                           unit: FITSRenderer.headerVal(r.header, "BUNIT") ?? "",
+                           unit: FITSRenderer.unitLabel(r.header) ?? "",
                            clipLo: clip?.lo, clipHi: clip?.hi)
     }
 
@@ -662,7 +662,7 @@ public final class FITSPreviewModel {
                                  rankName: filter.label, tickCount: tickCount)
         }
         guard mode != .diff else { return nil }
-        let unit = FITSRenderer.headerVal(p.res.header, "BUNIT") ?? ""
+        let unit = FITSRenderer.unitLabel(p.res.header) ?? ""
         if mode == .stretch, let l = displayLimits() {
             return Colorbar.make(lut: p.lut, lo: l.lo, hi: l.hi, gamma: Float(stretch.gamma),
                                  log: stretch.log, unit: unit, exact: limitsAreExact,
@@ -718,7 +718,7 @@ public final class FITSPreviewModel {
         // actually clipped and are not reproducible in Python. Reporting them
         // under a filter would defeat the point of showing them at all (#12).
         guard filter == .none else { return nil }
-        let unit = FITSRenderer.headerVal(p.res.header, "BUNIT") ?? ""
+        let unit = FITSRenderer.unitLabel(p.res.header) ?? ""
         if let o = stretchOverride { return (o.lo, o.hi, unit) }
         if stretchIsDefault || buffer(cur) == nil {
             return (p.res.lo, p.res.hi, unit)
