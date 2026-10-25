@@ -1,6 +1,6 @@
 <div align="center">
 
-# HelioFITS
+# HelioFITS Peek
 
 ### Know what you're looking at — before you open a thing.
 
@@ -28,7 +28,7 @@ is the same grey icon — you can't tell an EUV frame from a magnetogram without
 opening each one. On the right is the same folder with HelioFITS installed. That's
 the whole idea.
 
-**HelioFITS teaches Finder to read solar FITS files.** Once it's installed, your
+**HelioFITS Peek teaches Finder to read solar FITS files.** Once it's installed, your
 `.fits` files stop being rows of identical grey document icons and become what
 they actually are — the Sun, rendered in the correct instrument colormap. Press
 the spacebar on any of them and you get an interactive preview with pixel values,

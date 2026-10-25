@@ -55,6 +55,11 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ### Changed
 
+- **The app is called HelioFITS Peek.** The window title, the app's header, Welcome
+  and Help items, the README and the App Store listing copy use the new name, and the
+  Help links point at the renamed GitHub repository. The bundle id, app group, settings,
+  menu bar name and the HelioFITS.app file name are unchanged, so nothing moves for
+  anyone updating.
 - **The app icon is the AIA 171 Sun inside a white file outline,** matching Heliad,
   HelioFITS Studio and Heliogram. The outline, screen and violet-black ground follow
   Heliogram's icon. The Sun is now the real AIA 171 frame of 2024-05-14 16:51:09 UT at

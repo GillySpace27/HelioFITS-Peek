@@ -15,7 +15,7 @@ struct HelioFITSApp: App {
         // The first scene opens at launch: the viewer with no file in it. The
         // Welcome window rides alongside it (HomeWindowController), and the
         // preview settings are a standard Settings scene at ⌘,.
-        WindowGroup("HelioFITS") {
+        WindowGroup("HelioFITS Peek") {
             HomeView()
                 .background(WindowCapture { HomeWindowController.shared.capture($0) })
                 // SwiftUI delivers opened URLs here (not the AppDelegate).
@@ -55,15 +55,15 @@ struct HelioFITSApp: App {
             // Updates…" is the honest answer to the direct-download build
             // never self-updating: the Releases page IS the update channel.
             CommandGroup(replacing: .help) {
-                Button("Welcome to HelioFITS") { HomeWindowController.shared.showWelcome() }
-                Button("HelioFITS Help (README)") {
+                Button("Welcome to HelioFITS Peek") { HomeWindowController.shared.showWelcome() }
+                Button("HelioFITS Peek Help (README)") {
                     NSWorkspace.shared.open(
-                        URL(string: "https://github.com/GillySpace27/HelioFITS#readme")!)
+                        URL(string: "https://github.com/GillySpace27/HelioFITS-Peek#readme")!)
                 }
                 Divider()
                 Button("Report a Bug…") {
                     NSWorkspace.shared.open(
-                        URL(string: "https://github.com/GillySpace27/HelioFITS/issues/new")!)
+                        URL(string: "https://github.com/GillySpace27/HelioFITS-Peek/issues/new")!)
                 }
                 #if DIRECT_DOWNLOAD
                 // Direct-download builds only: ship.sh sets DIRECT_DOWNLOAD. The App
@@ -71,7 +71,7 @@ struct HelioFITSApp: App {
                 // /releases index, never /releases/latest (that one hides pre-releases).
                 Button("Check for Updates…") {
                     NSWorkspace.shared.open(
-                        URL(string: "https://github.com/GillySpace27/HelioFITS/releases")!)
+                        URL(string: "https://github.com/GillySpace27/HelioFITS-Peek/releases")!)
                 }
                 #endif
             }
@@ -168,12 +168,12 @@ final class HomeWindowController {
         }
     }
 
-    /// The landing page. Help ▸ Welcome to HelioFITS reopens it any time.
+    /// The landing page. Help ▸ Welcome to HelioFITS Peek reopens it any time.
     func showWelcome() {
         if welcome == nil {
             let w = NSWindow(contentRect: .zero, styleMask: [.titled, .closable],
                              backing: .buffered, defer: true)
-            w.title = "Welcome to HelioFITS"
+            w.title = "Welcome to HelioFITS Peek"
             w.isReleasedWhenClosed = false
             w.contentViewController = NSHostingController(
                 rootView: WelcomeView(close: { [weak w] in w?.close() }))

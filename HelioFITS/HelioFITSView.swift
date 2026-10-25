@@ -83,7 +83,7 @@ struct WelcomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 10) {
-                        Text("HelioFITS").font(.system(size: 20, weight: .semibold))
+                        Text("HelioFITS Peek").font(.system(size: 20, weight: .semibold))
                         Label("Installed", systemImage: "checkmark.seal.fill")
                             .font(.system(size: 13, weight: .medium)).foregroundStyle(.green)
                     }
@@ -117,7 +117,7 @@ struct WelcomeView: View {
                             Label("Open in Viewer…", systemImage: "doc.text.magnifyingglass")
                         }
                         Button("Getting Started") {
-                            NSWorkspace.shared.open(URL(string: "https://github.com/GillySpace27/HelioFITS#readme")!)
+                            NSWorkspace.shared.open(URL(string: "https://github.com/GillySpace27/HelioFITS-Peek#readme")!)
                         }
                     }
                     .padding(.top, 2)
