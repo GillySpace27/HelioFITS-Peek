@@ -925,6 +925,16 @@ public enum FITSRenderer {
     /// per keyword the shim copies (TELESCOP through PROD_ID, fitsshim.c); it has
     /// no NAXISn lines, so read `natW`/`natH` instead. Matches on line prefix with
     /// no keyword boundary. Not for raw cards: use `cardVal` there.
+    /// BUNIT as shown beside a number. Some products put a scale factor in the
+    /// unit itself (PUNCH L3: '2.009e+07 W/(m2 sr)', i.e. the data are multiples
+    /// of 2.009e7 W m-2 sr-1), which beside a value reads as a second number:
+    /// "1.2e-13 2.009e+07 W/(m2 sr)". A unit that starts with a number gets a
+    /// leading "×" so it reads as the multiplier it is. Nil when there is no BUNIT.
+    public static func unitLabel(_ h: String) -> String? {
+        guard let u = headerVal(h, "BUNIT") else { return nil }
+        return u.first.map { "0123456789+-.".contains($0) } == true ? "× " + u : u
+    }
+
     public static func headerVal(_ h: String, _ key: String) -> String? {
         for line in h.split(separator: "\n") where line.hasPrefix(key) {
             let v = String(line.dropFirst(9)).trimmingCharacters(in: .whitespaces)

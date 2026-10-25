@@ -90,6 +90,14 @@ struct ColorbarLayoutTests {
         #expect(cb.ticks.map(\.label) == ["0", "25", "50", "75", "100"])
     }
 
+    @Test("a BUNIT that carries a scale factor reads as a multiplier")
+    func scaledUnit() {
+        func h(_ b: String) -> String { "BUNIT     \(b)\n" }   // the shim's summary-line format
+        #expect(FITSRenderer.unitLabel(h("2.009e+07 W/(m2 sr)")) == "× 2.009e+07 W/(m2 sr)")
+        #expect(FITSRenderer.unitLabel(h("DN")) == "DN")
+        #expect(FITSRenderer.unitLabel("") == nil)
+    }
+
     @Test("wording: approx. for estimated limits, exact for typed ones, rank under a filter")
     func wording() throws {
         func bar(exact: Bool, rank: String?) throws -> Colorbar {
