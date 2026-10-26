@@ -508,7 +508,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         c.canvas.image = c.model.image().map(NSImage.init)
         c.canvas.caption = c.model.caption(pinned: SharedSettings.pinnedKeywords())
         c.canvas.limb = c.model.limbCircle()
-        c.canvas.colorbar = c.model.colorbar()
+        c.canvas.colorbar = SharedSettings.showsColorbar() ? c.model.colorbar() : nil
         c.canvas.rings = c.model.ringsOn ? c.model.rings() : nil
         // Compare: the second image already lined up on this one's grid. Image first,
         // then mode, so the canvas never sees a mode with nothing to show.
