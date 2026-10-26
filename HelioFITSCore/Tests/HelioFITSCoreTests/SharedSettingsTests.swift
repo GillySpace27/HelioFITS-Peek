@@ -30,4 +30,16 @@ struct SharedSettingsTests {
         #expect(SharedSettings.selectedHDU(forFileAt: "/data/aia/b.fits", in: empty) == -1)
         #expect(SharedSettings.selectedHDU(forFileAt: "/data/aia/b.fits", in: nil) == -1)
     }
+
+    @Test("the colorbar is off unless the setting turns it on")
+    func colorbarIsOptIn() throws {
+        #expect(SharedSettings.showColorbarKey == "showColorbar")
+        let empty = try #require(UserDefaults(suiteName: Self.scratchSuite + ".colorbar-empty"))
+        #expect(SharedSettings.showsColorbar(in: empty) == false)
+        #expect(SharedSettings.showsColorbar(in: nil) == false)
+        let d = try #require(UserDefaults(suiteName: Self.scratchSuite + ".colorbar"))
+        d.set(true, forKey: SharedSettings.showColorbarKey)
+        #expect(SharedSettings.showsColorbar(in: d) == true)
+        d.removePersistentDomain(forName: Self.scratchSuite + ".colorbar")
+    }
 }

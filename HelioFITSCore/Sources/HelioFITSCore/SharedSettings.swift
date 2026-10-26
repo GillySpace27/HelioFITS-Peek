@@ -19,6 +19,14 @@ public enum SharedSettings {
     /// Opt-in full-resolution RHEF in the Mac viewer (RH-15). Off when absent: the grid stays at
     /// 1024 pixels a side, Gilly's default. Previews and thumbnails never read it.
     public static let rhefFullResKey = "rhefFullRes"         // Bool
+    /// Opt-in colorbar strip in the Mac viewer and the Quick Look preview (HF-12). Off when
+    /// absent: the strip takes the left edge and pushes the image off centre (Gilly, 2026-10-25).
+    public static let showColorbarKey = "showColorbar"       // Bool
+
+    /// Whether the viewer and Quick Look draw the colorbar strip.
+    public static func showsColorbar(in d: UserDefaults? = SharedSettings.suite) -> Bool {
+        d?.bool(forKey: showColorbarKey) ?? false
+    }
     public static var suite: UserDefaults? { UserDefaults(suiteName: suiteName) }
 
     /// The pinned keywords, cleaned (see `keywords(from:)`).

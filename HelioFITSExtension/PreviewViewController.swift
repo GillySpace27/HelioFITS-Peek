@@ -343,7 +343,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         let pins = SharedSettings.pinnedKeywords()
         canvas.caption = model.caption(pinned: pins)
         canvas.limb = compact ? nil : model.limbCircle()
-        canvas.colorbar = compact ? nil : model.colorbar()
+        canvas.colorbar = (compact || !SharedSettings.showsColorbar()) ? nil : model.colorbar()
         canvas.rings = (model.ringsOn && !compact) ? model.rings() : nil
         if let p = model.page {
             canvas.natSize = CGSize(width: p.res.natW, height: p.res.natH)

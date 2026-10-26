@@ -31,8 +31,9 @@ All notable changes to HelioFITS are recorded here. Format follows
   Reveal control wipes back to the plain image, and the readout gives each pixel's rank
   in its ring (#71). Save RHEF PNG writes a RHEF image without changing the view (#73).
   An opt-in setting runs RHEF at full resolution in the viewer (#76).
-- **A colorbar** beside the image that follows the live stretch, with typed vmin and
-  vmax and draggable histogram handles. It hides in the narrow Finder column pane (#15).
+- **A colorbar** beside the image that follows the live stretch (#15). It is off by
+  default, so the image stays centred as in 1.4; turn it on in Settings > Colorbar. The
+  typed vmin and vmax and the draggable histogram handles work either way.
 - **Solar-coordinate tools.** Plane-of-sky rings and position-angle spokes (viewer,
   Quick Look, iPhone and iPad), and Compare for two files linked by helioprojective
   coordinates: swipe, blink or side by side in the viewer, a swipe on iPhone and iPad

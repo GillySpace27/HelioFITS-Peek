@@ -190,6 +190,7 @@ struct SettingsView: View {
     @State private var pins = ""
     @State private var rhefCovers = false
     @State private var rhefFullRes = false
+    @State private var showColorbar = false
 
     var body: some View {
         Form {
@@ -240,6 +241,17 @@ struct SettingsView: View {
                 Text("Folder rules")
             } footer: {
                 if !status.isEmpty { Text(status).foregroundStyle(.secondary) }
+            }
+
+            Section {
+                Toggle("Show a colorbar beside the image", isOn: Binding(
+                    get: { showColorbar },
+                    set: { showColorbar = $0; saveColorbar() }))
+            } header: {
+                Text("Colorbar")
+            } footer: {
+                Text("Off by default, so the image stays centred. On, the viewer and Quick Look draw the colormap with its limits on the left of the image. The stretch panel's limits and histogram work either way.")
+                    .foregroundStyle(.secondary)
             }
 
             Section {
@@ -297,6 +309,13 @@ struct SettingsView: View {
         pins = SharedSettings.pinnedKeywords(in: d).joined(separator: ", ")
         rhefCovers = d.bool(forKey: SharedSettings.rhefCoversKey)
         rhefFullRes = d.bool(forKey: SharedSettings.rhefFullResKey)
+        showColorbar = SharedSettings.showsColorbar(in: d)
+    }
+
+    private func saveColorbar() {
+        guard let d = PreviewSettings.suite else { return }
+        d.set(showColorbar, forKey: SharedSettings.showColorbarKey)
+        status = "Saved. Previews and viewer windows opened from now on use it."
     }
 
     private func saveFullRes() {
