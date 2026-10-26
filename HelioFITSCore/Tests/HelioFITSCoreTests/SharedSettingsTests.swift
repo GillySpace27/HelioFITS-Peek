@@ -16,6 +16,20 @@ struct SharedSettingsTests {
         #expect(SharedSettings.dirHDUKey == "dirHDU")
         #expect(SharedSettings.defaultHDUKey == "defaultHDU")
         #expect(SharedSettings.dirBookmarksKey == "dirBookmarks")
+        #expect(SharedSettings.colorbarKey == "showColorbar")
+    }
+
+    @Test("the colorbar is off unless the setting is on")
+    func colorbarOffByDefault() throws {
+        let empty = try #require(UserDefaults(suiteName: Self.scratchSuite + ".colorbar.empty"))
+        empty.removeObject(forKey: SharedSettings.colorbarKey)
+        #expect(SharedSettings.showsColorbar(in: empty) == false)
+        #expect(SharedSettings.showsColorbar(in: nil) == false)
+        let d = try #require(UserDefaults(suiteName: Self.scratchSuite + ".colorbar"))
+        d.set(true, forKey: SharedSettings.colorbarKey)
+        #expect(SharedSettings.showsColorbar(in: d))
+        d.set(false, forKey: SharedSettings.colorbarKey)
+        #expect(SharedSettings.showsColorbar(in: d) == false)
     }
 
     @Test("folder rule wins, then the global default, then -1")
