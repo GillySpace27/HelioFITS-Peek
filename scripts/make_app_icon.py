@@ -4,7 +4,8 @@
 The family look Gilly picked on 2026-10-23, beside Heliad (a sun over an outlined book),
 HelioFITS Studio (the iris) and Heliogram (a sun on an outlined monitor). The outline, the dark
 screen inside it and the violet-black ground are Heliogram's: chrome #E7EAF3 stroked 44 px at
-1024, screen #06070C, ground #171132 to #090711 top to bottom. HelioFITS keeps the AIA 171 Sun.
+1024, screen #06070C, ground #2F2263 to #15102A top to bottom (#171132 to #090711 until Gilly's
+family-wide lift of 2026-10-28). HelioFITS keeps the AIA 171 Sun.
 
 The Sun is the real AIA 171 full-disc frame of 2024-05-14 16:51:09 UT (icon_sources/SOURCES.md),
 the same flare day HelioFITS Studio's iris is cut from. Its brightness on the disc is mapped,
@@ -31,7 +32,7 @@ IOS = os.path.join(ROOT, "HelioFITS-iOS", "App", "Assets.xcassets", "AppIcon.app
 
 S, SS = 1024, 4
 CHROME, INK, STROKE = (0xE7, 0xEA, 0xF3), (0x06, 0x07, 0x0C), 44
-TOP, BOTTOM = (0x17, 0x11, 0x32), (0x09, 0x07, 0x11)
+TOP, BOTTOM = (0x2F, 0x22, 0x63), (0x15, 0x10, 0x2A)
 X0, Y0, X1, Y1, FOLD, CORNER = 246, 128, 778, 896, 150, 56     # the file, at 1024
 SUN_C, SUN_R = (512, 540), 205                                 # the disc in the icon
 FRAME_C, FRAME_R = 600, 500.0   # disc centre and radius in the 1200 px, 1.9 arcsec/px frame (measured by
