@@ -8,7 +8,7 @@
 
 **Solar FITS files, previewable in Finder: in the right colors, with real coordinates.**
 
-### [**Get it free on the Mac App Store →**](https://apps.apple.com/app/id6790952544)
+<a href="https://apps.apple.com/app/id6790952544"><img src="docs/badges/download-on-the-mac-app-store.svg" height="54" alt="Download on the Mac App Store" /></a>
 
 Free and open source. Universal for Apple Silicon and Intel. No network access of any kind.
 
