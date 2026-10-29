@@ -2,14 +2,16 @@
 
 # HelioFITS Peek
 
-### Know what you're looking at — before you open a thing.
+### Know what you're looking at before you open a thing.
 
 <img src="docs/before-after.png" width="860" alt="The same folder of FITS files, before and after HelioFITS: on the left every file is an identical generic document icon; on the right each is a distinct colored solar image" />
 
-**Solar FITS files, previewable in Finder — in the right colors, with real coordinates.**
+**Solar FITS files, previewable in Finder: in the right colors, with real coordinates.**
 
 ### [**Get it free on the Mac App Store →**](https://apps.apple.com/app/id6790952544)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23749496.svg)](https://doi.org/10.5281/zenodo.23749496)
+&nbsp;
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue.svg)](LICENSE)
 &nbsp;·&nbsp; macOS 14.5+ (universal — Apple Silicon & Intel)
 &nbsp;·&nbsp; Free & open source
@@ -255,11 +257,28 @@ analytics, no telemetry. See [PRIVACY.md](PRIVACY.md).
 
 ## Citing
 
-If HelioFITS helps your research, please cite the version you used. Each release
-is archived on Zenodo with its own DOI; [CITATION.cff](CITATION.cff) has the
-details, and GitHub's "Cite this repository" button turns it into APA or BibTeX.
+If HelioFITS Peek helps your research, please cite it. Every release is archived
+on Zenodo. The concept DOI, <https://doi.org/10.5281/zenodo.23749496>, always
+resolves to the newest version. Version 1.5.0 is <https://doi.org/10.5281/zenodo.23749497>.
+[CITATION.cff](CITATION.cff) has the details, and GitHub's "Cite this repository"
+button turns it into APA or BibTeX.
+
+```bibtex
+@software{gilly_heliofits_peek,
+  author    = {Gilly, Chris R.},
+  title     = {{HelioFITS Peek}},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23749496},
+  url       = {https://doi.org/10.5281/zenodo.23749496}
+}
+```
+
 If you used the RHEF filter, please also cite Gilly & Cranmer (2025),
-*Solar Physics* 300, 174, https://doi.org/10.1007/s11207-025-02578-x.
+*Solar Physics* 300, 174, <https://doi.org/10.1007/s11207-025-02578-x>.
+
+HelioFITS Peek is part of the HelioFITS suite, which has its own DOI:
+<https://doi.org/10.5281/zenodo.23524598>.
 
 ## License & credits
 

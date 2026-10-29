@@ -24,6 +24,11 @@
       "identifier": "10.1007/s11207-025-02578-x",
       "relation": "references",
       "resource_type": "publication-article"
+    },
+    {
+      "identifier": "10.5281/zenodo.23524598",
+      "relation": "isPartOf",
+      "resource_type": "software"
     }
   ]
 }

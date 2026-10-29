@@ -5,6 +5,9 @@ message: >-
   also cite Gilly and Cranmer (2025).
 type: software
 title: HelioFITS Peek
+doi: 10.5281/zenodo.23749496
+version: 1.5.0
+date-released: 2026-10-28
 abstract: >-
   HelioFITS Peek teaches macOS Finder and Quick Look to read solar FITS files. A
   thumbnail extension renders each file in the colormap its header calls for,
