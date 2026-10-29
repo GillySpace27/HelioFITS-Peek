@@ -377,7 +377,17 @@ def feed_notes(changelog_text, version, fallback):
     return fallback
 
 
-def record_release(live_state, version, build, changelog_text, today, site, run=subprocess.run):
+DOI_RE = re.compile(r"10\.5281/zenodo\.\d+")
+
+
+def check_doi(doi):
+    """The Zenodo version DOI for --record, or "" when none was given. Anything else that is not one is an error."""
+    if doi and not DOI_RE.fullmatch(doi):
+        raise ValueError("--doi %r is not a Zenodo DOI like 10.5281/zenodo.123456" % doi)
+    return doi or ""
+
+
+def record_release(live_state, version, build, changelog_text, today, site, run=subprocess.run, doi=""):
     """Append this release to the HelioSoftware feed, only when App Store Connect says READY_FOR_SALE.
 
     Returns (ok, message). ok is False only when the writer failed or is missing; a release that is not
@@ -396,6 +406,8 @@ def record_release(live_state, version, build, changelog_text, today, site, run=
             f.write(notes + "\n")
         argv = [sys.executable, tool, "--product", FEED_PRODUCT, "--version", version, "--build", str(build),
                 "--date", today, "--channel", "mac-app-store", "--url", APP_STORE_URL, "--notes-file", nf]
+        if doi:
+            argv += ["--doi", doi]
         r = run(argv, capture_output=True, text=True)
     if r.returncode == 3:
         return True, "record: HelioFITS %s build %s is already in the feed" % (version, build)
@@ -415,6 +427,9 @@ if __name__ == "__main__":
     p.add_argument("--done", default="", help="comma-separated session-only milestones to mark done: preflight,version,tests,changelog")
     p.add_argument("--record", action="store_true",
                    help="append this release to the HelioSoftware feed in $SITE (default ~/vscode/Website), only if App Store Connect says READY_FOR_SALE")
+    p.add_argument("--doi", default="",
+                   help="with --record: the release's Zenodo version DOI (10.5281/zenodo.N), written to the record and shown on What's new; "
+                        "Zenodo mints it when the GitHub release is published, so it usually exists by the time the App Store goes live")
     p.add_argument("--platform", default="MAC_OS", choices=["MAC_OS", "IOS"],
                    help="App Store platform of the version record to follow (default MAC_OS)")
     p.add_argument("--channels", action="store_true", help="also print the state of each distribution channel")
@@ -430,6 +445,12 @@ if __name__ == "__main__":
         sys.exit(0)
     if args.record and not (args.version and args.build):
         p.error("--record needs <version> <build>")
+    if args.doi and not args.record:
+        p.error("--doi only applies with --record")
+    try:
+        args.doi = check_doi(args.doi)
+    except ValueError as e:
+        p.error(str(e))
     done_flags = {k: True for k in args.done.split(",") if k}
     if not args.version:
         args.version, args.build = target_release(xcconfig_version())
@@ -481,7 +502,7 @@ if __name__ == "__main__":
         except OSError:
             changelog = ""
         today = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
-        ok, msg = record_release(live_state, args.version, args.build, changelog, today, site)
+        ok, msg = record_release(live_state, args.version, args.build, changelog, today, site, doi=args.doi)
         print(msg)
         if not ok:
             sys.exit(1)

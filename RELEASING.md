@@ -264,4 +264,4 @@ After App Store Connect reports `READY_FOR_SALE` for the release (never before),
 It appends one record to `heliosoftware/feed/heliofits.json` in the Website checkout (channel `mac-app-store`,
 no assets, the changelog's intro paragraph as the notes) and regenerates `feed.xml` and the What's new page.
 It prints `record: skipped, App Store state is ...` while the release is not live, and writes nothing then.
-The date is the day the record is written (UTC). Committing and pushing the Website is a separate yes from Gilly.
+The date is the day the record is written (UTC). Add `--doi 10.5281/zenodo.N` (the release's Zenodo version DOI, minted when the GitHub release is published) to put it in the record and show "Cite this release" on What's new; without it the record is unchanged. Committing and pushing the Website is a separate yes from Gilly.

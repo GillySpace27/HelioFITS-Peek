@@ -77,6 +77,29 @@ class RecordRelease(unittest.TestCase):
         self.assertTrue(calls[1].startswith("Opening the app now opens the viewer"))
         self.assertTrue(any("build_feed.py" in c[1] for c in calls if isinstance(c, list)))
 
+    def test_doi_is_passed_to_the_writer_only_when_given(self):
+        calls = []
+
+        def fake(argv, **kw):
+            calls.append(argv)
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        for doi in ("", "10.5281/zenodo.23749497"):
+            calls.clear()
+            ok, msg = rs.record_release({"released": True}, "1.4.0", "10", CHANGELOG, "2026-10-02", self.site(),
+                                        run=fake, doi=doi)
+            self.assertTrue(ok, msg)
+            self.assertEqual("--doi" in calls[0], bool(doi))
+            if doi:
+                self.assertEqual(calls[0][calls[0].index("--doi") + 1], doi)
+
+    def test_check_doi_accepts_zenodo_and_refuses_anything_else(self):
+        self.assertEqual(rs.check_doi(""), "")
+        self.assertEqual(rs.check_doi("10.5281/zenodo.23749497"), "10.5281/zenodo.23749497")
+        for bad in ("10.5281/zenodo.", "10.5281/zenodo.12a", "https://doi.org/10.5281/zenodo.1", "10.1007/s11207-025-02578-x",
+                    " 10.5281/zenodo.1"):
+            with self.assertRaises(ValueError, msg=bad):
+                rs.check_doi(bad)
+
     def test_duplicate_is_not_an_error_and_a_writer_failure_is(self):
         rc = {"n": 3}
 
