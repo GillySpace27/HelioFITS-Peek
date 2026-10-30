@@ -28,6 +28,10 @@ final class FITSToolbar {
     let play = NSButton()
     private let hasPlayChip: Bool
     var playOn = false
+    /// Optional Colorbar chip: the colormap and its limits in a strip left of the image.
+    /// Its state is the shared setting, so it carries to the next preview.
+    let colorbar = NSButton()
+    private let hasColorbarChip: Bool
     let filterMenu = NSPopUpButton(frame: .zero, pullsDown: false)
     let panel = NSView()
     let sLo = NSSlider(), sHi = NSSlider(), sG = NSSlider()
@@ -55,8 +59,9 @@ final class FITSToolbar {
          tuneSel: Selector, stretchSel: Selector, resetSel: Selector, filterSel: Selector,
          limitsSel: Selector? = nil, ringsSel: Selector? = nil, compareSel: Selector? = nil,
          headerSel: Selector? = nil, swipeSel: Selector? = nil, playSel: Selector? = nil,
-         upsilonSel: Selector? = nil) {
+         upsilonSel: Selector? = nil, colorbarSel: Selector? = nil) {
         self.hasSwipeChip = swipeSel != nil
+        self.hasColorbarChip = colorbarSel != nil
         self.hasRingsChip = ringsSel != nil
         self.hasHeaderChip = headerSel != nil
         self.hasPlayChip = playSel != nil
@@ -105,6 +110,11 @@ final class FITSToolbar {
         if let playSel {
             mk(play, "Play", "Play this file's layers as a loop. It never starts by itself; press again to stop.", playSel)
             play.setAccessibilityLabel("Play the layers as a movie")
+        }
+        if let colorbarSel {
+            mk(colorbar, "Colorbar", "Show the colormap and its data limits in a strip left of the image. "
+               + "Remembered for the next preview.", colorbarSel)
+            colorbar.setAccessibilityLabel("Show colorbar")
         }
         limb.setAccessibilityLabel("Show solar limb")
         diff.setAccessibilityLabel("Running difference with previous layer")
@@ -331,6 +341,7 @@ final class FITSToolbar {
         var views: [NSView] = [filterMenu]
         if hasSwipeChip { views.append(swipe) }
         views.append(limb)
+        if hasColorbarChip { views.append(colorbar) }
         if hasRingsChip { views.append(rings) }
         views += [diff, tune]
         if hasHeaderChip { views.append(header) }
@@ -445,6 +456,7 @@ final class FITSToolbar {
         if hasCompareChip { paint(compare, on: model.compareModel != nil, enabled: true) }
         if hasSwipeChip { paint(swipe, on: model.beforeAfter && model.filter != .none, enabled: model.filter != .none) }
         if hasHeaderChip { paint(header, on: headerOn, enabled: true) }
+        if hasColorbarChip { paint(colorbar, on: SharedSettings.showsColorbar(), enabled: true) }
         if hasPlayChip {
             play.title = playOn ? "Pause" : "Play"
             paint(play, on: playOn, enabled: model.count > 1)

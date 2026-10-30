@@ -87,7 +87,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
                             resetSel: #selector(resetStretch), filterSel: #selector(filterChanged),
                             limitsSel: #selector(limitsChanged(_:)), ringsSel: #selector(toggleRings),
                             headerSel: #selector(toggleHeader), swipeSel: #selector(toggleSwipe),
-                            playSel: #selector(togglePlay))
+                            playSel: #selector(togglePlay), colorbarSel: #selector(toggleColorbar))
         toolStack = tools.stack
         toolStack.translatesAutoresizingMaskIntoConstraints = false
         tools.panel.translatesAutoresizingMaskIntoConstraints = false
@@ -260,6 +260,10 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
     // MARK: actions
 
     @objc private func toggleLimb() { if model.toggleLimb() { refresh() } }
+    @objc private func toggleColorbar() {
+        SharedSettings.setShowsColorbar(!SharedSettings.showsColorbar())
+        refresh()
+    }
     @objc private func toggleDiff() { if model.toggleDiff() { refresh() } }
     @objc private func toggleRings() { if model.toggleRings() { refresh() } }
     @objc private func toggleSwipe() { if model.toggleBeforeAfter() { refresh() } }

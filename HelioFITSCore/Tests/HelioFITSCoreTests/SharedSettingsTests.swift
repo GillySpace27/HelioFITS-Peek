@@ -30,6 +30,11 @@ struct SharedSettingsTests {
         #expect(SharedSettings.showsColorbar(in: d))
         d.set(false, forKey: SharedSettings.colorbarKey)
         #expect(SharedSettings.showsColorbar(in: d) == false)
+        // The Colorbar chip writes the same key the hosts read.
+        SharedSettings.setShowsColorbar(true, in: d)
+        #expect(d.bool(forKey: "showColorbar"))
+        SharedSettings.setShowsColorbar(false, in: d)
+        #expect(SharedSettings.showsColorbar(in: d) == false)
     }
 
     @Test("folder rule wins, then the global default, then -1")

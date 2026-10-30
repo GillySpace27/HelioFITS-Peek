@@ -9,6 +9,8 @@ All notable changes to HelioFITS are recorded here. Format follows
 ### Changed
 
 - Get Info and Spotlight metadata for FITS files now in the Mac App Store build too.
+- The colour bar has a Colorbar button beside Limb, in Quick Look and the viewer, in place
+  of its Settings switch. Still off by default; the choice carries to the next preview.
 
 ### Fixed
 

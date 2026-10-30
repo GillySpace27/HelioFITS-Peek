@@ -30,6 +30,11 @@ public enum SharedSettings {
         d?.bool(forKey: colorbarKey) ?? false
     }
 
+    /// The Colorbar chip's write: every preview and viewer opened afterwards follows it.
+    public static func setShowsColorbar(_ on: Bool, in d: UserDefaults? = SharedSettings.suite) {
+        d?.set(on, forKey: colorbarKey)
+    }
+
     /// The pinned keywords, cleaned (see `keywords(from:)`).
     public static func pinnedKeywords(in d: UserDefaults? = SharedSettings.suite) -> [String] {
         keywords(from: d?.stringArray(forKey: pinnedKeywordsKey) ?? [])

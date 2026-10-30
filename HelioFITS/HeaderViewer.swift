@@ -278,7 +278,8 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
                               limitsSel: #selector(limitsChanged(_:)),
                               ringsSel: #selector(toggleRings(_:)), compareSel: #selector(compareClicked(_:)),
                               swipeSel: #selector(toggleSwipe(_:)),
-                              upsilonSel: #selector(upsilonChanged(_:)))
+                              upsilonSel: #selector(upsilonChanged(_:)),
+                              colorbarSel: #selector(toggleColorbar(_:)))
         let toolStack = c.tools.stack
         toolStack.translatesAutoresizingMaskIntoConstraints = false
         c.tools.panel.translatesAutoresizingMaskIntoConstraints = false
@@ -437,6 +438,12 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         c.stats.isHidden = true
         refresh(c)
         c.canvas.refreshReadout()
+    }
+
+    @objc private func toggleColorbar(_ s: NSButton) {
+        guard let c = ctx(for: s) else { return }
+        SharedSettings.setShowsColorbar(!SharedSettings.showsColorbar())
+        refresh(c)
     }
 
     @objc private func toggleLimb(_ s: NSButton) {
