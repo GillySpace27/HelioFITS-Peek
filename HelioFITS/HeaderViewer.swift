@@ -7,6 +7,7 @@
 // No browser involved.
 
 import AppKit
+import SwiftUI
 import UniformTypeIdentifiers
 import HelioFITSCore
 
@@ -66,6 +67,10 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         let fpsMenu = NSPopUpButton()
         let scrubber = NSSlider()
         let frameLabel = NSTextField(labelWithString: "")
+        // The folder table (List side of the List/Movie switch), made on first use.
+        var table: FolderTableModel?
+        var tableHost: NSView?
+        weak var content: NSStackView?    // split view + action bar, hidden while the list shows
         /// The file on screen: the opened file, or the current frame of a folder.
         var shownURL: URL { model.path.isEmpty ? url : URL(fileURLWithPath: model.path) }
         init(url: URL) { self.url = url }
@@ -91,7 +96,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         panel.allowedContentTypes = ["fits", "fts", "fit", "fz"]
             .compactMap { UTType(filenameExtension: $0) }
         panel.prompt = "Open"
-        panel.message = "Choose a FITS file, or a folder of FITS frames to play as a movie."
+        panel.message = "Choose a FITS file, or a folder of FITS frames to play as a movie or list in a table."
         panel.begin { [weak self] resp in
             guard resp == .OK, let url = panel.url else { return }
             if url.hasDirectoryPath { self?.present(folderURL: url) } else { self?.present(fileURL: url) }
@@ -409,6 +414,8 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
             content.bottomAnchor.constraint(equalTo: root.bottomAnchor),
         ])
         win.contentView = root
+        c.content = content
+        if c.sequence != nil { addViewSwitch(win, c) }
 
         win.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -716,6 +723,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         guard let w = notification.object as? NSWindow else { return }
         if let c = ctx[ObjectIdentifier(w)] {
             stopPlaying(c)
+            c.table?.stop()
             if c.scoped { c.url.stopAccessingSecurityScopedResource() }
         }
         ctx.removeValue(forKey: ObjectIdentifier(w))
@@ -957,6 +965,68 @@ extension HeaderWindowController {
                 self.pageChanged(c)
                 self.syncMovieControls(c)
             }
+        }
+    }
+}
+
+// MARK: folder table (List/Movie switch)
+
+extension HeaderWindowController {
+    /// A folder's window gets a Movie | List switch in its title bar. Movie (the HF-14
+    /// view) stays the default; List shows the sortable folder table in the same window.
+    private func addViewSwitch(_ win: NSWindow, _ c: Ctx) {
+        let sw = NSSegmentedControl(labels: ["Movie", "List"], trackingMode: .selectOne,
+                                    target: self, action: #selector(viewSwitched(_:)))
+        sw.selectedSegment = 0
+        sw.toolTip = "Movie plays the folder's frames; List shows its FITS files in a sortable table"
+        sw.setAccessibilityLabel("Show the folder as a movie or a list")
+        let holder = NSView(frame: NSRect(x: 0, y: 0, width: sw.fittingSize.width + 12, height: 28))
+        sw.frame.origin = NSPoint(x: 0, y: (28 - sw.fittingSize.height) / 2)
+        sw.setFrameSize(sw.fittingSize)
+        holder.addSubview(sw)
+        let acc = NSTitlebarAccessoryViewController()
+        acc.view = holder
+        acc.layoutAttribute = .trailing
+        win.addTitlebarAccessoryViewController(acc)
+    }
+
+    @objc private func viewSwitched(_ s: NSSegmentedControl) {
+        guard let c = ctx(for: s), let root = s.window?.contentView else { return }
+        showList(s.selectedSegment == 1, c, root: root)
+    }
+
+    private func showList(_ list: Bool, _ c: Ctx, root: NSView) {
+        stopPlaying(c)
+        if list, c.tableHost == nil {
+            let m = FolderTableModel(folder: c.url)
+            m.onOpen = { [weak self] path in self?.present(fileURL: URL(fileURLWithPath: path)) }
+            m.onShowInMovie = { [weak self, weak c, weak root] path in
+                guard let self, let c, let root, let i = c.sequence?.frames.firstIndex(where: { $0.path == path })
+                else { NSSound.beep(); return }
+                self.selectSwitch(root.window, 0)
+                self.showList(false, c, root: root)
+                self.showFrame(c, i)
+            }
+            let host = NSHostingView(rootView: FolderTableView(model: m))
+            host.translatesAutoresizingMaskIntoConstraints = false
+            root.addSubview(host)
+            NSLayoutConstraint.activate([
+                host.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+                host.trailingAnchor.constraint(equalTo: root.trailingAnchor),
+                host.topAnchor.constraint(equalTo: root.topAnchor),
+                host.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            ])
+            c.table = m
+            c.tableHost = host
+        }
+        c.content?.isHidden = list
+        c.tableHost?.isHidden = !list
+        if !list { root.window?.makeFirstResponder(c.canvas) }
+    }
+
+    private func selectSwitch(_ win: NSWindow?, _ segment: Int) {
+        for acc in win?.titlebarAccessoryViewControllers ?? [] {
+            for case let sw as NSSegmentedControl in acc.view.subviews { sw.selectedSegment = segment }
         }
     }
 }
