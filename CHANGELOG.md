@@ -24,6 +24,8 @@ All notable changes to HelioFITS are recorded here. Format follows
 ### Changed
 
 - Get Info and Spotlight metadata for FITS files now in the Mac App Store build too.
+- The colour bar has a Colorbar button beside Limb, in Quick Look and the viewer, in place
+  of its Settings switch. Still off by default; the choice carries to the next preview.
 - Stepping through a folder's movie is faster: each step renders only the page on screen,
   not every HDU and plane of the file (a PUNCH PAM frame has six), and the next frame is
   read ahead. The HDU menu still lists every page; picking one renders it.
