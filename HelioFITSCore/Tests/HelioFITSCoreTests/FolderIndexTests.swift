@@ -100,15 +100,42 @@ struct FolderIndexTests {
         // 9 x 7 = 63 pixels < 64 x 64 < 200 x 100, ties keep file-name order.
         #expect(names(.size) == ["no_instrume.fits", "aia_cutout.fits", "punch_pam_cube_cutout.fits",
                                  "synthetic_cube.fits", "synthetic_disk.fits", "compressed.fz"])
-        // 193 < 530 < 1700 (as text "1700" would sort first); files with no WAVELNTH last, both ways.
-        #expect(names(.wavelength) == ["aia_cutout.fits", "punch_pam_cube_cutout.fits", "compressed.fz",
+        // In one unit: 193 Å < 1700 Å < 530 nm = 5300 Å (by the number as written, 530 would
+        // sort before 1700); files with no WAVELNTH last, both ways.
+        #expect(names(.wavelength) == ["aia_cutout.fits", "compressed.fz", "punch_pam_cube_cutout.fits",
                                        "no_instrume.fits", "synthetic_cube.fits", "synthetic_disk.fits"])
-        #expect(names(.wavelength, .reverse) == ["compressed.fz", "punch_pam_cube_cutout.fits", "aia_cutout.fits",
+        #expect(names(.wavelength, .reverse) == ["punch_pam_cube_cutout.fits", "compressed.fz", "aia_cutout.fits",
                                                  "no_instrume.fits", "synthetic_cube.fits", "synthetic_disk.fits"])
         #expect(names(.instrument, .reverse).last == "no_instrume.fits")
 
         let csv = FITSFolderIndex.csv([aia, bare]).components(separatedBy: "\r\n")
         #expect(csv[1].hasPrefix("aia_cutout.fits,AIA_2,SDO/AIA,193.0,angstrom,2023-10-11T00:00:04.843,2.000057,64,64,-32,1,"))
         #expect(csv[2].hasPrefix("no_instrume.fits,,TEST,,,,,9,7,-32,1,"))
+    }
+
+    @Test("wavelength sorts in one unit (Å); an unknown or missing unit sorts last, with no wavelength")
+    func wavelengthUnits() {
+        func row(_ name: String, _ w: Double?, _ unit: String?) -> FITSFolderIndex.Row {
+            FITSFolderIndex.Row(path: "/x/" + name, wavelength: w, waveUnit: unit, imageHDUs: 1)
+        }
+        let rows = [row("a", 30.4, "nm"), row("b", 1700, "Angstrom"), row("c", 5.3e-7, "m"), row("d", 193, "angstrom"),
+                    row("e", 2, "furlong"), row("f", nil, nil), row("g", 171, nil), row("h", 0.1, "nanometer")]
+        let order = rows.sorted(using: FITSFolderIndex.Order(.wavelength)).map(\.name)
+        // 0.1 nm = 1 Å, 193 Å, 30.4 nm = 304 Å, 1700 Å, 5.3e-7 m = 5300 Å; then the rest in name order.
+        #expect(order == ["h", "d", "a", "b", "c", "e", "f", "g"])
+        #expect(rows.sorted(using: FITSFolderIndex.Order(.wavelength, order: .reverse)).map(\.name)
+                    == ["c", "b", "a", "d", "h", "e", "f", "g"])
+
+        #expect(rows.map(\.wavelengthLabel) == ["30.4 nm", "1700 Å", "5.3e-07 m", "193 Å", "2 furlong", nil, "171",
+                                                "0.1 nm"])
+        var r = row("x", nil, nil)
+        r.exposure = 2.000057
+        r.date = "2023-10-11T00:00:04.843"
+        #expect(r.exposureLabel(locale: Locale(identifier: "en_US_POSIX")) == "2.0 s")
+        #expect(r.dateLabel == "2023-10-11 00:00")
+        r.exposure = 0.0123456
+        r.date = "11/10/23"
+        #expect(r.exposureLabel(locale: Locale(identifier: "en_US_POSIX")) == "0.0123 s")
+        #expect(r.dateLabel == "11/10/23")
     }
 }

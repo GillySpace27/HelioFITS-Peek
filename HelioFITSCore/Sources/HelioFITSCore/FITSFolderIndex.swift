@@ -115,13 +115,21 @@ extension FITSFolderIndex {
         return out
     }
 
+    /// WAVEUNIT spellings (lowercased) we can convert: the symbol shown and one unit in Å.
+    static let waveUnits: [String: (symbol: String, angstroms: Double)] = [
+        "angstrom": ("Å", 1), "angstroms": ("Å", 1), "å": ("Å", 1),
+        "nm": ("nm", 10), "nanometer": ("nm", 10), "nanometers": ("nm", 10), "nanometre": ("nm", 10),
+        "um": ("µm", 1e4), "µm": ("µm", 1e4), "micron": ("µm", 1e4), "microns": ("µm", 1e4),
+        "micrometer": ("µm", 1e4), "m": ("m", 1e10), "meter": ("m", 1e10), "metre": ("m", 1e10),
+    ]
+
     public enum Column: String, CaseIterable, Sendable {
         case name, instrument, telescope, wavelength, date, exposure, size, bitpix, imageHDUs, fileBytes
     }
 
     /// Sorts rows by one column. Numbers sort as numbers (size by width times height,
-    /// wavelength by its value as written, whatever WAVEUNIT says). A missing value sorts
-    /// last in either direction.
+    /// wavelength converted to Å, so 530 nm sorts after 1700 Å). A missing value, or a
+    /// wavelength whose WAVEUNIT we cannot convert, sorts last in either direction.
     public struct Order: SortComparator, Hashable, Sendable {
         public var column: Column
         public var order: SortOrder = .forward
@@ -138,7 +146,7 @@ extension FITSFolderIndex {
             case .instrument: return r.instrument.map(Key.text)
             case .telescope: return r.telescope.map(Key.text)
             case .date: return r.date.map(Key.text)
-            case .wavelength: return r.wavelength.map(Key.number)
+            case .wavelength: return r.wavelengthInAngstroms.map(Key.number)
             case .exposure: return r.exposure.map(Key.number)
             case .size: return r.pixels.map { .number(Double($0)) }
             case .bitpix: return r.bitpix.map { .number(Double($0)) }
@@ -160,5 +168,35 @@ extension FITSFolderIndex {
             guard order == .reverse else { return r }
             return r == .orderedAscending ? .orderedDescending : r == .orderedDescending ? .orderedAscending : r
         }
+    }
+}
+
+extension FITSFolderIndex.Row {
+    /// WAVELNTH in Å, when WAVEUNIT is a unit we know (nil otherwise, or with no WAVEUNIT).
+    public var wavelengthInAngstroms: Double? {
+        guard let w = wavelength, let u = waveUnit,
+              let unit = FITSFolderIndex.waveUnits[u.trimmingCharacters(in: .whitespaces).lowercased()]
+        else { return nil }
+        return w * unit.angstroms
+    }
+
+    /// "193 Å", "530 nm": a known WAVEUNIT as its symbol, an unknown one as written.
+    public var wavelengthLabel: String? {
+        guard let w = wavelength else { return nil }
+        let u = waveUnit.map { FITSFolderIndex.waveUnits[$0.trimmingCharacters(in: .whitespaces).lowercased()]?.symbol ?? $0 }
+        return String(format: "%g", w) + (u.map { " " + $0 } ?? "")
+    }
+
+    /// "2.0 s": EXPTIME to two or three significant figures.
+    public func exposureLabel(locale: Locale = .current) -> String? {
+        exposure.map { $0.formatted(.number.precision(.significantDigits(2...3)).grouping(.never).locale(locale)) + " s" }
+    }
+
+    /// "2023-10-11 00:00" from an ISO 8601 date and time; anything else as written.
+    public var dateLabel: String? {
+        guard let d = date else { return nil }
+        let c = Array(d)
+        guard c.count >= 16, c[4] == "-", c[7] == "-", c[10] == "T" || c[10] == " ", c[13] == ":" else { return d }
+        return String(c[0..<10]) + " " + String(c[11..<16])
     }
 }

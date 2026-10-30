@@ -1008,6 +1008,7 @@ extension HeaderWindowController {
                 self.showFrame(c, i)
             }
             let host = NSHostingView(rootView: FolderTableView(model: m))
+            host.sizingOptions = []                    // the window sizes the table, not the reverse
             host.translatesAutoresizingMaskIntoConstraints = false
             root.addSubview(host)
             NSLayoutConstraint.activate([

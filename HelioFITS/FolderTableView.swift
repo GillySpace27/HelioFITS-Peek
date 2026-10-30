@@ -92,20 +92,22 @@ struct FolderTableView: View {
         return f
     }()
 
-    private func num(_ v: Double?) -> String { v.map { String(format: "%g", $0) } ?? "" }
-
     var body: some View {
         VStack(spacing: 0) {
             Table(model.rows, selection: $selection, sortOrder: $model.sortOrder) {
-                TableColumn("File", sortUsing: Order(.name)) { Text($0.name) }
+                TableColumn("File", sortUsing: Order(.name)) {
+                    Text($0.name).lineLimit(1).truncationMode(.middle).help($0.name)
+                }
+                .width(min: 120, ideal: 280)
                 TableColumn("Instrument", sortUsing: Order(.instrument)) { Text($0.instrument ?? "") }
                 TableColumn("Telescope", sortUsing: Order(.telescope)) { Text($0.telescope ?? "") }
-                TableColumn("Wavelength", sortUsing: Order(.wavelength)) { r in
-                    Text(r.wavelength.map { num($0) + (r.waveUnit.map { " " + $0 } ?? "") } ?? "")
+                TableColumn("Wavelength", sortUsing: Order(.wavelength)) { Text($0.wavelengthLabel ?? "").monospacedDigit() }
+                TableColumn("Observed", sortUsing: Order(.date)) {
+                    Text($0.dateLabel ?? "").monospacedDigit().help($0.date ?? "")
                 }
-                TableColumn("Observed", sortUsing: Order(.date)) { Text($0.date ?? "").monospacedDigit() }
+                .width(min: 110, ideal: 120)
                 TableColumn("Exposure", sortUsing: Order(.exposure)) { r in
-                    Text(r.exposure.map { num($0) + " s" } ?? "").monospacedDigit()
+                    Text(r.exposureLabel() ?? "").monospacedDigit().help(r.exposure.map { String($0) + " s" } ?? "")
                 }
                 TableColumn("Size", sortUsing: Order(.size)) { r in
                     Text(r.width.flatMap { w in r.height.map { "\(w) × \($0)" } } ?? "").monospacedDigit()
@@ -138,6 +140,7 @@ struct FolderTableView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { model.start() }
     }
 }
