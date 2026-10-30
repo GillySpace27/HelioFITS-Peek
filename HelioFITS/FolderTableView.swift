@@ -7,6 +7,7 @@
 import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
+import QuickLookThumbnailing
 import HelioFITSCore
 
 /// Used on the main thread only; the scan's Task runs on the main actor.
@@ -27,6 +28,10 @@ final class FolderTableModel: ObservableObject {
     /// Show in Movie: switch this window to the movie at that file.
     var onShowInMovie: (String) -> Void = { _ in }
     private var task: Task<Void, Never>?
+    /// Thumbnails for this window, keyed by size and path; dropped with the window.
+    private let thumbs = NSCache<NSString, NSImage>()
+    /// Thumbnail requests in flight, cancelled when the window closes.
+    private var requests: [UUID: QLThumbnailGenerator.Request] = [:]
 
     init(folder: URL) { self.folder = folder }
 
@@ -53,7 +58,38 @@ final class FolderTableModel: ObservableObject {
         }
     }
 
-    func stop() { task?.cancel() }
+    func stop() {
+        task?.cancel()
+        requests.values.forEach(QLThumbnailGenerator.shared.cancel)
+        requests = [:]
+    }
+
+    /// The thumbnail macOS makes for `path` at `side` points: Quick Look asks Peek's own
+    /// thumbnail extension, so it matches Finder. nil when there is none or the asking
+    /// view went away (its task was cancelled).
+    @MainActor
+    func thumbnail(_ path: String, side: CGFloat) async -> NSImage? {
+        let key = "\(Int(side)) \(path)" as NSString
+        if let img = thumbs.object(forKey: key) { return img }
+        guard !Task.isCancelled else { return nil }
+        let req = QLThumbnailGenerator.Request(fileAt: URL(fileURLWithPath: path), size: CGSize(width: side, height: side),
+                                               scale: NSScreen.main?.backingScaleFactor ?? 2,
+                                               representationTypes: .thumbnail)
+        let id = UUID()
+        requests[id] = req
+        defer { requests[id] = nil }
+        let img: NSImage? = await withTaskCancellationHandler {
+            await withCheckedContinuation { cont in
+                QLThumbnailGenerator.shared.generateBestRepresentation(for: req) { rep, _ in
+                    cont.resume(returning: rep?.nsImage)
+                }
+            }
+        } onCancel: {
+            QLThumbnailGenerator.shared.cancel(req)
+        }
+        if let img { thumbs.setObject(img, forKey: key) }
+        return img
+    }
 
     var status: String {
         if !finished { return total == 0 ? "Listing \(folder.lastPathComponent)…" : "Reading \(done.formatted()) of \(total.formatted())" }
@@ -98,38 +134,47 @@ struct FolderTableView: View {
     var body: some View {
         VStack(spacing: 0) {
             Table(model.rows, selection: $selection, sortOrder: $model.sortOrder, columnCustomization: $columns) {
-                TableColumn("File", sortUsing: Order(.name)) {
-                    Text($0.name).lineLimit(1).truncationMode(.middle).help($0.name)
-                }
-                .width(min: 120, ideal: 280)
-                .customizationID("file")
-                TableColumn("Instrument", sortUsing: Order(.instrument)) { Text($0.instrument ?? "") }
-                    .customizationID("instrument")
-                TableColumn("Telescope", sortUsing: Order(.telescope)) { Text($0.telescope ?? "") }
-                    .customizationID("telescope").defaultVisibility(.hidden)
-                TableColumn("Wavelength", sortUsing: Order(.wavelength)) { Text($0.wavelengthLabel ?? "").monospacedDigit() }
+                TableColumn("Thumbnail") { FolderThumbnail(model: model, path: $0.path, side: 32) }
+                    .width(40)
+                    .customizationID("thumbnail")
+                Group {                                // a column builder takes at most 10
+                    TableColumn("File", sortUsing: Order(.name)) {
+                        Text($0.name).lineLimit(1).truncationMode(.middle).help($0.name)
+                    }
+                    .width(min: 120, ideal: 280)
+                    .customizationID("file")
+                    TableColumn("Instrument", sortUsing: Order(.instrument)) { Text($0.instrument ?? "") }
+                        .customizationID("instrument")
+                    TableColumn("Telescope", sortUsing: Order(.telescope)) { Text($0.telescope ?? "") }
+                        .customizationID("telescope").defaultVisibility(.hidden)
+                    TableColumn("Wavelength", sortUsing: Order(.wavelength)) {
+                        Text($0.wavelengthLabel ?? "").monospacedDigit()
+                    }
                     .customizationID("wavelength")
-                TableColumn("Observed", sortUsing: Order(.date)) {
-                    Text($0.dateLabel ?? "").monospacedDigit().help($0.date ?? "")
-                }
-                .width(min: 110, ideal: 120)
-                .customizationID("observed")
-                TableColumn("Exposure", sortUsing: Order(.exposure)) { r in
-                    Text(r.exposureLabel() ?? "").monospacedDigit().help(r.exposure.map { String($0) + " s" } ?? "")
-                }
-                .customizationID("exposure")
-                TableColumn("Size", sortUsing: Order(.size)) { r in
-                    Text(r.width.flatMap { w in r.height.map { "\(w) × \($0)" } } ?? "").monospacedDigit()
-                }
-                .customizationID("size")
-                TableColumn("BITPIX", sortUsing: Order(.bitpix)) { Text($0.bitpix.map(String.init) ?? "").monospacedDigit() }
+                    TableColumn("Observed", sortUsing: Order(.date)) {
+                        Text($0.dateLabel ?? "").monospacedDigit().help($0.date ?? "")
+                    }
+                    .width(min: 110, ideal: 120)
+                    .customizationID("observed")
+                    TableColumn("Exposure", sortUsing: Order(.exposure)) { r in
+                        Text(r.exposureLabel() ?? "").monospacedDigit().help(r.exposure.map { String($0) + " s" } ?? "")
+                    }
+                    .customizationID("exposure")
+                    TableColumn("Size", sortUsing: Order(.size)) { r in
+                        Text(r.width.flatMap { w in r.height.map { "\(w) × \($0)" } } ?? "").monospacedDigit()
+                    }
+                    .customizationID("size")
+                    TableColumn("BITPIX", sortUsing: Order(.bitpix)) {
+                        Text($0.bitpix.map(String.init) ?? "").monospacedDigit()
+                    }
                     .customizationID("bitpix").defaultVisibility(.hidden)
-                TableColumn("Image HDUs", sortUsing: Order(.imageHDUs)) { Text("\($0.imageHDUs)").monospacedDigit() }
-                    .customizationID("imageHDUs").defaultVisibility(.hidden)
-                TableColumn("File Size", sortUsing: Order(.fileBytes)) { r in
-                    Text(r.fileBytes.map { Self.bytes.string(fromByteCount: Int64($0)) } ?? "").monospacedDigit()
+                    TableColumn("Image HDUs", sortUsing: Order(.imageHDUs)) { Text("\($0.imageHDUs)").monospacedDigit() }
+                        .customizationID("imageHDUs").defaultVisibility(.hidden)
+                    TableColumn("File Size", sortUsing: Order(.fileBytes)) { r in
+                        Text(r.fileBytes.map { Self.bytes.string(fromByteCount: Int64($0)) } ?? "").monospacedDigit()
+                    }
+                    .customizationID("fileBytes").defaultVisibility(.hidden)
                 }
-                .customizationID("fileBytes").defaultVisibility(.hidden)
             }
             .contextMenu(forSelectionType: String.self) { ids in
                 Button("Open") { ids.sorted().forEach(model.onOpen) }
@@ -155,5 +200,35 @@ struct FolderTableView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { model.start() }
+    }
+}
+
+/// One file's Quick Look thumbnail, asked for only while the view is on screen (the
+/// task is cancelled when it scrolls away). Sizes are rounded up to 32, 64, 128 or
+/// 256 points so a slider drag does not ask again at every step.
+struct FolderThumbnail: View {
+    let model: FolderTableModel
+    let path: String
+    let side: CGFloat
+    @State private var image: NSImage?
+    @State private var failed = false
+
+    private var asked: CGFloat { [32, 64, 128, 256].first { $0 >= side } ?? 256 }
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(nsImage: image).resizable().interpolation(.high).aspectRatio(contentMode: .fit)
+            } else {
+                Image(systemName: failed ? "doc" : "photo").foregroundStyle(.tertiary)
+            }
+        }
+        .frame(width: side, height: side)
+        .task(id: "\(asked) \(path)") {
+            let img = await model.thumbnail(path, side: asked)
+            guard !Task.isCancelled else { return }
+            image = img
+            failed = img == nil
+        }
     }
 }
