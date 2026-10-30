@@ -7,6 +7,7 @@
 // No browser involved.
 
 import AppKit
+import SwiftUI
 import UniformTypeIdentifiers
 import HelioFITSCore
 
@@ -62,10 +63,16 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         var fps = 5
         /// A frame render in flight while playing; a timer tick that finds one waits.
         var frameInFlight = false
+        /// The next frame in the direction of travel, rendered before it is asked for.
+        var ahead: (path: String, hdu: Int, plane: Int, model: FITSPreviewModel, text: String)?
         let play = NSButton()
         let fpsMenu = NSPopUpButton()
         let scrubber = NSSlider()
         let frameLabel = NSTextField(labelWithString: "")
+        // The folder grid and table (Grid and List sides of the switch), made on first use.
+        var table: FolderTableModel?
+        var tableHost: NSView?
+        weak var content: NSStackView?    // split view + action bar, hidden while the list shows
         /// The file on screen: the opened file, or the current frame of a folder.
         var shownURL: URL { model.path.isEmpty ? url : URL(fileURLWithPath: model.path) }
         init(url: URL) { self.url = url }
@@ -91,7 +98,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         panel.allowedContentTypes = ["fits", "fts", "fit", "fz"]
             .compactMap { UTType(filenameExtension: $0) }
         panel.prompt = "Open"
-        panel.message = "Choose a FITS file, or a folder of FITS frames to play as a movie."
+        panel.message = "Choose a FITS file, or a folder of FITS frames to play as a movie or list in a table."
         panel.begin { [weak self] resp in
             guard resp == .OK, let url = panel.url else { return }
             if url.hasDirectoryPath { self?.present(folderURL: url) } else { self?.present(fileURL: url) }
@@ -172,17 +179,17 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
             names[n] = String(rest[rest.index(after: l)..<r])
         }
         c.popup.removeAllItems()
-        guard c.model.count > 1 else { c.popup.isHidden = true; return }
+        guard c.model.slots.count > 1 else { c.popup.isHidden = true; return }
 
         // A data cube (e.g. PUNCH PAM's Stokes planes) puts several pages under
         // the SAME hdu, so "HDU h" alone no longer names one page — tag each
         // item by its page index instead, and disambiguate the label whenever
         // more than one page shares an hdu.
+        // Items are the file's slots, not its rendered pages: a movie frame renders one.
         var pagesPerHDU: [Int: Int] = [:]
-        for pg in c.model.pages { pagesPerHDU[pg.hdu, default: 0] += 1 }
+        for pg in c.model.slots { pagesPerHDU[pg.hdu, default: 0] += 1 }
 
-        for p in 0..<c.model.count {
-            let pg = c.model.pages[p]
+        for (p, pg) in c.model.slots.enumerated() {
             var title = names[pg.hdu].map { "HDU \(pg.hdu): \($0)" } ?? "HDU \(pg.hdu)"
             if (pagesPerHDU[pg.hdu] ?? 1) > 1 {
                 title += "  (plane \(pg.plane + 1)/\(pagesPerHDU[pg.hdu]!))"
@@ -190,7 +197,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
             c.popup.addItem(withTitle: title)
             c.popup.lastItem?.tag = p
         }
-        c.popup.selectItem(withTag: c.model.cur)
+        c.popup.selectItem(withTag: c.model.curSlot)
         c.popup.sizeToFit()
     }
 
@@ -233,7 +240,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
             // populatePopup tags items with the PAGE INDEX, not the HDU number —
             // they differ as soon as a file has several image HDUs, and a data
             // cube gives many pages the same hdu.
-            c.popup.selectItem(withTag: c.model.cur)
+            c.popup.selectItem(withTag: c.model.curSlot)
             self.pageChanged(c)
         }
         c.canvas.onHover = { [weak c] n in
@@ -410,6 +417,8 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
             content.bottomAnchor.constraint(equalTo: root.bottomAnchor),
         ])
         win.contentView = root
+        c.content = content
+        if c.sequence != nil { addViewSwitch(win, c) }
 
         win.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -426,8 +435,14 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
 
     @objc private func hduChanged(_ sender: NSPopUpButton) {
         guard let c = ctx(for: sender) else { return }
-        c.model.select(page: sender.selectedTag())
-        pageChanged(c)
+        guard c.model.slots.indices.contains(sender.selectedTag()) else { return }
+        let s = c.model.slots[sender.selectedTag()]
+        if let p = c.model.pages.firstIndex(where: { ($0.hdu, $0.plane) == s }) {
+            c.model.select(page: p)
+            pageChanged(c)
+        } else if c.sequence != nil {
+            showFrame(c, c.frame, only: s)    // a movie frame rendered one page; render the one picked
+        }
     }
 
     /// Refresh after the displayed layer changes. The readout and any measured
@@ -723,6 +738,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         guard let w = notification.object as? NSWindow else { return }
         if let c = ctx[ObjectIdentifier(w)] {
             stopPlaying(c)
+            c.table?.stop()
             if c.scoped { c.url.stopAccessingSecurityScopedResource() }
         }
         ctx.removeValue(forKey: ObjectIdentifier(w))
@@ -933,23 +949,28 @@ extension HeaderWindowController {
         }
         // One file: step through its layers and loop.
         if !c.model.step(1) { c.model.select(page: 0) }
-        c.popup.selectItem(withTag: c.model.cur)
+        c.popup.selectItem(withTag: c.model.curSlot)
         pageChanged(c)
     }
 
     /// Load frame `i` of a folder in full: the same viewer as for one file, keeping
     /// the filter, mode, limb and stretch that were on.
-    private func showFrame(_ c: Ctx, _ i: Int) {
+    private func showFrame(_ c: Ctx, _ i: Int, only: (hdu: Int, plane: Int)? = nil) {
         guard let seq = c.sequence, seq.frames.indices.contains(i) else { return }
+        let step = i < c.frame ? -1 : 1
         c.frame = i
         c.gen += 1
         let gen = c.gen
         let path = seq.frames[i].path
         let old = c.model
+        // Only the page on screen is rendered; the picker loads another on demand.
+        let key = only ?? old.page.map { (hdu: $0.hdu, plane: $0.plane) }
+        let ahead = c.ahead.flatMap { a in a.path == path && key.map { (a.hdu, a.plane) == $0 } == true ? a : nil }
+        c.ahead = nil
         syncMovieControls(c)
         DispatchQueue.global(qos: .userInitiated).async { [weak self, weak c] in
-            let m = FITSPreviewModel.load(path: path, maxSide: 2048)
-            let text = FITSHeader.dump(path: path)
+            let m = ahead?.model ?? FITSPreviewModel.load(path: path, maxSide: 2048, only: key)
+            let text = ahead?.text ?? FITSHeader.dump(path: path)
             DispatchQueue.main.async {
                 guard let self, let c, c.gen == gen else { return }
                 m.setFilter(old.filter)
@@ -963,7 +984,87 @@ extension HeaderWindowController {
                 c.canvas.pageCount = max(m.count, seq.count)
                 self.pageChanged(c)
                 self.syncMovieControls(c)
+                self.prefetch(c, i + step, key)
             }
+        }
+    }
+
+    /// Render the next frame in the direction of travel, so a step lands at once.
+    /// ponytail: one frame ahead (~16 MB at 2048 px); a ring of several if scrubbing needs it.
+    private func prefetch(_ c: Ctx, _ i: Int, _ key: (hdu: Int, plane: Int)?) {
+        guard let key, let seq = c.sequence, seq.frames.indices.contains(i) else { return }
+        let path = seq.frames[i].path
+        DispatchQueue.global(qos: .utility).async { [weak c] in
+            let m = FITSPreviewModel.load(path: path, maxSide: 2048, only: key)
+            let text = FITSHeader.dump(path: path)
+            DispatchQueue.main.async { c?.ahead = (path, key.hdu, key.plane, m, text) }
+        }
+    }
+}
+
+// MARK: folder table (Movie | Grid | List switch)
+
+extension HeaderWindowController {
+    /// A folder's window gets a Movie | Grid | List switch in its title bar. Movie (the
+    /// HF-14 view) stays the default; Grid shows the files' thumbnails and List the
+    /// sortable folder table, both in the same window and the same order.
+    private func addViewSwitch(_ win: NSWindow, _ c: Ctx) {
+        let sw = NSSegmentedControl(labels: ["Movie", "Grid", "List"], trackingMode: .selectOne,
+                                    target: self, action: #selector(viewSwitched(_:)))
+        sw.selectedSegment = 0
+        sw.toolTip = "Movie plays the folder's frames; Grid shows their thumbnails; List shows them in a sortable table"
+        sw.setAccessibilityLabel("Show the folder as a movie, a grid or a list")
+        let holder = NSView(frame: NSRect(x: 0, y: 0, width: sw.fittingSize.width + 12, height: 28))
+        sw.frame.origin = NSPoint(x: 0, y: (28 - sw.fittingSize.height) / 2)
+        sw.setFrameSize(sw.fittingSize)
+        holder.addSubview(sw)
+        let acc = NSTitlebarAccessoryViewController()
+        acc.view = holder
+        acc.layoutAttribute = .trailing
+        win.addTitlebarAccessoryViewController(acc)
+    }
+
+    @objc private func viewSwitched(_ s: NSSegmentedControl) {
+        guard let c = ctx(for: s), let root = s.window?.contentView else { return }
+        showFolder(s.selectedSegment, c, root: root)
+    }
+
+    /// Segment 0 is the movie, 1 the grid, 2 the list.
+    private func showFolder(_ segment: Int, _ c: Ctx, root: NSView) {
+        let list = segment != 0
+        stopPlaying(c)
+        if list, c.tableHost == nil {
+            let m = FolderTableModel(folder: c.url)
+            m.onOpen = { [weak self] path in self?.present(fileURL: URL(fileURLWithPath: path)) }
+            m.onShowInMovie = { [weak self, weak c, weak root] path in
+                guard let self, let c, let root, let i = c.sequence?.frames.firstIndex(where: { $0.path == path })
+                else { NSSound.beep(); return }
+                self.selectSwitch(root.window, 0)
+                self.showFolder(0, c, root: root)
+                self.showFrame(c, i)
+            }
+            let host = NSHostingView(rootView: FolderTableView(model: m))
+            host.sizingOptions = []                    // the window sizes the table, not the reverse
+            host.translatesAutoresizingMaskIntoConstraints = false
+            root.addSubview(host)
+            NSLayoutConstraint.activate([
+                host.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+                host.trailingAnchor.constraint(equalTo: root.trailingAnchor),
+                host.topAnchor.constraint(equalTo: root.topAnchor),
+                host.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            ])
+            c.table = m
+            c.tableHost = host
+        }
+        if list { c.table?.grid = segment == 1 }
+        c.content?.isHidden = list
+        c.tableHost?.isHidden = !list
+        if !list { root.window?.makeFirstResponder(c.canvas) }
+    }
+
+    private func selectSwitch(_ win: NSWindow?, _ segment: Int) {
+        for acc in win?.titlebarAccessoryViewControllers ?? [] {
+            for case let sw as NSSegmentedControl in acc.view.subviews { sw.selectedSegment = segment }
         }
     }
 }
