@@ -42,41 +42,38 @@ Open a file.
 
 
 class Lint(unittest.TestCase):
-    def run_lint(self, text, known=frozenset()):
-        return ss.lint(ss.parse(text), set(known))
+    def run_lint(self, text):
+        return ss.lint(ss.parse(text))
 
     def test_clean_listing_passes(self):
-        self.assertEqual(self.run_lint(GOOD), ([], []))
+        self.assertEqual(self.run_lint(GOOD), [])
 
     def test_subtitle_with_apple_name_fails(self):
-        f, _ = self.run_lint(GOOD.replace("Instant solar FITS previews", "Solar FITS previews in Finder"))
+        f = self.run_lint(GOOD.replace("Instant solar FITS previews", "Solar FITS previews in Finder"))
         self.assertTrue(any("subtitle: Apple name 'Finder'" in x for x in f))
 
     def test_over_limit_fails(self):
-        f, _ = self.run_lint(GOOD.replace("Instant solar FITS previews", "x" * 31))
+        f = self.run_lint(GOOD.replace("Instant solar FITS previews", "x" * 31))
         self.assertTrue(any("31 characters, limit 30" in x for x in f))
 
-    def test_new_importer_claim_fails_but_a_known_one_is_a_note(self):
-        text = GOOD.replace("Reads FITS files.", "Spotlight-searchable.")
-        f, n = self.run_lint(text)
-        self.assertTrue(any("Spotlight" in x for x in f) and not n)
-        f, n = self.run_lint(text, {"description|Spotlight"})
-        self.assertEqual(f, [])
-        self.assertEqual(n, ["KNOWN description|Spotlight"])
+    def test_spotlight_and_get_info_claims_are_allowed_in_the_description(self):
+        self.assertEqual(self.run_lint(GOOD.replace("Reads FITS files.", "Spotlight-searchable, in Get Info.")), [])
+
+    def test_apple_names_stay_out_of_the_subtitle_even_with_the_importer(self):
+        f = self.run_lint(GOOD.replace("Instant solar FITS previews", "Spotlight solar FITS search"))
+        self.assertTrue(any("subtitle: Apple name 'Spotlight'" in x for x in f))
 
     def test_missing_field_fails(self):
-        f, _ = self.run_lint(GOOD.replace("## Keywords", "## Other"))
+        f = self.run_lint(GOOD.replace("## Keywords", "## Other"))
         self.assertTrue(any("keywords: no fenced block" in x for x in f))
 
     def test_keywords_space_after_comma_fails(self):
-        f, _ = self.run_lint(GOOD.replace("FITS,solar", "FITS, solar"))
+        f = self.run_lint(GOOD.replace("FITS,solar", "FITS, solar"))
         self.assertTrue(any("keywords" in x for x in f))
 
-    def test_real_store_md_has_no_spotlight_claims(self):
+    def test_real_store_md_passes(self):
         with open(ss.STORE, encoding="utf-8") as fh:
-            f, n = ss.lint(ss.parse(fh.read()), ss.known_claims())
-        self.assertEqual(f, [])
-        self.assertEqual(n, [], "STORE.md claims no Spotlight importer; none may be listed as KNOWN")
+            self.assertEqual(ss.lint(ss.parse(fh.read())), [])
 
 
 if __name__ == "__main__":
