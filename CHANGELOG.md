@@ -6,6 +6,10 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Get Info and Spotlight metadata for FITS files now in the Mac App Store build too.
+
 ### Fixed
 
 - **A PUNCH unit read like a second number.** PUNCH L3 writes its scale factor

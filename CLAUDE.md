@@ -166,8 +166,12 @@ The owner is Gilly; call him Gilly.
   (`UB45PPC2JS.com.gillyspace27.fits`): a Debug build once opened Gilly's real files and a
   test wrote a real folder rule (SKILL.md incident 2026-09-24). Run `./lsclean.sh` after
   anything that builds or launches the app.
-- A Mac App Store archive must not contain `Contents/Library/Spotlight` (the legacy
-  importer); only `ship.sh` embeds it (RELEASING.md step 6; SKILL.md step 9).
+- The Mac App Store archive carries the legacy Spotlight importer (`Contents/Library/Spotlight/
+  FITSMetadataImporter.mdimporter`, decided by Gilly 2026-10-29), embedded by `scripts/release.py
+  archive` through `embed-importer.sh`; `ship.sh` embeds it for the direct download. A hand-made Xcode
+  Organizer archive does NOT carry it: use release.py, or run `embed-importer.sh` on it before Validate
+  (RELEASING.md step 6; SKILL.md step 9). The Xcode project itself never embeds it
+  (`check_no_mdimporter_phase`).
 - No network entitlement in any target (README "Privacy").
 - Do not pin the Xcode project to one signing identity: it signs Automatic for the store and
   `ship.sh` overrides to Developer ID (RELEASING.md "Signing model").
