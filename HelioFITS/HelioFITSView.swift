@@ -70,9 +70,10 @@ struct WelcomeView: View {
     @AppStorage("hideWelcome") private var hideWelcome = false
     var close: () -> Void = {}
 
-    /// The legacy Spotlight importer is embedded only by ship.sh (embed-importer.sh,
-    /// Contents/Library/Spotlight). The Mac App Store build has none, so the Spotlight
-    /// promise is shown only where it is true.
+    /// The legacy Spotlight importer is embedded after archiving by embed-importer.sh
+    /// (scripts/release.py for the Mac App Store build, ship.sh for the direct download), into
+    /// Contents/Library/Spotlight. Both channels carry it from 1.5.1. A Debug build or a hand-made
+    /// Xcode archive has none, so the Spotlight promise is still shown only where it is true.
     static var spotlightImporterBundled: Bool {
         FileManager.default.fileExists(atPath: Bundle.main.bundleURL
             .appendingPathComponent("Contents/Library/Spotlight").path)

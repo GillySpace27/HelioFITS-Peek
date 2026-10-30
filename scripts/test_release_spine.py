@@ -79,7 +79,7 @@ rspec.loader.exec_module(rel)
 
 
 class Release(unittest.TestCase):
-    def app(self, d, ver="1.4.0", build="10", spotlight=False):
+    def app(self, d, ver="1.4.0", build="10", spotlight=True):
         import plistlib
         a = os.path.join(d, "HelioFITS.app", "Contents")
         os.makedirs(os.path.join(a, "MacOS"))
@@ -90,23 +90,58 @@ class Release(unittest.TestCase):
             os.makedirs(os.path.join(a, "Library", "Spotlight", "FITSMetadataImporter.mdimporter"))
         return os.path.join(d, "HelioFITS.app")
 
+    BOTH = staticmethod(lambda p: {"arm64", "x86_64"})
+    SIGNED = staticmethod(lambda p: (True, False))   # signed, no entitlements
+
     def test_good_app_passes(self):
         with tempfile.TemporaryDirectory() as d:
-            self.assertEqual(rel.verify_app(self.app(d), "1.4.0", "10", archs=lambda p: {"arm64", "x86_64"}), ([], []))
+            self.assertEqual(rel.verify_app(self.app(d), "1.4.0", "10", archs=self.BOTH, importer=self.SIGNED), ([], []))
+
+    def test_store_app_without_the_importer_is_the_problem(self):
+        with tempfile.TemporaryDirectory() as d:
+            probs, _ = rel.verify_app(self.app(d, spotlight=False), "1.4.0", "10", archs=self.BOTH)
+            self.assertEqual(len(probs), 1)
+            self.assertIn("FITSMetadataImporter.mdimporter is missing", probs[0])
 
     def test_each_defect_is_reported(self):
         with tempfile.TemporaryDirectory() as d:
-            probs, _ = rel.verify_app(self.app(d, ver="1.3.0", spotlight=True), "1.4.0", "10",
-                                      archs=lambda p: {"arm64"})
+            probs, _ = rel.verify_app(self.app(d, ver="1.3.0", spotlight=False), "1.4.0", "10",
+                                      archs=lambda p: {"arm64"}, importer=self.SIGNED)
             joined = " | ".join(probs)
             for word in ("importer", "Config/Version.xcconfig", "architectures"):
                 self.assertIn(word, joined)
 
+    def test_importer_must_be_signed_and_carry_no_entitlements(self):
+        with tempfile.TemporaryDirectory() as d:
+            app = self.app(d)
+            probs, _ = rel.verify_app(app, "1.4.0", "10", archs=self.BOTH, importer=lambda p: (False, False))
+            self.assertTrue(any("not signed" in q for q in probs), probs)
+            probs, _ = rel.verify_app(app, "1.4.0", "10", archs=self.BOTH, importer=lambda p: (True, True))
+            self.assertTrue(any("entitlements" in q for q in probs), probs)
+
+    def test_unreadable_importer_signature_is_unchecked_not_failed(self):
+        with tempfile.TemporaryDirectory() as d:
+            app = self.app(d)
+            probs, unchecked = rel.verify_app(app, "1.4.0", "10", archs=self.BOTH, importer=lambda p: (None, None))
+            self.assertEqual(probs, [])
+            self.assertTrue(unchecked)
+
+    def test_signing_authority_is_the_first_authority_line_or_none(self):
+        class R:
+            def __init__(self, err): self.stderr = err
+        out = "Identifier=x\nAuthority=Apple Development: A B (X1)\nAuthority=Apple Worldwide Developer Relations\n"
+        self.assertEqual(rel.signing_authority("a.app", run=lambda *a, **k: R(out)), "Apple Development: A B (X1)")
+        self.assertIsNone(rel.signing_authority("a.app", run=lambda *a, **k: R("Signature=adhoc\n")))
+
+    def test_embed_command_takes_an_absolute_app_path(self):
+        cmd = rel.embed_cmd("/r", "/r/build/x.app")
+        self.assertEqual(cmd, ["/r/embed-importer.sh", "/r/build/x.app"])
+
     def test_unreadable_archs_are_unchecked_not_ok_or_failed(self):
         with tempfile.TemporaryDirectory() as d:
             app = self.app(d)
-            self.assertEqual(rel.verify_app(app, "1.4.0", "10", archs=lambda p: None)[0], [])
-            self.assertTrue(rel.verify_app(app, "1.4.0", "10", archs=lambda p: None)[1])
+            self.assertEqual(rel.verify_app(app, "1.4.0", "10", archs=lambda p: None, importer=self.SIGNED)[0], [])
+            self.assertTrue(rel.verify_app(app, "1.4.0", "10", archs=lambda p: None, importer=self.SIGNED)[1])
 
     def test_store_archive_command_has_no_developer_id_override(self):
         cmd = " ".join(rel.archive_cmd("1.4.0", "10"))
@@ -118,6 +153,19 @@ class Release(unittest.TestCase):
             with self.assertRaises(SystemExit) as c:
                 rel.main([step, "--confirm", f"{step} 1.4.0 build 9"])
             self.assertEqual(c.exception.code, 3, step)
+
+    def test_upload_refuses_an_archive_that_fails_verify(self):
+        with tempfile.TemporaryDirectory() as d:
+            os.environ[gates.LOG_ENV] = os.path.join(d, "log.tsv")
+            try:
+                v, b = rel.xcconfig()
+                os.makedirs(os.path.join(d, "Config"))
+                open(os.path.join(d, "Config", "Version.xcconfig"), "w").write(
+                    f"MARKETING_VERSION = {v}\nCURRENT_PROJECT_VERSION = {b}\n")
+                # No archive at all under root: verify must fail, so upload must not reach the upload command.
+                self.assertEqual(rel.main(["upload", "--confirm", f"upload {v} build {b}", "--dry-run"], root=d), 1)
+            finally:
+                del os.environ[gates.LOG_ENV]
 
     def test_submit_stops_after_the_gate(self):
         with tempfile.TemporaryDirectory() as d:

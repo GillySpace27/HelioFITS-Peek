@@ -23,7 +23,7 @@ import gates  # noqa: E402
 
 ASC_API = os.path.join(ROOT, ".claude", "skills", "ship-heliofits", "scripts", "asc_api.py")
 EXPORT_OPTIONS = os.path.join(HERE, "ExportOptions-AppStore.plist")
-SPOTLIGHT = os.path.join("Contents", "Library", "Spotlight")
+IMPORTER = os.path.join("Contents", "Library", "Spotlight", "FITSMetadataImporter.mdimporter")
 WANT_ARCHS = {"arm64", "x86_64"}
 
 
@@ -75,15 +75,54 @@ def lipo_archs(binary):
     return set(r.stdout.split()) if r.returncode == 0 else None
 
 
-def verify_app(app, version, build, archs=lipo_archs):
-    """(problems, unchecked). Reads only. The MAS app must not carry the legacy Spotlight importer."""
+def signing_authority(app, run=subprocess.run):
+    """The leaf signing authority of an app, from `codesign -dvv`, or None (ad hoc, unsigned, no codesign)."""
+    try:
+        r = run(["codesign", "-dvv", app], capture_output=True, text=True)
+    except FileNotFoundError:
+        return None
+    m = re.search(r"^Authority=(.+)$", r.stderr, re.M)
+    return m.group(1) if m else None
+
+
+def embed_cmd(root, app):
+    """embed-importer.sh cd's to its own folder, so the app path must be absolute. SIGN_ID goes in the env."""
+    return [os.path.join(root, "embed-importer.sh"), app]
+
+
+def importer_state(path):
+    """(signed, has_entitlements) of the importer bundle; (None, None) when codesign cannot be run."""
+    try:
+        v = subprocess.run(["codesign", "--verify", "--strict", path], capture_output=True)
+        e = subprocess.run(["codesign", "-d", "--entitlements", ":-", path], capture_output=True)
+    except FileNotFoundError:
+        return None, None
+    return v.returncode == 0, bool(e.stdout.strip())
+
+
+def verify_app(app, version, build, archs=lipo_archs, importer=importer_state):
+    """(problems, unchecked). Reads only. The MAS app must carry the Spotlight importer, signed, with no entitlements.
+
+    A plain Xcode archive does not (embed-importer.sh adds it); `release.py archive` does.
+    """
     problems, unchecked = [], []
     try:
         info = plistlib.load(open(os.path.join(app, "Contents", "Info.plist"), "rb"))
     except (OSError, plistlib.InvalidFileException) as e:
         return [f"cannot read {app}/Contents/Info.plist: {e}"], unchecked
-    if os.path.isdir(os.path.join(app, SPOTLIGHT)):
-        problems.append(f"{SPOTLIGHT} is in the app: the store build must not carry the importer")
+    imp = os.path.join(app, IMPORTER)
+    if not os.path.isdir(imp):
+        problems.append(f"{IMPORTER} is missing: the store build carries the importer "
+                        "(release.py archive embeds it; run embed-importer.sh on a hand-made archive)")
+    else:
+        signed, entitled = importer(imp)
+        if signed is None:
+            unchecked.append("importer signature: codesign could not be run on " + imp)
+        else:
+            if not signed:
+                problems.append("the importer is not signed (codesign --verify --strict fails)")
+            if entitled:
+                problems.append("the importer carries entitlements; it must have none")
     if (info.get("CFBundleShortVersionString"), info.get("CFBundleVersion")) != (version, build):
         problems.append("app says %s build %s, Config/Version.xcconfig says %s build %s"
                         % (info.get("CFBundleShortVersionString"), info.get("CFBundleVersion"), version, build))
@@ -123,7 +162,20 @@ def main(argv=None, root=ROOT):
             return 0
         cmd = archive_cmd(version, build)
         print(" ".join(cmd))
-        return 0 if a.dry_run else subprocess.run(cmd, cwd=root).returncode
+        if a.dry_run:
+            print("then: SIGN_ID=<the archive app's signing authority> embed-importer.sh <archived app>")
+            return 0
+        rc = subprocess.run(cmd, cwd=root).returncode
+        if rc:
+            return rc
+        # The store build carries the importer (RELEASING.md step 6); Xcode's archive does not. Same
+        # identity as the archived app, so the importer and the re-sealed app match; export re-signs both.
+        app = os.path.join(root, dest, "Products", "Applications", "HelioFITS.app")
+        sign_id = signing_authority(app)
+        if not sign_id:
+            print(f"FAIL: cannot read the signing authority of {app}; importer not embedded", file=sys.stderr)
+            return 1
+        return subprocess.run(embed_cmd(root, app), cwd=root, env=dict(os.environ, SIGN_ID=sign_id)).returncode
     if a.step in ("verify", "prepare"):
         app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS.app")
         problems, unchecked = verify_app(app, version, build)
@@ -141,6 +193,15 @@ def main(argv=None, root=ROOT):
         if already_logged("upload", version, build):
             print(f"upload {version} build {build} is already in the state log; nothing to do")
             return 0
+        # Never upload an archive verify would fail, e.g. one archived by hand in Organizer, which has
+        # no Spotlight importer (only the archive step embeds it).
+        app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS.app")
+        problems, _ = verify_app(app, version, build)
+        if problems:
+            for q in problems:
+                print("FAIL:", q, file=sys.stderr)
+            print("upload refused: run `release.py verify` and fix the archive first", file=sys.stderr)
+            return 1
         cmd = upload_cmd(version, build, asc_credentials(os.path.join(root, os.path.relpath(ASC_API, ROOT))))
         print(" ".join(cmd))
         if a.dry_run:
