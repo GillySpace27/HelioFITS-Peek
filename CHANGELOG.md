@@ -15,7 +15,7 @@ All notable changes to HelioFITS are recorded here. Format follows
   starts with a number now reads as a multiplier: "× 2.009e+07 W/(m2 sr)". The
   values were always right.
 
-## [1.5.0] - 2026-10-24
+## [1.5.0] - 2026-10-26
 
 ### Added
 
