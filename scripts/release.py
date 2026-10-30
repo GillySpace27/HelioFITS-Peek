@@ -193,6 +193,15 @@ def main(argv=None, root=ROOT):
         if already_logged("upload", version, build):
             print(f"upload {version} build {build} is already in the state log; nothing to do")
             return 0
+        # Never upload an archive verify would fail, e.g. one archived by hand in Organizer, which has
+        # no Spotlight importer (only the archive step embeds it).
+        app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS.app")
+        problems, _ = verify_app(app, version, build)
+        if problems:
+            for q in problems:
+                print("FAIL:", q, file=sys.stderr)
+            print("upload refused: run `release.py verify` and fix the archive first", file=sys.stderr)
+            return 1
         cmd = upload_cmd(version, build, asc_credentials(os.path.join(root, os.path.relpath(ASC_API, ROOT))))
         print(" ".join(cmd))
         if a.dry_run:

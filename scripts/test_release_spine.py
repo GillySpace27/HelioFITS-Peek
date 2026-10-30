@@ -154,6 +154,19 @@ class Release(unittest.TestCase):
                 rel.main([step, "--confirm", f"{step} 1.4.0 build 9"])
             self.assertEqual(c.exception.code, 3, step)
 
+    def test_upload_refuses_an_archive_that_fails_verify(self):
+        with tempfile.TemporaryDirectory() as d:
+            os.environ[gates.LOG_ENV] = os.path.join(d, "log.tsv")
+            try:
+                v, b = rel.xcconfig()
+                os.makedirs(os.path.join(d, "Config"))
+                open(os.path.join(d, "Config", "Version.xcconfig"), "w").write(
+                    f"MARKETING_VERSION = {v}\nCURRENT_PROJECT_VERSION = {b}\n")
+                # No archive at all under root: verify must fail, so upload must not reach the upload command.
+                self.assertEqual(rel.main(["upload", "--confirm", f"upload {v} build {b}", "--dry-run"], root=d), 1)
+            finally:
+                del os.environ[gates.LOG_ENV]
+
     def test_submit_stops_after_the_gate(self):
         with tempfile.TemporaryDirectory() as d:
             os.environ[gates.LOG_ENV] = os.path.join(d, "log.tsv")
