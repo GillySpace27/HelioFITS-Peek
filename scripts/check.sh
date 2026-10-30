@@ -65,9 +65,10 @@ check_no_network_entitlements() {
 }
 CHECKS+=(check_no_network_entitlements)
 
-# The Mac App Store build must not contain the legacy Spotlight importer (RELEASING.md
-# step 6): no build phase or file reference in either project may name an .mdimporter
-# or embed-importer.sh. Only ship.sh embeds the importer, after archiving.
+# The Spotlight importer is embedded after archiving, never by the Xcode project (RELEASING.md
+# step 6): no build phase or file reference in either project may name an .mdimporter or
+# embed-importer.sh. scripts/release.py (store) and ship.sh (direct download) embed it; a
+# project phase would also put it in Debug builds and hosted test runs.
 # Shown failing on a scratch copy (an .mdimporter build file added to the mac pbxproj):
 #   FAIL check_no_mdimporter_phase: HelioFITS.xcodeproj/project.pbxproj:10:<the planted line>
 check_no_mdimporter_phase() {
@@ -195,9 +196,10 @@ check_cfitsio_stamp() {
 }
 CHECKS+=(check_cfitsio_stamp)
 
-# STORE.md is the one source of store claims (HF-17): limits, no Apple name in the subtitle, no new
-# Spotlight-importer claim for the App Store build. Offline. Shown failing before store/known-claims.txt
-# existed: "FAIL: description: mentions 'Spotlight'; the Spotlight importer is not in the App Store build".
+# STORE.md is the one source of store claims (HF-17): limits, no Apple name in the subtitle, keyword
+# format. Spotlight and Get Info claims are allowed since the store build carries the importer
+# (2026-10-29). Offline. Shown failing (subtitle changed to "Solar FITS previews in Finder"):
+#   FAIL: subtitle: Apple name 'Finder' (Guideline 5.2.5; STORE.md explains)
 check_store_claims() {
   local out
   out="$(python3 scripts/store_sync.py lint 2>&1)" || { grep -m1 '^FAIL' <<<"$out" || echo "store_sync.py lint failed"; return 1; }

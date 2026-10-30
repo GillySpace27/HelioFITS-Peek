@@ -106,9 +106,16 @@ Gilly's machine, not in this repository).
 
 ### Channel A — Mac App Store (default)
 
-6. Xcode → **Product → Archive** (plain archive is MAS-clean: the legacy
-   Spotlight importer is injected only by `embed-importer.sh`, which archiving
-   never runs; Quick Actions are separate files).
+6. Archive with `python3 scripts/release.py archive`. The store build carries the
+   legacy Spotlight importer (Gilly's decision, 2026-10-29): the script archives,
+   then runs `embed-importer.sh` on the archived app with `SIGN_ID` set to that
+   app's own signing authority (read with `codesign -dvv`), and export re-signs
+   the importer with Apple Distribution. `release.py verify` fails when the app
+   lacks `FITSMetadataImporter.mdimporter`, or when it is unsigned or carries
+   entitlements. A hand-made Xcode **Product → Archive** does NOT carry the
+   importer (archiving never runs `embed-importer.sh`): use release.py, or run
+   `SIGN_ID="<the archive app's Authority>" ./embed-importer.sh <archived app>`
+   on it before Validate. Quick Actions are separate files.
 7. Window → **Organizer** → select the archive → **Validate App** (free dry-run
    of the upload checks) → **Distribute App → App Store Connect → Upload**.
 8. In App Store Connect: wait for the build to finish Processing (15–60 min),
@@ -127,7 +134,8 @@ Gilly's machine, not in this repository).
 
 10. `./ship.sh` — archives with Developer ID, embeds the Spotlight importer,
    notarizes (waits), staples, Gatekeeper-verifies, and produces
-   `build/HelioFITS-<VER>-b<N>.zip`.
+   `build/HelioFITS-<VER>-b<N>.zip`. The store archive (step 6) carries the
+   importer too since 2026-10-29.
 11. Publish it: the script prints the exact `gh release create` command.
 
 ## How much review to expect
@@ -196,8 +204,8 @@ only: new subtitle, resubmit, same build, no re-upload, no rename, bundle ID
 untouched. See `STORE.md`.
 
 **If App Review rejects with 4.2 "minimum functionality"** — prepared response
-(Resolution Center), citing only what's in the MAS binary (the legacy Spotlight
-importer is NOT in the store build; don't mention it):
+(Resolution Center), citing only what's in the MAS binary (the store build carries
+the Spotlight importer since 1.5.1; it is point (6) below):
 
 > HelioFITS is a purpose-built scientific utility for solar-physics FITS data,
 > not a generic image viewer. Functionality in this build:
@@ -214,6 +222,10 @@ importer is NOT in the store build; don't mention it):
 > handling for magnetograms.
 > (5) Live percentile/gamma/log stretch, solar-limb overlay, PNG export, and
 > generation of Python (sunpy) code for the displayed HDU.
+> (6) Metadata in Get Info and Spotlight: a Spotlight importer plug-in, per
+> Apple's Spotlight Importer Programming Guide, inside the app bundle, run by
+> mdworker, makes telescope, instrument, wavelength and observation date
+> searchable.
 > These functions are used by working heliophysicists on calibrated mission
 > data (SDO, SOHO, PUNCH, GOES). A demo FITS file is attached to the
 > submission; sample data is freely available at https://sdo.gsfc.nasa.gov/data/.

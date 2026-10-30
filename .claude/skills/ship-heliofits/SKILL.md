@@ -198,8 +198,16 @@ what the tracker shows as ready).
          -configuration Release -destination 'generic/platform=macOS' \
          -archivePath "$HOME/Library/Developer/Xcode/Archives/$(date +%Y-%m-%d)/HelioFITS <VER> (<N>).xcarchive" archive
 
-   Verify it's universal and MAS-clean (no Spotlight importer under
-   `Contents/Library/Spotlight`) before uploading.
+   That command does NOT embed the Spotlight importer. The store archive
+   carries it since 2026-10-29, so before step 10 either use
+   `python3 scripts/release.py archive` instead (it archives into `build/` and
+   runs `embed-importer.sh` with `SIGN_ID` read from the archived app's own
+   `codesign -dvv` authority), or run
+   `SIGN_ID="<the archive app's Authority>" ./embed-importer.sh <archived app>`
+   on this one. Verify it is universal and carries the importer
+   (`Contents/Library/Spotlight/FITSMetadataImporter.mdimporter`, signed, no
+   entitlements): `python3 scripts/release.py verify` checks both for the
+   `build/` archive and fails on a missing, unsigned or entitled importer.
 
 10. **Export and upload to App Store Connect** — no password needed, this
     rides on Xcode's already-signed-in account:
@@ -288,6 +296,8 @@ runbook is worth more than the commands it contains.
 - Assuming an Xcode archive is MAS-clean without checking for the Spotlight
   importer — `ship.sh`'s embed step runs on Channel B builds only, so a plain
   Xcode archive for the Store should never have it, but confirm each time.
+  (Superseded 2026-10-29: the store archive now MUST carry the importer, see the
+  last entry; a plain Xcode archive is the one that is missing it.)
 - **2026-09-29: the runbook pointed at files that had moved.** Step 1 told an
   agent to `lipo` `HelioFITSExtension/cfitsio/libcfitsio.a`, which has not existed
   since the library moved into `HelioFITSCore/CFITSIO.xcframework` (#31); the API
@@ -296,3 +306,23 @@ runbook is worth more than the commands it contains.
   only when there is a reason. Found by a plan verifier reading this file against
   origin/main. Guard: the lines were corrected in place, and the repo-root
   `CLAUDE.md` names the current paths.
+- **2026-10-29: the importer ban that was never a rejection.** In 2026-07 the
+  store build was told to carry no Spotlight importer (CLAUDE.md, check.sh,
+  `store_sync.py` lint, STORE.md, `release.py verify`). That was a self-imposed
+  risk flag, not an App Review rejection: Review has never seen an importer in
+  this app, and the one rejection so far (5.2.5, 2026-07-27) was about the
+  subtitle. Evidence for lifting it: on 2026-10-29 a Release archive of
+  origin/main 41f9c77 (labelled 1.5.1 (13) on the command line), with the
+  importer embedded by `SIGN_ID="Apple Development: ..." ./embed-importer.sh
+  <archived app>`, exported as app-store-connect (importer re-signed Apple
+  Distribution, no entitlements on the importer, app sandboxed), passed
+  `xcrun altool --validate-app` with "No errors validating archive" and no
+  warnings. Precedent: Apple's GarageBand from the Mac App Store ships two
+  `.mdimporter` bundles in `Contents/Library/Spotlight`; Apple's docs say a
+  Spotlight File Import extension adds nothing to Spotlight on macOS and point
+  to a Spotlight importer plug-in for custom files. Decision: Gilly chose on
+  2026-10-29 that the 1.5.1 store build carries the importer. App Review has not
+  seen it (UNCHECKED until it does). Consequence: `release.py archive` embeds
+  it and `release.py verify` requires it, so the new way to get this wrong is a
+  hand-made Xcode Organizer archive, which has none. Guard: `verify` fails on
+  a store app without it; the 4.2 response in RELEASING.md describes it.

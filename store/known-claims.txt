@@ -1,2 +1,3 @@
-# Store claims that mention the Spotlight importer, which the Mac App Store build does not contain
-# (CLAUDE.md "Must-nots"). Listed so scripts/store_sync.py lint stays green while they stay visible;
+# Retired 2026-10-29, no longer read. It listed store claims about the Spotlight importer while the
+# Mac App Store build did not carry it. The store build now carries it (release.py embeds it), so
+# scripts/store_sync.py lint no longer checks those claims. Kept in place: nothing is deleted.

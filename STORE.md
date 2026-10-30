@@ -6,7 +6,8 @@ unrelated "Helio Fit" fitness app exist). Do NOT ship as "FITS Quick Look"
 (confusable with QuickFits; Apple may reject "Quick Look" in an app name).
 
 Primary category: **Utilities**. It is a Quick Look extension, a thumbnail
-generator; its job is teaching Finder a file type. (The Mac App Store build has no Spotlight importer.)
+generator; its job is teaching Finder a file type. (From 1.5.1 the Mac App Store build also carries the
+Spotlight importer, embedded by `scripts/release.py`, so Get Info and Spotlight metadata are in the listing.)
 
 ---
 
@@ -77,6 +78,11 @@ Rice-compressed and .fz files work natively.
 METADATA AT A GLANCE
 Telescope, instrument, wavelength, observation date, exposure, dimensions and
 HDU count appear in the viewer's header pane and in the Quick Look preview.
+
+METADATA IN THE FINDER
+Telescope, instrument, wavelength, observation date, exposure, dimensions and
+HDU count appear in Get Info, and are Spotlight-searchable: find every 171 Å
+frame on your disk with a query.
 
 BACK TO PYTHON IN ONE CLICK
 Copy a sunpy snippet that loads exactly the HDU you are looking at. Export any

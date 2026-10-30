@@ -16,6 +16,10 @@ All notable changes to HelioFITS are recorded here. Format follows
   in Finder, or export the table as CSV. Rows fill in as a large folder is read. Only the
   files directly in the folder, and the folder is not remembered after quitting.
 
+### Changed
+
+- Get Info and Spotlight metadata for FITS files now in the Mac App Store build too.
+
 ### Fixed
 
 - **A PUNCH unit read like a second number.** PUNCH L3 writes its scale factor

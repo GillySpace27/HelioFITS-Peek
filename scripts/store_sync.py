@@ -4,10 +4,9 @@
   store_sync.py lint   exit 0 pass, 1 on a new problem (offline, no network)
   store_sync.py diff   read-only: compare STORE.md with the live en-US listing; 3 = UNCHECKED
 
-The Mac App Store build carries no Spotlight importer (CLAUDE.md, "Must-nots"), so a store
-claim about Spotlight, Get Info metadata, a Quick Action or an importer describes the
-direct-download build, not this one. Existing instances are listed in store/known-claims.txt (one
-`field|word` per line) so the check stays green while they stay visible; a new one fails.
+Since 2026-10-29 the Mac App Store build carries the Spotlight importer (release.py embeds it), so
+Spotlight and Get Info claims are allowed; lint no longer checks them. It still checks limits, Apple
+names in the subtitle (Guideline 5.2.5) and the keyword format.
 Rewriting the listing text is Gilly's call (a store listing change is his yes).
 """
 import os
@@ -17,7 +16,6 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STORE = os.path.join(ROOT, "STORE.md")
-KNOWN = os.path.join(ROOT, "store", "known-claims.txt")
 ASC_API = os.path.join(ROOT, ".claude", "skills", "ship-heliofits", "scripts", "asc_api.py")
 APP_ID = "6790952544"   # APP_ID in release_status.py
 
@@ -25,8 +23,6 @@ APP_ID = "6790952544"   # APP_ID in release_status.py
 HEADINGS = {"subtitle": "subtitle", "promotional text": "promotional", "description": "description",
             "keywords": "keywords", "app review notes": "review_notes"}
 APPLE_WORDS = ["Finder", "Quick Look", "Spotlight", "Mac", "macOS", "iCloud", "Apple"]
-CLAIM_WORDS = [r"Spotlight", r"Get Info", r"Quick Action", r"importer"]
-CLAIM_FIELDS = ["promotional", "description", "review_notes"]
 
 
 def parse(text):
@@ -43,17 +39,9 @@ def parse(text):
     return out
 
 
-def known_claims(path=KNOWN):
-    try:
-        with open(path, encoding="utf-8") as f:
-            return {l.strip() for l in f if l.strip() and not l.startswith("#")}
-    except OSError:
-        return set()
-
-
-def lint(fields, known):
-    """(failures, notes): failures are new problems; notes are KNOWN listed claims."""
-    fails, notes = [], []
+def lint(fields):
+    """List of failures."""
+    fails = []
     for need in HEADINGS.values():
         if need not in fields:
             fails.append(f"{need}: no fenced block under its heading in STORE.md")
@@ -66,15 +54,7 @@ def lint(fields, known):
             fails.append(f"subtitle: Apple name '{w}' (Guideline 5.2.5; STORE.md explains)")
     if re.search(r",\s", fields.get("keywords", ("", None))[0]):
         fails.append("keywords: a space after a comma wastes characters")
-    for name in CLAIM_FIELDS:
-        body = fields.get(name, ("", None))[0]
-        for pat in CLAIM_WORDS:
-            if re.search(pat, body, re.I):
-                key = f"{name}|{pat}"
-                (notes if key in known else fails).append(
-                    f"{name}: mentions '{pat}'; the Spotlight importer is not in the App Store build (CLAUDE.md)" if key not in known
-                    else f"KNOWN {key}")
-    return fails, notes
+    return fails
 
 
 def asc_get(path):
@@ -118,9 +98,7 @@ def main(argv):
     with open(STORE, encoding="utf-8") as f:
         fields = parse(f.read())
     if cmd == "lint":
-        fails, notes = lint(fields, known_claims())
-        for n in notes:
-            print(n)
+        fails = lint(fields)
         for x in fails:
             print("FAIL: " + x)
         return 1 if fails else 0
