@@ -71,6 +71,13 @@ public final class FITSPreviewModel {
     private struct PageKey: Hashable { let hdu: Int; let plane: Int }
 
     public private(set) var pages: [Page] = []
+    /// Every (hdu, plane) of the file, rendered or not: `pages` holds fewer when
+    /// `load(only:)` rendered one, as a folder's movie does per frame.
+    public private(set) var slots: [(hdu: Int, plane: Int)] = []
+    /// The slot on screen, the index the HDU picker tags its items with.
+    public var curSlot: Int {
+        page.flatMap { p in slots.firstIndex { $0 == (p.hdu, p.plane) } } ?? 0
+    }
     public private(set) var path = ""
     public var cur = 0
     public var mode: Mode = .plain
@@ -159,7 +166,8 @@ public final class FITSPreviewModel {
     /// Render every image HDU, and every plane of any data cube among them
     /// (e.g. PUNCH PAM's 3 Stokes planes) as its own page. Call OFF the main
     /// thread.
-    public static func load(path: String, maxSide: Int = 1024) -> FITSPreviewModel {
+    public static func load(path: String, maxSide: Int = 1024,
+                            only: (hdu: Int, plane: Int)? = nil) -> FITSPreviewModel {
         let m = FITSPreviewModel()
         m.path = path
         var idx = [Int](repeating: 0, count: FITSRenderer.maxPagerHDUs)
@@ -174,7 +182,11 @@ public final class FITSPreviewModel {
             for p in 0..<n { slots.append((h, p)) }
         }
 
-        for (h, plane) in slots {
+        m.slots = slots
+        // `only`: render just that page, when the file has it. A movie step shows one
+        // page, and a PUNCH PAM frame has six (7x the work, measured 2026-10-30).
+        let render = only.flatMap { o in slots.contains { $0 == o } ? [o] : nil } ?? slots
+        for (h, plane) in render {
             guard let r = try? FITSRenderer.render(path: path, maxSide: maxSide, hdu: h, plane: plane) else { continue }
             let img = r.image
             let cards = FITSRenderer.cards(path: path, hdu: h) ?? ""
@@ -183,7 +195,8 @@ public final class FITSPreviewModel {
                 hdu: h, plane: plane, image: img, res: r,
                 wcs: FITSRenderer.solarWCS(cards: cards, isSolar: key != nil),
                 caption: FITSRenderer.caption(res: r, cards: cards,
-                                              index: m.pages.count + 1, of: slots.count),
+                                              index: (slots.firstIndex { $0 == (h, plane) } ?? 0) + 1,
+                                              of: slots.count),
                 lut: key.flatMap { FITSColormaps.lut($0) }))
         }
         // Start on the HDU the folder rule / global default selects (plane 0).
