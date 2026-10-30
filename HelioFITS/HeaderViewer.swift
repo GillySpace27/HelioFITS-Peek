@@ -67,7 +67,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         let fpsMenu = NSPopUpButton()
         let scrubber = NSSlider()
         let frameLabel = NSTextField(labelWithString: "")
-        // The folder table (List side of the List/Movie switch), made on first use.
+        // The folder grid and table (Grid and List sides of the switch), made on first use.
         var table: FolderTableModel?
         var tableHost: NSView?
         weak var content: NSStackView?    // split view + action bar, hidden while the list shows
@@ -969,17 +969,18 @@ extension HeaderWindowController {
     }
 }
 
-// MARK: folder table (List/Movie switch)
+// MARK: folder table (Movie | Grid | List switch)
 
 extension HeaderWindowController {
-    /// A folder's window gets a Movie | List switch in its title bar. Movie (the HF-14
-    /// view) stays the default; List shows the sortable folder table in the same window.
+    /// A folder's window gets a Movie | Grid | List switch in its title bar. Movie (the
+    /// HF-14 view) stays the default; Grid shows the files' thumbnails and List the
+    /// sortable folder table, both in the same window and the same order.
     private func addViewSwitch(_ win: NSWindow, _ c: Ctx) {
-        let sw = NSSegmentedControl(labels: ["Movie", "List"], trackingMode: .selectOne,
+        let sw = NSSegmentedControl(labels: ["Movie", "Grid", "List"], trackingMode: .selectOne,
                                     target: self, action: #selector(viewSwitched(_:)))
         sw.selectedSegment = 0
-        sw.toolTip = "Movie plays the folder's frames; List shows its FITS files in a sortable table"
-        sw.setAccessibilityLabel("Show the folder as a movie or a list")
+        sw.toolTip = "Movie plays the folder's frames; Grid shows their thumbnails; List shows them in a sortable table"
+        sw.setAccessibilityLabel("Show the folder as a movie, a grid or a list")
         let holder = NSView(frame: NSRect(x: 0, y: 0, width: sw.fittingSize.width + 12, height: 28))
         sw.frame.origin = NSPoint(x: 0, y: (28 - sw.fittingSize.height) / 2)
         sw.setFrameSize(sw.fittingSize)
@@ -992,10 +993,12 @@ extension HeaderWindowController {
 
     @objc private func viewSwitched(_ s: NSSegmentedControl) {
         guard let c = ctx(for: s), let root = s.window?.contentView else { return }
-        showList(s.selectedSegment == 1, c, root: root)
+        showFolder(s.selectedSegment, c, root: root)
     }
 
-    private func showList(_ list: Bool, _ c: Ctx, root: NSView) {
+    /// Segment 0 is the movie, 1 the grid, 2 the list.
+    private func showFolder(_ segment: Int, _ c: Ctx, root: NSView) {
+        let list = segment != 0
         stopPlaying(c)
         if list, c.tableHost == nil {
             let m = FolderTableModel(folder: c.url)
@@ -1004,7 +1007,7 @@ extension HeaderWindowController {
                 guard let self, let c, let root, let i = c.sequence?.frames.firstIndex(where: { $0.path == path })
                 else { NSSound.beep(); return }
                 self.selectSwitch(root.window, 0)
-                self.showList(false, c, root: root)
+                self.showFolder(0, c, root: root)
                 self.showFrame(c, i)
             }
             let host = NSHostingView(rootView: FolderTableView(model: m))
@@ -1020,6 +1023,7 @@ extension HeaderWindowController {
             c.table = m
             c.tableHost = host
         }
+        if list { c.table?.grid = segment == 1 }
         c.content?.isHidden = list
         c.tableHost?.isHidden = !list
         if !list { root.window?.makeFirstResponder(c.canvas) }
