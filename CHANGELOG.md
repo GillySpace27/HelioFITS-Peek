@@ -6,6 +6,16 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- **A sortable table of a folder's FITS files.** A folder still opens as a movie; a
+  Movie | List switch in its window shows the files in a table instead: file, instrument,
+  telescope, wavelength, observation date, exposure, size, BITPIX, image HDUs and file
+  size, read with the same keywords as the Spotlight importer. Click a column to sort
+  (numbers sort as numbers, missing values last), double-click to open a file, reveal it
+  in Finder, or export the table as CSV. Rows fill in as a large folder is read. Only the
+  files directly in the folder, and the folder is not remembered after quitting.
+
 ### Fixed
 
 - **A PUNCH unit read like a second number.** PUNCH L3 writes its scale factor
