@@ -17,8 +17,8 @@ HelioFITS Peek
 ```
 
 > The App Store name. Gilly chose HelioFITS Peek on 2026-10-24 (the site has used it
-> since 2026-10-13); the live listing reads HelioFITS until `store_sync.py` pushes this
-> (see the ship-heliofits skill). Change it here, then run `store_sync.py`.
+> since 2026-10-13); the live listing name is HelioFITS Peek (iTunes lookup, 2026-10-29).
+> To change it, edit it here, then run `store_sync.py` (see the ship-heliofits skill).
 
 ## Subtitle (30 char max)
 
