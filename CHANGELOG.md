@@ -8,13 +8,18 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ### Added
 
-- **A sortable table of a folder's FITS files.** A folder still opens as a movie; a
-  Movie | List switch in its window shows the files in a table instead: file, instrument,
-  telescope, wavelength, observation date, exposure, size, BITPIX, image HDUs and file
-  size, read with the same keywords as the Spotlight importer. Click a column to sort
-  (numbers sort as numbers, missing values last), double-click to open a file, reveal it
-  in Finder, or export the table as CSV. Rows fill in as a large folder is read. Only the
-  files directly in the folder, and the folder is not remembered after quitting.
+- **A grid of thumbnails and a sortable table of a folder's FITS files.** A folder still
+  opens as a movie; a Movie | Grid | List switch in its window shows the files instead as
+  a grid of their thumbnails (the same ones Finder shows, with a size slider and a caption
+  of instrument, wavelength and date) or as a table: thumbnail, file, instrument,
+  wavelength (as 193 Å or 530 nm), observation date, exposure and size, read with the
+  same keywords as the Spotlight importer. Right-click the table's header to show or hide
+  columns, among them telescope, BITPIX, image HDUs and file size; the choice is
+  remembered. Click a column, or use the grid's Sort menu, to sort both views
+  (wavelengths in one unit, numbers as numbers, missing values last), double-click to
+  open a file, reveal it in Finder, or export the table as CSV. Rows fill in as a large
+  folder is read. Only the files directly in the folder, and the folder is not
+  remembered after quitting.
 
 ### Changed
 
