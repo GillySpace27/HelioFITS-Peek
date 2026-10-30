@@ -97,6 +97,20 @@ struct CubeTests {
         #expect(m.pages.allSatisfy { $0.hdu == 0 }, "all three planes share the same HDU")
     }
 
+    @Test("load(only:) renders one plane but lists every slot, and falls back when absent")
+    func loadOnlyRendersOnePage() throws {
+        let p = try writeConstantCube(w: 4, h: 4, planes: 3)
+        defer { try? FileManager.default.removeItem(atPath: p) }
+
+        let m = FITSPreviewModel.load(path: p, maxSide: 64, only: (hdu: 0, plane: 2))
+        #expect(m.pages.map(\.plane) == [2], "a movie step renders only the page on screen")
+        #expect(m.slots.count == 3, "the HDU picker still lists all three planes")
+        #expect(m.curSlot == 2)
+        #expect(m.pages[0].caption.hasPrefix("3 / 3"), "the caption counts the file's slots")
+        #expect(FITSPreviewModel.load(path: p, maxSide: 64, only: (hdu: 5, plane: 0)).count == 3,
+                "a page the file lacks renders the whole file")
+    }
+
     @Test("Full-resolution buffers for two planes of the same HDU never collide")
     @MainActor func buffersDoNotCollideAcrossPlanes() async throws {
         // Not a uniform cube this time — a per-pixel ramp offset by plane, so a

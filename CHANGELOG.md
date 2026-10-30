@@ -6,9 +6,27 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ## [Unreleased]
 
+### Added
+
+- **A grid of thumbnails and a sortable table of a folder's FITS files.** A folder still
+  opens as a movie; a Movie | Grid | List switch in its window shows the files instead as
+  a grid of their thumbnails (the same ones Finder shows, with a size slider and a caption
+  of instrument, wavelength and date) or as a table: thumbnail, file, instrument,
+  wavelength (as 193 Å or 530 nm), observation date, exposure and size, read with the
+  same keywords as the Spotlight importer. Right-click the table's header to show or hide
+  columns, among them telescope, BITPIX, image HDUs and file size; the choice is
+  remembered. Click a column, or use the grid's Sort menu, to sort both views
+  (wavelengths in one unit, numbers as numbers, missing values last), double-click to
+  open a file, reveal it in Finder, or export the table as CSV. Rows fill in as a large
+  folder is read. Only the files directly in the folder, and the folder is not
+  remembered after quitting.
+
 ### Changed
 
 - Get Info and Spotlight metadata for FITS files now in the Mac App Store build too.
+- Stepping through a folder's movie is faster: each step renders only the page on screen,
+  not every HDU and plane of the file (a PUNCH PAM frame has six), and the next frame is
+  read ahead. The HDU menu still lists every page; picking one renders it.
 
 ### Fixed
 
