@@ -85,6 +85,9 @@ struct FolderTableView: View {
     typealias Order = FITSFolderIndex.Order
     @ObservedObject var model: FolderTableModel
     @State private var selection = Set<String>()
+    /// Which columns show, their order and widths: right-click the header to change them.
+    /// The app's own defaults (UserDefaults.standard), not the shared app-group suite.
+    @AppStorage("folderTableColumns") private var columns = TableColumnCustomization<FITSFolderIndex.Row>()
 
     private static let bytes: ByteCountFormatter = {
         let f = ByteCountFormatter()
@@ -94,29 +97,39 @@ struct FolderTableView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Table(model.rows, selection: $selection, sortOrder: $model.sortOrder) {
+            Table(model.rows, selection: $selection, sortOrder: $model.sortOrder, columnCustomization: $columns) {
                 TableColumn("File", sortUsing: Order(.name)) {
                     Text($0.name).lineLimit(1).truncationMode(.middle).help($0.name)
                 }
                 .width(min: 120, ideal: 280)
+                .customizationID("file")
                 TableColumn("Instrument", sortUsing: Order(.instrument)) { Text($0.instrument ?? "") }
+                    .customizationID("instrument")
                 TableColumn("Telescope", sortUsing: Order(.telescope)) { Text($0.telescope ?? "") }
+                    .customizationID("telescope").defaultVisibility(.hidden)
                 TableColumn("Wavelength", sortUsing: Order(.wavelength)) { Text($0.wavelengthLabel ?? "").monospacedDigit() }
+                    .customizationID("wavelength")
                 TableColumn("Observed", sortUsing: Order(.date)) {
                     Text($0.dateLabel ?? "").monospacedDigit().help($0.date ?? "")
                 }
                 .width(min: 110, ideal: 120)
+                .customizationID("observed")
                 TableColumn("Exposure", sortUsing: Order(.exposure)) { r in
                     Text(r.exposureLabel() ?? "").monospacedDigit().help(r.exposure.map { String($0) + " s" } ?? "")
                 }
+                .customizationID("exposure")
                 TableColumn("Size", sortUsing: Order(.size)) { r in
                     Text(r.width.flatMap { w in r.height.map { "\(w) × \($0)" } } ?? "").monospacedDigit()
                 }
+                .customizationID("size")
                 TableColumn("BITPIX", sortUsing: Order(.bitpix)) { Text($0.bitpix.map(String.init) ?? "").monospacedDigit() }
+                    .customizationID("bitpix").defaultVisibility(.hidden)
                 TableColumn("Image HDUs", sortUsing: Order(.imageHDUs)) { Text("\($0.imageHDUs)").monospacedDigit() }
+                    .customizationID("imageHDUs").defaultVisibility(.hidden)
                 TableColumn("File Size", sortUsing: Order(.fileBytes)) { r in
                     Text(r.fileBytes.map { Self.bytes.string(fromByteCount: Int64($0)) } ?? "").monospacedDigit()
                 }
+                .customizationID("fileBytes").defaultVisibility(.hidden)
             }
             .contextMenu(forSelectionType: String.self) { ids in
                 Button("Open") { ids.sorted().forEach(model.onOpen) }
