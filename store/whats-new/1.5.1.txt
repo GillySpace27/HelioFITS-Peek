@@ -1,0 +1,5 @@
+- Folders: a Movie, Grid and List switch shows a folder's FITS files as a movie, a grid of thumbnails, or a sortable table you can export as CSV.
+- Stepping through a folder's movie is faster.
+- Spotlight and Get Info now show FITS metadata in the App Store version.
+- A Colorbar button beside Limb turns the colour bar on and off. It is off by default.
+- Fixed: PUNCH units now read as a multiplier, "× 2.009e+07 W/(m2 sr)", instead of a second number.
