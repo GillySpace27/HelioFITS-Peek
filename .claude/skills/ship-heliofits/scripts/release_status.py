@@ -404,8 +404,9 @@ def record_release(live_state, version, build, changelog_text, today, site, run=
     r = run([sys.executable, os.path.join(feed, "build_feed.py")], capture_output=True, text=True)
     if r.returncode != 0:
         return False, "record: appended, but build_feed.py failed (exit %d): %s" % (r.returncode, (r.stderr or "").strip()[-200:])
-    return True, ("record: appended HelioFITS %s build %s in %s; commit and push the Website is Gilly's step"
-                  % (version, build, site))
+    return True, ("record: appended HelioFITS %s build %s in %s; open the site pull request with"
+                  " (cd %s && python3 tools/release_pr.py --product heliofits --version %s --build %s);"
+                  " merging it publishes gilly.space" % (version, build, site, site, version, build))
 
 
 if __name__ == "__main__":
