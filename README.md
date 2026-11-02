@@ -12,47 +12,53 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23749496.svg)](https://doi.org/10.5281/zenodo.23749496)
 &nbsp;
+[![Latest release](https://img.shields.io/github/v/release/GillySpace27/HelioFITS-Peek?style=flat)](https://github.com/GillySpace27/HelioFITS-Peek/releases)
+&nbsp;
+[![tests](https://github.com/GillySpace27/HelioFITS-Peek/actions/workflows/tests.yml/badge.svg)](https://github.com/GillySpace27/HelioFITS-Peek/actions/workflows/tests.yml)
+&nbsp;
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue.svg)](LICENSE)
-&nbsp;·&nbsp; macOS 14.5+ (universal — Apple Silicon & Intel)
+&nbsp;·&nbsp; macOS 14.5+ (universal: Apple Silicon & Intel)
 &nbsp;·&nbsp; Free & open source
 &nbsp;·&nbsp; No network access
 
 </div>
 
-> **HelioFITS** previews solar FITS files in Finder and Quick Look. **HelioFITS Studio** is the full desktop application for working with coronagraph and wide-field solar imagery.
-> Looking for the desktop application? See [HelioFITS Studio](https://gilly.space/heliofits-studio).
+> **The HelioFITS suite**
+> - [HelioFITS Peek](https://github.com/GillySpace27/HelioFITS-Peek): solar FITS thumbnails and previews in macOS Finder and Quick Look.
+> - [HelioFITS Studio](https://github.com/GillySpace27/HelioFITS-Studio): a desktop viewer for coronagraph and wide-field solar imagery, forked from JHelioviewer.
+> - [HelioFITS Suite](https://github.com/GillySpace27/HelioFITS-suite): how the programs fit together, with one DOI to cite them all.
 
 ---
 
 Do you have a hundred directories of FITS files and no way to preview them
 without launching a heavy application for each one? On the left above, every file
-is the same grey icon — you can't tell an EUV frame from a magnetogram without
+is the same grey icon: you can't tell an EUV frame from a magnetogram without
 opening each one. On the right is the same folder with HelioFITS installed. That's
 the whole idea.
 
 **HelioFITS Peek teaches Finder to read solar FITS files.** Once it's installed, your
 `.fits` files stop being rows of identical grey document icons and become what
-they actually are — the Sun, rendered in the correct instrument colormap. Press
+they actually are: the Sun, rendered in the correct instrument colormap. Press
 the spacebar on any of them and you get an interactive preview with pixel values,
 helioprojective coordinates, region statistics, and multi-HDU blink comparison,
 without opening anything.
 
 It's built by a solar physicist, for the archive already sitting on your disk. It
 recognizes SDO/AIA, HMI magnetograms, LASCO, SUVI, EIT, STEREO, PUNCH, K‑Cor,
-TRACE, and XRT straight from the header — nothing to configure. There is no
+TRACE, and XRT straight from the header; nothing to configure. There is no
 account, no telemetry, and no network access of any kind.
 
 ## Three ways it makes Finder understand FITS
 
 HelioFITS is three small system extensions plus a viewer. Each lights up a
-different part of macOS, and they all work together — no app window required.
+different part of macOS, and they all work together; no app window required.
 
 ### 1 · Thumbnails, on every icon
 
 <img src="docs/colormaps.png" width="640" alt="Finder icon view of solar FITS files, each a distinct colormap"/>
 
 The thumbnail extension renders each FITS file's default image in the colormap its
-header calls for — AIA gold, a diverging red/blue magnetogram, a LASCO coronagraph,
+header calls for: AIA gold, a diverging red/blue magnetogram, a LASCO coronagraph,
 a PUNCH heliospheric mosaic. Icon view, gallery view, the icons in list and column
 views: all of them show the real image. A directory of solar data becomes browsable
 the way a folder of photos is.
@@ -66,20 +72,20 @@ the way a folder of photos is.
 </tr>
 </table>
 
-Select a `.fits` file and press the **spacebar** — the standard macOS Quick Look —
+Select a `.fits` file and press the **spacebar** (the standard macOS Quick Look)
 and HelioFITS draws the image live. This is not a static picture; it's fully
 interactive in the spacebar panel and gallery view. (Finder's narrow column pane
 gives you scroll‑to‑blink; press space there for the full controls.)
 
 - **Hover** any pixel to read its value together with its *helioprojective*
-  coordinate — **Tx, Ty**, the arcsecond offset east/west and north/south from the
-  center of the Sun's disk — and its distance from disk center in solar radii (**R☉**).
-- **Drag a box** for region statistics — mean, median, σ, sum, min, max — computed
+  coordinate: **Tx, Ty**, the arcsecond offset east/west and north/south from the
+  center of the Sun's disk, and its distance from disk center in solar radii (**R☉**).
+- **Drag a box** for region statistics (mean, median, σ, sum, min, max), computed
   at full native resolution, with a live histogram.
 - **Scroll** (or press **↑/↓**) to blink between HDUs (a FITS file's stacked image
   extensions), pixel‑registered, to compare processing levels or filters.
 - **Toggle** the solar limb, a running difference between HDUs, a live stretch
-  (percentile clip, gamma, log), or the **RHEF** filter — a radial histogram
+  (percentile clip, gamma, log), or the **RHEF** filter, a radial histogram
   equalization ([Gilly & Cranmer 2025](https://doi.org/10.1007/s11207-025-02578-x))
   that flattens the steep coronal falloff to reveal faint off‑limb structure at
   every height. None of it touches the file.
@@ -95,7 +101,7 @@ gives you scroll‑to‑blink; press space there for the full controls.)
 - **⌥‑scroll** (or **⌘ +/−/0**) to zoom.
 
 The coordinate math is computed the same way astropy and sunpy do it, and verified
-against astropy pixel‑for‑pixel in the test suite — so you can trust the numbers. (For
+against astropy pixel‑for‑pixel in the test suite, so you can trust the numbers. (For
 the experts: real spherical deprojection for TAN/ARC/SIN/CAR, honoring CUNIT, the
 PC/CD matrices, and CROTA2.) When it meets a projection it can't handle, it shows no
 coordinate rather than a plausible wrong one.
@@ -104,8 +110,8 @@ coordinate rather than a plausible wrong one.
 
 <img src="docs/spotlight-metadata.png" width="640" alt="A Finder Get Info panel showing telescope, instrument, wavelength and other FITS metadata"/>
 
-The Spotlight importer pulls the header fields you actually search on — telescope,
-instrument, wavelength, observation date, exposure, dimensions, HDU count — into
+The Spotlight importer pulls the header fields you actually search on: telescope,
+instrument, wavelength, observation date, exposure, dimensions, HDU count, into
 Finder's **Get Info** panel and makes them Spotlight‑searchable. You can find every
 171 Å frame on your disk with a query.
 
@@ -116,7 +122,7 @@ Finder's **Get Info** panel and makes them Spotlight‑searchable. You can find 
 Double‑click a FITS file to open the built‑in viewer: the interactive image on top,
 the complete FITS header beneath. From here you can **export any HDU to PNG** for a
 slide or a paper, or **copy a ready‑to‑run sunpy snippet** that loads exactly the
-HDU you're looking at — a one‑click bridge back to Python.
+HDU you're looking at: a one‑click bridge back to Python.
 
 **Play** runs a file's layers as a looping movie. Open a **folder** (File ▸ Open…)
 and its FITS files become one: frames in DATE‑OBS order, a scrubber, a frame rate,
@@ -127,14 +133,14 @@ resolution. Nothing plays until you press Play.
 
 ## Install
 
-> **Runs on any Mac** — Apple Silicon or Intel — with macOS 14.5 or later. It's a
+> **Runs on any Mac**: Apple Silicon or Intel, with macOS 14.5 or later. It's a
 > universal binary.
 
 ### [**Get it on the Mac App Store →**](https://apps.apple.com/app/id6790952544)
 
 That's the whole install: it's free, it updates itself, and macOS registers the
 Finder extensions for you. Then press the **spacebar** on any `.fits` file. (If a
-thumbnail still looks generic at first, relaunch Finder or log out and back in —
+thumbnail still looks generic at first, relaunch Finder or log out and back in;
 macOS caches icons.)
 
 <details>
@@ -144,7 +150,7 @@ Some managed and institutional Macs block it. The notarized build is also attach
 to each [GitHub release](https://github.com/GillySpace27/HelioFITS/releases):
 download the zip, unzip it, drag `HelioFITS.app` into `/Applications`, and launch it
 once so the extensions register. It opens without security warnings, but it does
-**not** self-update — watch the
+**not** self-update; watch the
 [releases feed](https://github.com/GillySpace27/HelioFITS/releases.atom) for new
 versions. The App Store is the supported channel; this is a fallback.
 
@@ -152,7 +158,7 @@ versions. The App Store is the supported channel; this is a fallback.
 
 ### Getting FITS files to try
 
-The repo ships no data. Any solar `.fits` file works — free sources include
+The repo ships no data. Any solar `.fits` file works; free sources include
 [SDO data](https://sdo.gsfc.nasa.gov/data/), the
 [Virtual Solar Observatory](https://sdac.virtualsolar.org/),
 [PUNCH](https://umbra.nascom.nasa.gov/punch/), and
@@ -164,7 +170,7 @@ The repo ships no data. Any solar `.fits` file works — free sources include
 <img src="docs/settings.png" width="640" alt="The HelioFITS Settings panel: a Default HDU picker, an Open File with Viewer button, and per-folder HDU pinning rules"/>
 
 Open **HelioFITS ▸ Settings…** (⌘,). A FITS file can stack several images as
-separate **Header Data Units (HDUs)** — also called *extensions*, each labelled by
+separate **Header Data Units (HDUs)**, also called *extensions*, each labelled by
 its `EXTNAME` (say, a raw frame, a processed layer, and an uncertainty map).
 HelioFITS shows the first image HDU by default; the settings panel lets you change
 that globally, or **pin a folder** to a specific HDU so an entire directory previews
@@ -174,10 +180,10 @@ the same layer for apples‑to‑apples comparison.
 
 AIA · HMI (line‑of‑sight magnetograms and synoptic B_r charts) · LASCO C2/C3 ·
 SUVI · EIT · STEREO/SECCHI (EUVI, COR, HI) · PUNCH (including its polarized Stokes
-cubes — a stack of polarization measurements in one file) · K‑Cor · TRACE · XRT.
+cubes: a stack of polarization measurements in one file) · K‑Cor · TRACE · XRT.
 Instrument is recognized from `TELESCOP`/`INSTRUME`/`DETECTOR`; anything
 unrecognized falls back to a sensible grayscale stretch. Missing one?
-[Open an issue](https://github.com/GillySpace27/HelioFITS/issues) — colormaps are
+[Open an issue](https://github.com/GillySpace27/HelioFITS/issues): colormaps are
 easy to add.
 
 ## Accessibility
@@ -251,7 +257,7 @@ cannot be read or rendered, and 2 on a usage error.
 
 ## Privacy
 
-HelioFITS collects nothing and has **no network entitlement** — the macOS sandbox
+HelioFITS collects nothing and has **no network entitlement**: the macOS sandbox
 denies it all internet access, so nothing can leave your Mac. No accounts, no
 analytics, no telemetry. See [PRIVACY.md](PRIVACY.md).
 
@@ -283,9 +289,9 @@ HelioFITS Peek is part of the HelioFITS suite, which has its own DOI:
 ## License & credits
 
 [BSD 2‑Clause](LICENSE). Vendors [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/)
-by William Pence (NASA HEASARC) — see
+by William Pence (NASA HEASARC); see
 [its license](HelioFITSExtension/cfitsio/LICENSE). Instrument colormaps are the
 standard [sunpy](https://sunpy.org) color tables.
 
-Built by **Dr. Chris "Gilly" Gilbert**, heliophysics research scientist at
+Built by **Gilly**, heliophysics research scientist at
 [NorthWest Research Associates](https://www.nwra.com) · [gilly.space](https://www.gilly.space).
