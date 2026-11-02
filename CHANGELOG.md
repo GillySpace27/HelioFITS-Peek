@@ -6,6 +6,8 @@ All notable changes to HelioFITS are recorded here. Format follows
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-10-31
+
 ### Added
 
 - **A grid of thumbnails and a sortable table of a folder's FITS files.** A folder still
