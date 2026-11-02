@@ -203,6 +203,14 @@ def main(argv=None, call=None, out=sys.stdout):
         v = listing.edit_version or listing.live_version
         print(f"version: {v['attributes']['versionString'] + ' ' + v['attributes']['appStoreState'] if v else 'none'}"
               f" ({'editable' if listing.edit_version else 'not editable'})", file=out)
+        # What's New belongs to one version: store/whats-new/<version>.txt beside STORE.md, never a
+        # STORE.md block (that one sat at "First release." and would have overwritten 1.5.1's text).
+        store.pop("whatsNew", None)
+        wn = v and os.path.join(os.path.dirname(a.store), "store", "whats-new",
+                                v["attributes"]["versionString"] + ".txt")
+        if wn and os.path.exists(wn):
+            with open(wn, encoding="utf-8") as fh:
+                store["whatsNew"] = fh.read().strip()
         changes, blocked = {}, {}
         for f in ALL_FIELDS:
             if f not in store or same(listing.live(f), store[f]):

@@ -152,6 +152,24 @@ class Diff(unittest.TestCase):
         self.assertIn("name: 31 characters, limit 30", out)
 
 
+class WhatsNew(unittest.TestCase):
+    def test_comes_from_the_version_file_never_store_md(self):
+        stale = STORE + "\n## What's New in This Version (1.0)\n\n```\nFirst release.\n```\n"
+        with tempfile.TemporaryDirectory() as d:
+            store = os.path.join(d, "STORE.md")
+            open(store, "w").write(stale)
+            out = io.StringIO()
+            ss.main(["--store", store], call=FakeASC(), out=out)
+            self.assertNotIn("whatsNew", out.getvalue())
+            os.makedirs(os.path.join(d, "store", "whats-new"))
+            open(os.path.join(d, "store", "whats-new", "1.5.0.txt"), "w").write("Faster.\n")
+            out = io.StringIO()
+            ss.main(["--store", store], call=FakeASC(), out=out)
+            self.assertIn("--- whatsNew", out.getvalue())
+            self.assertIn("store: Faster.", out.getvalue())
+            self.assertNotIn("First release.", out.getvalue())
+
+
 class Apply(unittest.TestCase):
     def test_applies_only_named_fields_and_reads_back(self):
         fake = FakeASC()
