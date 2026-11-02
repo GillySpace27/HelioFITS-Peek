@@ -404,6 +404,9 @@ def record_release(live_state, version, build, changelog_text, today, site, run=
     r = run([sys.executable, os.path.join(feed, "build_feed.py")], capture_output=True, text=True)
     if r.returncode != 0:
         return False, "record: appended, but build_feed.py failed (exit %d): %s" % (r.returncode, (r.stderr or "").strip()[-200:])
+    if not os.path.isfile(os.path.join(site, "tools", "release_pr.py")):
+        return True, ("record: appended HelioFITS %s build %s in %s; tools/release_pr.py is not in that checkout"
+                      " (pull the Website first), so commit and push it by hand" % (version, build, site))
     cmd = "cd %s && python3 tools/release_pr.py --product %s --version %s --build %s" % tuple(
         shlex.quote(str(x)) for x in (site, FEED_PRODUCT, version, build))
     return True, ("record: appended HelioFITS %s build %s in %s; open the site pull request with (%s);"
