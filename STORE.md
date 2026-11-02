@@ -103,11 +103,10 @@ coronagraph and wide-field solar imagery.
 FITS,solar,sun,astronomy,heliophysics,sunpy,SDO,AIA,HMI,LASCO,PUNCH,quicklook,preview,FITS viewer
 ```
 
-## What's New in This Version (1.0)
+## What's New in This Version
 
-```
-First release.
-```
+One file per version: `store/whats-new/<version>.txt` (`store_sync.py` reads it, `release-notes.py
+<version> --check-whats-new` lints it). No block here, so a stale one cannot overwrite a release.
 
 ## Support / Marketing URL
 
