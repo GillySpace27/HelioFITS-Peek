@@ -18,7 +18,7 @@ Usage: python3 release_status.py [<VERSION> <BUILD>] [--done preflight,tests,cha
   the Orrery registry needs neither a pinned version nor --done.
   python3 release_status.py 1.3.1 8 --done preflight,tests,changelog
 """
-import sys, os, re, json, shutil, subprocess, argparse, datetime, tempfile
+import sys, os, re, json, shlex, shutil, subprocess, argparse, datetime, tempfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 APP_ID = "6790952544"
@@ -404,8 +404,13 @@ def record_release(live_state, version, build, changelog_text, today, site, run=
     r = run([sys.executable, os.path.join(feed, "build_feed.py")], capture_output=True, text=True)
     if r.returncode != 0:
         return False, "record: appended, but build_feed.py failed (exit %d): %s" % (r.returncode, (r.stderr or "").strip()[-200:])
-    return True, ("record: appended HelioFITS %s build %s in %s; commit and push the Website is Gilly's step"
-                  % (version, build, site))
+    if not os.path.isfile(os.path.join(site, "tools", "release_pr.py")):
+        return True, ("record: appended HelioFITS %s build %s in %s; tools/release_pr.py is not in that checkout"
+                      " (pull the Website first), so commit and push it by hand" % (version, build, site))
+    cmd = "cd %s && python3 tools/release_pr.py --product %s --version %s --build %s" % tuple(
+        shlex.quote(str(x)) for x in (site, FEED_PRODUCT, version, build))
+    return True, ("record: appended HelioFITS %s build %s in %s; open the site pull request with (%s);"
+                  " merging it publishes gilly.space" % (version, build, site, cmd))
 
 
 if __name__ == "__main__":
