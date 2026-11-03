@@ -1,5 +1,5 @@
 #!/bin/bash
-# LaunchServices hygiene — run after ANY build that produces a HelioFITS.app.
+# LaunchServices hygiene: run after ANY build that produces a HelioFITS Peek.app.
 #
 # This is the most recurring bug in the project, so it lives in one script that
 # ship.sh and every local install loop call.
@@ -7,7 +7,7 @@
 # xcodebuild silently registers each app copy it builds:
 #   - `archive` registers build/HelioFITS.xcarchive/Products/Applications/…
 #     AND DerivedData/…/ArchiveIntermediates/…
-#   - `test`    registers DerivedData/…/Build/Products/Debug/HelioFITS.app
+#   - `test`    registers DerivedData/…/Build/Products/Debug/HelioFITS Peek.app
 # Any dangling one can hijack QuickLook THUMBNAIL generation: the ThumbnailsAgent
 # latches a stale appex path, every launch then fails with
 #   "Extension … not found in LS database"
@@ -19,7 +19,7 @@ set -u
 cd "$(dirname "$0")"
 
 LSREG=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
-APP=/Applications/HelioFITS.app
+APP="/Applications/HelioFITS Peek.app"
 
 # 1. Unregister every copy that is not the installed one.
 #
@@ -76,7 +76,7 @@ killall Finder 2>/dev/null || true
 
 # 5. Report anything still registered outside /Applications.
 stale=$("$LSREG" -dump 2>/dev/null | grep -iE "path:.*HelioFITS" \
-        | grep -viE "/Applications/HelioFITS.app" | grep -vi Trash | sort -u)
+        | grep -viE "/Applications/HelioFITS Peek.app" | grep -vi Trash | sort -u)
 if [ -n "$stale" ]; then
     echo "==> WARNING: stale HelioFITS registrations remain:"
     echo "$stale"

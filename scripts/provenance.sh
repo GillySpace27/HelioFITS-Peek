@@ -2,13 +2,13 @@
 # Write build/HelioFITS-<VERSION>-b<BUILD>.provenance.json and SHA256SUMS for a finished build (HF-21).
 # Reads only. A field this machine cannot read is "UNCHECKED", never a guess.
 #   scripts/provenance.sh 1.4.0 10
-# Test hooks: PROV_BUILD_DIR (default build), PROV_APP (default $PROV_BUILD_DIR/HelioFITS.app).
+# Test hooks: PROV_BUILD_DIR (default build), PROV_APP (default $PROV_BUILD_DIR/HelioFITS Peek.app).
 set -euo pipefail
 VERSION="${1:?usage: provenance.sh <VERSION> <BUILD>}"
 BUILD="${2:?usage: provenance.sh <VERSION> <BUILD>}"
 cd "$(dirname "$0")/.."
 OUTDIR="${PROV_BUILD_DIR:-build}"
-APP="${PROV_APP:-$OUTDIR/HelioFITS.app}"
+APP="${PROV_APP:-$OUTDIR/HelioFITS Peek.app}"
 OUT="$OUTDIR/HelioFITS-${VERSION}-b${BUILD}.provenance.json"
 [ ! -e "$OUT" ] || { echo "REFUSING: $OUT exists" >&2; exit 1; }
 mkdir -p "$OUTDIR"

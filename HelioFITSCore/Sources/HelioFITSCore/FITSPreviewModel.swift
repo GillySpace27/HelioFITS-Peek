@@ -1018,7 +1018,7 @@ public final class FITSPreviewModel {
                         gamma: Double(p.res.gam), log: false)
     }
 
-    /// The sunpy / matplotlib colormap name for a HelioFITS table, or nil when
+    /// The sunpy / matplotlib colormap name for a HelioFITS Peek table, or nil when
     /// there is no honest one: the six tables sunpy does not carry (ASPIICS and
     /// EUI HRI Lyman-alpha, see FITSColormaps.swift). nil key means grey.
     static func sunpyColormap(_ key: String?) -> String? {
@@ -1059,7 +1059,7 @@ public final class FITSPreviewModel {
             path = \(q)   # edit if you move or share this file
             with fits.open(path) as hdul:
                 hdu = hdul[\(p.hdu)]                 # 3-D cube
-                data = hdu.data[\(p.plane)]            # plane shown in HelioFITS
+                data = hdu.data[\(p.plane)]            # plane shown in HelioFITS Peek
                 header = hdu.header
             m = sunpy.map.Map((data, header))   # `data` is the displayed plane (numpy array)
             \(rhefLines)\(multiscaleLines)\(displayLines(q))
@@ -1080,7 +1080,7 @@ public final class FITSPreviewModel {
                                            PowerStretch, LogStretch, CompositeStretch)
         """
 
-    /// The lines that draw the map the way HelioFITS shows it now (HF-16): the
+    /// The lines that draw the map the way HelioFITS Peek shows it now (HF-16): the
     /// same clip, gamma, log and colormap, or the difference.
     private func displayLines(_ q: String) -> String {
         guard let p = page, let recipe = displayRecipe() else { return "m.peek()  # opens a quick-look plot" }
@@ -1088,21 +1088,21 @@ public final class FITSPreviewModel {
         if let c = Self.sunpyColormap(p.res.cmapKey) {
             plot = "m.plot(norm=norm, cmap=\"\(c)\")"
         } else {
-            plot = "m.plot(norm=norm)   # HelioFITS draws this with its own \(p.res.cmapKey ?? "") table, "
+            plot = "m.plot(norm=norm)   # HelioFITS Peek draws this with its own \(p.res.cmapKey ?? "") table, "
                 + "which sunpy does not carry"
         }
         func num(_ x: Double) -> String { String(format: "%g", x) }
         func stretchExpr(_ gamma: Double, _ log: Bool) -> String {
             log ? "CompositeStretch(LogStretch(9), PowerStretch(\(num(gamma))))" : "PowerStretch(\(num(gamma)))"
         }
-        /// HelioFITS's log is log10(1 + 9x) on the clipped value, before the gamma.
+        /// HelioFITS Peek's log is log10(1 + 9x) on the clipped value, before the gamma.
         func logNote(_ log: Bool) -> String {
-            log ? "# Log as HelioFITS applies it: LogStretch(9) is log10(1 + 9x), then the power.\n" : ""
+            log ? "# Log as HelioFITS Peek applies it: LogStretch(9) is log10(1 + 9x), then the power.\n" : ""
         }
         // With a filter selected the filter is what is shown (its output may still be computing).
         if filter != .none {
             return """
-            # HelioFITS maps the \(filter.label) output with the stretch panel: the \(num(stretch.lo)) and
+            # HelioFITS Peek maps the \(filter.label) output with the stretch panel: the \(num(stretch.lo)) and
             # \(num(stretch.hi)) percentiles of the filtered values, then the stretch.
             \(logNote(stretch.log))norm = ImageNormalize(m.data,
                                   interval=AsymmetricPercentileInterval(\(num(stretch.lo)), \(num(stretch.hi))),
@@ -1116,7 +1116,7 @@ public final class FITSPreviewModel {
             let prev = FITSRenderer.planeCount(path: path, hdu: prevHDU) > 1
                 ? "fits.getdata(\(q), \(prevHDU))[\(prevPlane)]" : "fits.getdata(\(q), \(prevHDU))"
             return """
-            # Difference, as HelioFITS shows it: this layer minus the previous one (HDU \(prevHDU)),
+            # Difference, as HelioFITS Peek shows it: this layer minus the previous one (HDU \(prevHDU)),
             # symmetric limits at the 99th percentile of |difference|, blue negative, red positive.
             import numpy as np
             from astropy.io import fits
@@ -1128,8 +1128,8 @@ public final class FITSPreviewModel {
             """
         case .stretch(_, let lo, let hi, let exact, let pLo, let pHi, let gamma, let log):
             let why = exact
-                ? "# The display limits typed in HelioFITS, in data units."
-                : "# The display limits HelioFITS estimated from the \(num(pLo)) and \(num(pHi)) percentiles of a\n"
+                ? "# The display limits typed in HelioFITS Peek, in data units."
+                : "# The display limits HelioFITS Peek estimated from the \(num(pLo)) and \(num(pHi)) percentiles of a\n"
                 + "# strided sample, in data units. The same rule on every pixel would be\n"
                 + "# AsymmetricPercentileInterval(\(num(pLo)), \(num(pHi)))."
             return """
@@ -1146,31 +1146,31 @@ public final class FITSPreviewModel {
 
     /// With RHEF on, the lines that reproduce it: sunkit-image's `radial.rhef` is
     /// the reference implementation this viewer's filter was ported from, called
-    /// with the same upsilon and its default (average) ranking. HelioFITS runs it on a
+    /// with the same upsilon and its default (average) ranking. HelioFITS Peek runs it on a
     /// display-sized grid; this runs it at full resolution. Verified against
     /// sunkit-image 0.7.0 on an AIA 1700 frame. Empty when RHEF is off. The comment
-    /// lines name the deviations HelioFITS declares against oRHEF-2.0 (RH-12).
+    /// lines name the deviations HelioFITS Peek declares against oRHEF-2.0 (RH-12).
     private var rhefLines: String {
         guard filter == .rhef else { return "" }
         return """
         from sunkit_image.radial import rhef   # needs sunkit-image with radial.rhef (0.7.0 has it)
-        m = rhef(m, upsilon=\(upsilonLow == upsilonHigh ? String(format: "%g", upsilonLow) : String(format: "(%g, %g)", upsilonLow, upsilonHigh)))   # the RHEF filter shown in HelioFITS (a pair is Shadows, Highlights)
+        m = rhef(m, upsilon=\(upsilonLow == upsilonHigh ? String(format: "%g", upsilonLow) : String(format: "(%g, %g)", upsilonLow, upsilonHigh)))   # the RHEF filter shown in HelioFITS Peek (a pair is Shadows, Highlights)
         # Known differences from the on-screen filter (fastRHEF conventions, oRHEF-2.0):
         # TIES-TOL ties within 1e-9 of the frame's peak share a rank; KEY-QUANT the sort
-        # key drops 2 bits of the float32 pattern; GEOM-GRID HelioFITS filters a grid of at
+        # key drops 2 bits of the float32 pattern; GEOM-GRID HelioFITS Peek filters a grid of at
         # most 1024 px a side; DTYPE-IN float32 out. RHEF output is a visualization.
         rhef_data = m.data   # filtered values: per-radius rank in (0, 1]
-        # HelioFITS showed: \(FITSRenderer.rhefStamp(upsilon: (upsilonLow, upsilonHigh)))
+        # HelioFITS Peek showed: \(FITSRenderer.rhefStamp(upsilon: (upsilonLow, upsilonHigh)))
         # RHEF output is a visualization, not a calibrated radiance.
 
         """
     }
 
     /// With MGN or WOW on, the lines that reproduce it at full resolution (HF-19).
-    /// MGN calls sunkit-image's `enhance.mgn`, whose defaults HelioFITS uses. WOW is
-    /// HelioFITS's own reading of Auchere et al. 2023, written out in numpy so the
+    /// MGN calls sunkit-image's `enhance.mgn`, whose defaults HelioFITS Peek uses. WOW is
+    /// HelioFITS Peek's own reading of Auchere et al. 2023, written out in numpy so the
     /// snippet computes what the screen shows; it is not the authors' watroo package.
-    /// HelioFITS runs both on a grid of at most 1024 px a side with the widths
+    /// HelioFITS Peek runs both on a grid of at most 1024 px a side with the widths
     /// divided by the decimation. Empty for any other filter.
     private var multiscaleLines: String {
         switch filter {
@@ -1178,8 +1178,8 @@ public final class FITSPreviewModel {
             return """
             import numpy as np
             from sunkit_image.enhance import mgn   # Morgan and Druckmueller 2014, sunkit-image defaults
-            m = sunpy.map.Map(mgn(np.array(m.data, dtype=float)), m.meta)   # the MGN filter shown in HelioFITS
-            # HelioFITS filters a block-mean grid of at most 1024 px a side, with the Gaussian
+            m = sunpy.map.Map(mgn(np.array(m.data, dtype=float)), m.meta)   # the MGN filter shown in HelioFITS Peek
+            # HelioFITS Peek filters a block-mean grid of at most 1024 px a side, with the Gaussian
             # widths divided by the decimation; this runs at full resolution.
             # MGN output is a visualization, not a calibrated radiance.
 
@@ -1193,7 +1193,7 @@ public final class FITSPreviewModel {
                     p = np.pad(a, [(2 * step, 2 * step) if i == ax else (0, 0) for i in (0, 1)], mode="edge")
                     a = sum(kv * np.take(p, range(i * step, i * step + a.shape[ax]), axis=ax) for i, kv in enumerate(k))
                 return a
-            def wow(d, scales=\(MultiscaleFilters.wowScales)):   # HelioFITS's WOW (after Auchere et al. 2023), not watroo
+            def wow(d, scales=\(MultiscaleFilters.wowScales)):   # HelioFITS Peek's WOW (after Auchere et al. 2023), not watroo
                 d = np.where(np.isfinite(d), d, np.nanmean(d)).astype(float)
                 out, c = np.zeros_like(d), d
                 for j in range(scales):
@@ -1206,8 +1206,8 @@ public final class FITSPreviewModel {
                     out += np.divide(w, rms, out=np.zeros_like(w), where=rms > 0)
                     c = nxt
                 return out
-            m = sunpy.map.Map(wow(m.data), m.meta)   # the WOW filter shown in HelioFITS
-            # HelioFITS filters a block-mean grid of at most 1024 px a side and drops the
+            m = sunpy.map.Map(wow(m.data), m.meta)   # the WOW filter shown in HelioFITS Peek
+            # HelioFITS Peek filters a block-mean grid of at most 1024 px a side and drops the
             # scales finer than a grid cell; this runs at full resolution.
             # WOW output is a visualization, not a calibrated radiance.
 

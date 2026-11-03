@@ -25,7 +25,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A3AE31B22CE3ED1A0080470D"
-               BuildableName = "HelioFITS.app"
+               BuildableName = "HelioFITS Peek.app"
                BlueprintName = "HelioFITS"
                ReferencedContainer = "container:HelioFITS.xcodeproj">
             </BuildableReference>
@@ -66,7 +66,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A3AE31B22CE3ED1A0080470D"
-            BuildableName = "HelioFITS.app"
+            BuildableName = "HelioFITS Peek.app"
             BlueprintName = "HelioFITS"
             ReferencedContainer = "container:HelioFITS.xcodeproj">
          </BuildableReference>
@@ -83,7 +83,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A3AE31B22CE3ED1A0080470D"
-            BuildableName = "HelioFITS.app"
+            BuildableName = "HelioFITS Peek.app"
             BlueprintName = "HelioFITS"
             ReferencedContainer = "container:HelioFITS.xcodeproj">
          </BuildableReference>

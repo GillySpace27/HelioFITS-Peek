@@ -82,7 +82,7 @@
 		A3186F702CE436DD00395F60 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		A3186F712CE436DD00395F60 /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = System/Library/Frameworks/QuickLookUI.framework; sourceTree = SDKROOT; };
 		A3186F722CE436DD00395F60 /* QuickLookThumbnailing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookThumbnailing.framework; path = System/Library/PrivateFrameworks/QuickLookThumbnailing.framework; sourceTree = SDKROOT; };
-		A3AE31B32CE3ED1A0080470D /* HelioFITS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelioFITS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3AE31B32CE3ED1A0080470D /* HelioFITS Peek.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HelioFITS Peek.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3AE31C42CE3ED1C0080470D /* HelioFITSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HelioFITSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3AE31CE2CE3ED1C0080470D /* HelioFITSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HelioFITSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3AE31E52CE3ED570080470D /* HelioFITSExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HelioFITSExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -255,7 +255,7 @@
 		A3AE31B42CE3ED1A0080470D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A3AE31B32CE3ED1A0080470D /* HelioFITS.app */,
+				A3AE31B32CE3ED1A0080470D /* HelioFITS Peek.app */,
 				A3AE31C42CE3ED1C0080470D /* HelioFITSTests.xctest */,
 				A3AE31CE2CE3ED1C0080470D /* HelioFITSUITests.xctest */,
 				A3AE31E52CE3ED570080470D /* HelioFITSExtension.appex */,
@@ -333,7 +333,7 @@
 				5D8F6F20E905C4F7153A4CA0 /* HelioFITSCore */,
 			);
 			productName = HelioFITS;
-			productReference = A3AE31B32CE3ED1A0080470D /* HelioFITS.app */;
+			productReference = A3AE31B32CE3ED1A0080470D /* HelioFITS Peek.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A3AE31C32CE3ED1C0080470D /* HelioFITSTests */ = {
@@ -745,7 +745,9 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gillyspace27.HelioFITS;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				EXECUTABLE_NAME = HelioFITS;
+				PRODUCT_MODULE_NAME = HelioFITS;
+				PRODUCT_NAME = "HelioFITS Peek";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
@@ -779,7 +781,9 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gillyspace27.HelioFITS;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				EXECUTABLE_NAME = HelioFITS;
+				PRODUCT_MODULE_NAME = HelioFITS;
+				PRODUCT_NAME = "HelioFITS Peek";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
@@ -805,7 +809,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HelioFITS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HelioFITS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HelioFITS Peek.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HelioFITS";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -822,7 +826,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HelioFITS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HelioFITS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HelioFITS Peek.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HelioFITS";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

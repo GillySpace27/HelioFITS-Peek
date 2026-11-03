@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 
 PROFILE="${PROFILE:-HelioFITS-notary}"
 ARCH="build/HelioFITS.xcarchive"
-APP="build/HelioFITS.app"
+APP="build/HelioFITS Peek.app"
 # ZIP is derived from the built app's version, after the archive.
 
 # Shared release gates before the slow archive and notarization (SU-3).
@@ -61,7 +61,7 @@ xcodebuild -project HelioFITS.xcodeproj -scheme HelioFITS \
   SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DIRECT_DOWNLOAD' \
   -archivePath "$ARCH" archive
 
-cp -R "$ARCH/Products/Applications/HelioFITS.app" "$APP"
+cp -R "$ARCH/Products/Applications/HelioFITS Peek.app" "$APP"
 
 # Versioned artifact name, so two releases' zips can never be confused and the
 # GitHub Release upload can't grab a stale file.
