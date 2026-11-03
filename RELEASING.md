@@ -127,8 +127,11 @@ Gilly's machine, not in this repository).
      sidebar page; attach a **demo FITS file** in App Review Information (a
      reviewer has no FITS files and cannot otherwise exercise the app); never
      click **Expire Build**.
-9. Release is **manual**: after approval, the "Release this version" button in
-   ASC. Check the live listing before clicking.
+9. Release type: 1.3.2 through 1.5.1 were set to **Automatically release this
+   version**, so approval puts the version live with no further step. When a
+   release must wait, set **Manually release this version** on the version page
+   before submitting, then after approval check the live listing and click
+   "Release this version".
 
 ### Channel B — Direct notarized download (fallback)
 
