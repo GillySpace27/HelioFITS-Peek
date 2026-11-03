@@ -4,7 +4,7 @@
 
 ### Know what you're looking at before you open a thing.
 
-<img src="docs/before-after.png" width="860" alt="The same folder of FITS files, before and after HelioFITS: on the left every file is an identical generic document icon; on the right each is a distinct colored solar image" />
+<img src="docs/before-after.png" width="860" alt="The same folder of FITS files, before and after HelioFITS Peek: on the left every file is an identical generic document icon; on the right each is a distinct colored solar image" />
 
 **Solar FITS files, previewable in Finder: in the right colors, with real coordinates.**
 
@@ -23,7 +23,7 @@
 
 </div>
 
-> **The HelioFITS suite**
+> **The HelioFITS Suite**
 > - [HelioFITS Peek](https://github.com/GillySpace27/HelioFITS-Peek): solar FITS thumbnails and previews in macOS Finder and Quick Look.
 > - [HelioFITS Studio](https://github.com/GillySpace27/HelioFITS-Studio): a desktop viewer for coronagraph and wide-field solar imagery, forked from JHelioviewer.
 > - [HelioFITS Suite](https://github.com/GillySpace27/HelioFITS-suite): how the programs fit together, with one DOI to cite them all.
@@ -33,7 +33,7 @@
 Do you have a hundred directories of FITS files and no way to preview them
 without launching a heavy application for each one? On the left above, every file
 is the same grey icon: you can't tell an EUV frame from a magnetogram without
-opening each one. On the right is the same folder with HelioFITS installed. That's
+opening each one. On the right is the same folder with HelioFITS Peek installed. That's
 the whole idea.
 
 **HelioFITS Peek teaches Finder to read solar FITS files.** Once it's installed, your
@@ -50,7 +50,7 @@ account, no telemetry, and no network access of any kind.
 
 ## Three ways it makes Finder understand FITS
 
-HelioFITS is three small system extensions plus a viewer. Each lights up a
+HelioFITS Peek is three small system extensions plus a viewer. Each lights up a
 different part of macOS, and they all work together; no app window required.
 
 ### 1 · Thumbnails, on every icon
@@ -73,7 +73,7 @@ the way a folder of photos is.
 </table>
 
 Select a `.fits` file and press the **spacebar** (the standard macOS Quick Look)
-and HelioFITS draws the image live. This is not a static picture; it's fully
+and HelioFITS Peek draws the image live. This is not a static picture; it's fully
 interactive in the spacebar panel and gallery view. (Finder's narrow column pane
 gives you scroll‑to‑blink; press space there for the full controls.)
 
@@ -91,7 +91,7 @@ gives you scroll‑to‑blink; press space there for the full controls.)
   every height. None of it touches the file.
 - Pick **MGN** (multi‑scale Gaussian normalization, Morgan & Druckmüller 2014, with
   sunkit‑image's default widths) or **WOW** (wavelet whitening after Auchère et al.
-  2023, in HelioFITS's own reading; not checked against the authors' `watroo` package)
+  2023, in HelioFITS Peek's own reading; not checked against the authors' `watroo` package)
   to bring out structure at every scale. **Swipe** puts the unfiltered image left of a
   divider and the filter right of it; drag it, or press **⌥←/⌥→**.
   Every filter runs on a grid of at most 1024 px a side; MGN and WOW divide their
@@ -117,7 +117,7 @@ Finder's **Get Info** panel and makes them Spotlight‑searchable. You can find 
 
 ### And a viewer, when you want more
 
-<img src="docs/viewer.png" width="640" alt="The HelioFITS viewer window showing an image above the full FITS header"/>
+<img src="docs/viewer.png" width="640" alt="The HelioFITS Peek viewer window showing an image above the full FITS header"/>
 
 Double‑click a FITS file to open the built‑in viewer: the interactive image on top,
 the complete FITS header beneath. From here you can **export any HDU to PNG** for a
@@ -167,12 +167,12 @@ The repo ships no data. Any solar `.fits` file works; free sources include
 
 ## Settings
 
-<img src="docs/settings.png" width="640" alt="The HelioFITS Settings panel: a Default HDU picker, an Open File with Viewer button, and per-folder HDU pinning rules"/>
+<img src="docs/settings.png" width="640" alt="The HelioFITS Peek Settings panel: a Default HDU picker, an Open File with Viewer button, and per-folder HDU pinning rules"/>
 
-Open **HelioFITS ▸ Settings…** (⌘,). A FITS file can stack several images as
+Open **HelioFITS Peek ▸ Settings…** (⌘,). A FITS file can stack several images as
 separate **Header Data Units (HDUs)**, also called *extensions*, each labelled by
 its `EXTNAME` (say, a raw frame, a processed layer, and an uncertainty map).
-HelioFITS shows the first image HDU by default; the settings panel lets you change
+HelioFITS Peek shows the first image HDU by default; the settings panel lets you change
 that globally, or **pin a folder** to a specific HDU so an entire directory previews
 the same layer for apples‑to‑apples comparison.
 
@@ -257,7 +257,7 @@ cannot be read or rendered, and 2 on a usage error.
 
 ## Privacy
 
-HelioFITS collects nothing and has **no network entitlement**: the macOS sandbox
+HelioFITS Peek collects nothing and has **no network entitlement**: the macOS sandbox
 denies it all internet access, so nothing can leave your Mac. No accounts, no
 analytics, no telemetry. See [PRIVACY.md](PRIVACY.md).
 
@@ -283,7 +283,7 @@ button turns it into APA or BibTeX.
 If you used the RHEF filter, please also cite Gilly & Cranmer (2025),
 *Solar Physics* 300, 174, <https://doi.org/10.1007/s11207-025-02578-x>.
 
-HelioFITS Peek is part of the HelioFITS suite, which has its own DOI:
+HelioFITS Peek is part of the HelioFITS Suite, which has its own DOI:
 <https://doi.org/10.5281/zenodo.23524598>.
 
 ## License & credits

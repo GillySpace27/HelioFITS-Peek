@@ -36,9 +36,9 @@ public enum FITSRenderer {
     public static func readFailureMessage(_ rc: Int32) -> String {
         switch rc {
         case Int32(FITSSHIM_ERR_TOO_LARGE):
-            return "Image too large to preview here (over \(extensionMaxPixels) pixels); open it in HelioFITS (CFITSIO \(rc))"
+            return "Image too large to preview here (over \(extensionMaxPixels) pixels); open it in HelioFITS Peek (CFITSIO \(rc))"
         case Int32(FITSSHIM_ERR_COMPRESSED):
-            return "Compressed FITS files are not previewed here; open it in HelioFITS (CFITSIO \(rc))"
+            return "Compressed FITS files are not previewed here; open it in HelioFITS Peek (CFITSIO \(rc))"
         default:
             return "No readable image HDU (CFITSIO \(rc))"
         }
@@ -901,7 +901,7 @@ public enum FITSRenderer {
         // files). An HDU with NAXIS ≥ 2 means image data is present.
         let hasImage = hdus.contains { $0.naxis >= 2 }
         var lines = [hasImage
-            ? "This FITS file has image data, but HelioFITS couldn’t render it — possibly an unusual BITPIX or a damaged file."
+            ? "This FITS file has image data, but HelioFITS Peek couldn’t render it; possibly an unusual BITPIX or a damaged file."
             : "No image to display — this FITS file holds only tables or non-image data.", ""]
         for u in hdus { lines.append("HDU \(u.h): \(u.xt)\(u.nm)   (NAXIS \(u.naxis))") }
         lines.append("")

@@ -28,11 +28,11 @@ public struct Provenance {
 
     public init(fields: [(key: String, value: String)]) { self.fields = fields }
 
-    /// "HelioFITS 1.4.0 (12)" from a bundle's Info.plist.
+    /// "HelioFITS Peek 1.4.0 (12)" from a bundle's Info.plist.
     public static func appVersion(_ bundle: Bundle = .main) -> String {
         let v = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
         let b = bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String
-        return "HelioFITS \(v)" + (b.map { " (\($0))" } ?? "")
+        return "HelioFITS Peek \(v)" + (b.map { " (\($0))" } ?? "")
     }
 
     /// The instrument keywords worth carrying, from the shim's header summary.

@@ -39,14 +39,14 @@ import ImageIO
     func readBack() throws {
         let path = try Self.diskPath()
         let m = FITSPreviewModel.load(path: path, maxSide: 256)
-        let prov = Provenance(model: m, fileName: "synthetic_disk.fits", appVersion: "HelioFITS test (1)")
+        let prov = Provenance(model: m, fileName: "synthetic_disk.fits", appVersion: "HelioFITS Peek test (1)")
         let img = try #require(m.image())
         let png = try #require(Self.pngText(try prov.pngData(img)), "the PNG has no text dictionary")
         let desc = try #require(png[kCGImagePropertyPNGDescription as String] as? String, "Description missing")
         for f in prov.fields {
             #expect(desc.contains("\(f.key)=\(f.value)"), "\(f.key) is not in the PNG")
         }
-        #expect(png[kCGImagePropertyPNGSoftware as String] as? String == "HelioFITS test (1)")
+        #expect(png[kCGImagePropertyPNGSoftware as String] as? String == "HelioFITS Peek test (1)")
         #expect(prov.value("source") == "synthetic_disk.fits")
         #expect(prov.value("mode") == "plain")
         #expect(prov.value("limits_kind") == "approx")

@@ -82,7 +82,7 @@ import Foundation
         #expect(m.caption().hasSuffix("RHEF oRHEF-2.0 (differs: TIES-TOL, KEY-QUANT, GEOM-GRID, DTYPE-IN)"))
         let stamp = try #require(m.rhefStamp)
         #expect(Self.matches(stamp))
-        #expect(m.pythonSnippet(path: p).contains("# HelioFITS showed: RHEF oRHEF-2.0 via heliofits-swift "))
+        #expect(m.pythonSnippet(path: p).contains("# HelioFITS Peek showed: RHEF oRHEF-2.0 via heliofits-swift "))
         m.filter = .none
         #expect(m.rhefStamp == nil)
         #expect(!m.caption().contains("RHEF oRHEF-2.0"))

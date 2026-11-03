@@ -99,7 +99,7 @@ public enum MovieExporter {
         item.value = description as NSString
         let software = AVMutableMetadataItem()
         software.identifier = .commonIdentifierSoftware
-        software.value = "HelioFITS" as NSString
+        software.value = "HelioFITS Peek" as NSString
         writer.metadata = [item, software]
         guard writer.startWriting() else {
             throw Failure(description: writer.error?.localizedDescription ?? "cannot start writing")

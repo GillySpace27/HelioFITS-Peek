@@ -91,7 +91,7 @@ import Foundation
         #expect(!s.contains("LogStretch(9)"))
     }
 
-    @Test("log on: log10(1 + 9x) before the power, as HelioFITS applies it")
+    @Test("log on: log10(1 + 9x) before the power, as HelioFITS Peek applies it")
     func logMode() async throws {
         let p = try Self.diskPath()
         let m = try await Self.resident(p)
@@ -109,7 +109,7 @@ import Foundation
         m.setLimits(lo: 2, hi: 30)
         let s = m.pythonSnippet(path: p)
         #expect(s.contains("ManualInterval(2.0, 30.0)"), "\(s)")
-        #expect(s.contains("typed in HelioFITS"))
+        #expect(s.contains("typed in HelioFITS Peek"))
     }
 
     @Test("difference: this layer minus the previous one, symmetric, blue to red")
