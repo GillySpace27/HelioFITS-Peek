@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fast static invariants for HelioFITS. Read-only. Exit 0 when every check passes, 1 otherwise.
+# Fast static invariants for HelioFITS Peek. Read-only. Exit 0 when every check passes, 1 otherwise.
 # No source edits, no network, no xcodebuild: the app and package builds are CI's job.
 # Run from anywhere inside the repo: bash scripts/check.sh
 # Later checks: add a function plus one CHECKS+=(...) line above "# ---- run ----"; never reorder.

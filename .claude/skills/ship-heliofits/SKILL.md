@@ -1,11 +1,11 @@
 ---
 name: ship-heliofits
-description: Full HelioFITS release pipeline: version bump, conditional libcfitsio.a rebuild, tests on both arches, changelog (two-tier), tag, ship.sh (Developer ID + notarize + GitHub release), and the Mac App Store archive + upload. Use whenever Gilly says "ship a patch/release", "cut a new version", "publish vX.Y.Z", "ship this as build N", or asks to deploy/release HelioFITS. Also use when Gilly says "update the apple store" or asks to sync the App Store listing text from STORE.md (scripts/store_sync.py). Do NOT use for a single code fix with no release attached, or for other repos.
+description: Full HelioFITS Peek release pipeline: version bump, conditional libcfitsio.a rebuild, tests on both arches, changelog (two-tier), tag, ship.sh (Developer ID + notarize + GitHub release), and the Mac App Store archive + upload. Use whenever Gilly says "ship a patch/release", "cut a new version", "publish vX.Y.Z", "ship this as build N", or asks to deploy/release HelioFITS Peek. Also use when Gilly says "update the apple store" or asks to sync the App Store listing text from STORE.md (scripts/store_sync.py). Do NOT use for a single code fix with no release attached, or for other repos.
 ---
 
 # ship-heliofits
 
-Runs the HelioFITS release pipeline end to end, stopping at the confirmation
+Runs the HelioFITS Peek release pipeline end to end, stopping at the confirmation
 gate before anything public-facing. The authoritative procedure is
 [RELEASING.md](../../../RELEASING.md) at the repo root — read it if anything
 here seems to disagree with it; RELEASING.md wins.
@@ -54,7 +54,7 @@ and calls the API — `python3 scripts/asc_api.py GET /v1/apps/6790952544/builds
 etc. GET calls are safe to run freely; anything that mutates ASC state goes
 through the confirmation gate below regardless of which script does the
 mutating. Verified 2026-08-22: `GET /v1/apps` and `GET .../builds` both work
-and correctly resolve to HelioFITS (app id `6790952544`).
+and correctly resolve to HelioFITS Peek (app id `6790952544`).
 
 If it was issued, it's under Apple's "internal development, testing, and
 reporting" terms for a single team. Keep usage inside that scope, always:
@@ -62,7 +62,7 @@ reporting" terms for a single team. Keep usage inside that scope, always:
 - The key and any JWT derived from it go to Apple's App Store Connect API
   endpoints ONLY. Never log it, never include it in a commit, never send it
   or its contents to any other service.
-- It is for HelioFITS, under Gilly's own account. Don't reuse it for another
+- It is for HelioFITS Peek, under Gilly's own account. Don't reuse it for another
   app or another person's project, and don't treat it as something that can
   be shared outside Gilly's team.
 - This does not relax the confirmation gate above. A working API key makes
@@ -189,7 +189,7 @@ what the tracker shows as ready).
    `gh release view <prior-tag> --json body`):
 
        gh release create v<VER>-build.<N> build/HelioFITS-<VER>-b<N>.zip \
-         --title "HelioFITS <VER> (build <N>)" --notes-file <path>
+         --title "HelioFITS Peek <VER> (build <N>)" --notes-file <path>
 
 9. **App Store archive**, straight into the Organizer library so Gilly can
    also drive it by hand if he wants to:

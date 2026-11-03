@@ -1,4 +1,4 @@
-// The one version source for the macOS targets (HelioFITS, both extensions, both test
+// The one version source for the macOS targets (the HelioFITS Peek app, both extensions, both test
 // bundles). Edit with scripts/bump-version.sh, never by hand; the iOS project keeps its
 // own values until Gilly decides (map Q3).
 MARKETING_VERSION = 1.5.1

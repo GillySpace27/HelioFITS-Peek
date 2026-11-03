@@ -1,4 +1,4 @@
-# Releasing HelioFITS
+# Releasing HelioFITS Peek
 
 Two channels, one source tree. This is the runbook as actually executed. For the
 live state of a release (tagged, uploaded, in review, live), run
@@ -70,7 +70,7 @@ Gilly's machine, not in this repository).
 
        swift test --package-path HelioFITSCore
 
-   Then the rest (hosted in the GUI app - quit any running HelioFITS first
+   Then the rest (hosted in the GUI app - quit any running HelioFITS Peek first
    or the runner hangs, and do NOT `pkill HelioFITS` while a run is in flight:
    the test host IS the app, so killing it fails the run with "crashed with
    signal term before establishing connection", which looks like a real failure
@@ -221,7 +221,7 @@ untouched. See `STORE.md`.
 (Resolution Center), citing only what's in the MAS binary (the store build carries
 the Spotlight importer since 1.5.1; it is point (6) below):
 
-> HelioFITS is a purpose-built scientific utility for solar-physics FITS data,
+> HelioFITS Peek is a purpose-built scientific utility for solar-physics FITS data,
 > not a generic image viewer. Functionality in this build:
 > (1) World-coordinate readout: hovering reports each pixel's helioprojective
 > coordinates (Tx, Ty) and distance from disk center, via full spherical

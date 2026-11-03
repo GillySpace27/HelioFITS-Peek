@@ -1,5 +1,5 @@
 # Fuzz the two C parsers that read untrusted FITS bytes (HF-11): the CFITSIO
-# shim linked into every HelioFITS target and the Spotlight importer's header
+# shim linked into every HelioFITS Peek target and the Spotlight importer's header
 # reader. Weekly for 10 minutes per harness, 2 minutes on a PR that touches
 # them, and on demand. A crash fails the job and its input is uploaded as an
 # artifact; commit that input under Fuzz/regressions/<harness>/ with the fix.

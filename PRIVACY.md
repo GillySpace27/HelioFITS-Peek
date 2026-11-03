@@ -14,4 +14,4 @@ The only data HelioFITS Peek stores are your own display preferences (such as wh
 ## Contact
 
 Questions about this policy: open an issue at
-<https://github.com/GillySpace27/HelioFITS/issues>.
+<https://github.com/GillySpace27/HelioFITS-Peek/issues>.

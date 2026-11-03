@@ -115,7 +115,7 @@ Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
   changes: ranks here are multiples of 1/(2m), so the only rank between 0.5 and the
   mean is 0.5 itself, where both halves meet (checked bit for bit on the RHEF golden
   bundle and on random tie-heavy data). Copy Python now names the deviations
-  HelioFITS still declares (TIES-TOL, KEY-QUANT, GEOM-GRID, DTYPE-IN).
+  HelioFITS Peek still declares (TIES-TOL, KEY-QUANT, GEOM-GRID, DTYPE-IN).
 
 ### Fixed
 
@@ -160,7 +160,7 @@ hands you the array.
   window is a drop zone: drop a FITS file on it or click Open… (⌘O). Opening a
   file still shows only that file's viewer.
 - **The landing page is now a Welcome window** beside the viewer on launch, with
-  a "Don't show this again" checkbox. Help ▸ Welcome to HelioFITS brings it back.
+  a "Don't show this again" checkbox. Help ▸ Welcome to HelioFITS Peek brings it back.
 - **The default-layer and folder-rule controls moved to Settings (⌘,),** the
   standard macOS Settings window.
 - **"Sync FITS previews to HDU…" is now its own dialog.** It used to be a sheet on
@@ -171,7 +171,7 @@ hands you the array.
   same numbers without the metadata.
 - **With RHEF on, Copy Python reproduces it.** The snippet adds sunkit-image's
   `radial.rhef` with the viewer's settings (`upsilon=0.35`, ordinal ranking) and
-  names the result `rhef_data`. HelioFITS runs the filter on a display-sized grid;
+  names the result `rhef_data`. HelioFITS Peek runs the filter on a display-sized grid;
   the snippet runs it at full resolution. Checked with sunkit-image 0.7.0 on an
   AIA 1700 frame and a PUNCH PAM cube plane.
 
@@ -192,7 +192,7 @@ plate at small sizes.
 
 ### Changed
 
-- **The About panel says what HelioFITS is and links to HelioFITS Studio,** the separate
+- **The About panel says what HelioFITS Peek is and links to HelioFITS Studio,** the separate
   desktop application for coronagraph and wide-field imagery, so the two are not
   confused.
 

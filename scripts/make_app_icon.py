@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Draw the HelioFITS app icon: the AIA 171 Sun inside a white file outline.
+"""Draw the HelioFITS Peek app icon: the AIA 171 Sun inside a white file outline.
 
 The family look Gilly picked on 2026-10-23, beside Heliad (a sun over an outlined book),
 HelioFITS Studio (the iris) and Heliogram (a sun on an outlined monitor). The outline, the dark
 screen inside it and the violet-black ground are Heliogram's: chrome #E7EAF3 stroked 44 px at
 1024, screen #06070C, ground #2F2263 to #15102A top to bottom (#171132 to #090711 until Gilly's
-family-wide lift of 2026-10-28). HelioFITS keeps the AIA 171 Sun.
+family-wide lift of 2026-10-28). HelioFITS Peek keeps the AIA 171 Sun.
 
 The Sun is the real AIA 171 full-disc frame of 2024-05-14 16:51:09 UT (icon_sources/SOURCES.md),
 the same flare day HelioFITS Studio's iris is cut from. Its brightness on the disc is mapped,
-quantile by quantile, onto the disc of the icon HelioFITS shipped until now
+quantile by quantile, onto the disc of the icon HelioFITS Peek shipped until now
 (icon_sources/shipped_icon_512.png), so it reads as bright as the Sun users know. The corona off
 the limb keeps the frame's own brightness.
 

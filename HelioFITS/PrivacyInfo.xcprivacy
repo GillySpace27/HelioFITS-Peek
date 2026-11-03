@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  HelioFITS collects nothing and talks to no one: there is no networking code in
+  HelioFITS Peek collects nothing and talks to no one: there is no networking code in
   the app or either extension, no analytics, no third-party SDKs. It reads the
   FITS files the user opens and writes the PNGs the user asks for.
 

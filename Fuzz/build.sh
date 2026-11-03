@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build the fuzz harnesses for the two C parsers that read untrusted FITS bytes:
 # the CFITSIO shim (HelioFITSExtension/cfitsio/fitsshim.c, linked into every
-# HelioFITS target) and the Spotlight importer's header reader
+# HelioFITS Peek target) and the Spotlight importer's header reader
 # (FITSMetadataImporter/fits_header.c). CFITSIO itself is built from the tarball
 # whose version and SHA-256 build-universal.sh pins, with the same sanitizers.
 #

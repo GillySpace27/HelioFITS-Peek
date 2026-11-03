@@ -16,11 +16,11 @@ values at or below zero set to 1e-15, output clipped to 0..1). `--sunkit` compar
 transcription with sunkit-image itself when it is importable; it is not in this repository's
 pinned requirements, so CI does not run that comparison.
 
-WOW follows Auchere et al. 2023 as HelioFITS reads it: a starlet (B3-spline a trous)
+WOW follows Auchere et al. 2023 as HelioFITS Peek reads it: a starlet (B3-spline a trous)
 transform, each detail plane divided by its local RMS (the squared plane smoothed by the
 scaling function of the next level), and the whitened planes summed. Parity with the
-authors' `watroo` package is NOT checked here; the local-power estimate is HelioFITS's
-choice. Both outputs are visualizations, not calibrated radiance.
+authors' `watroo` package is NOT checked here; the local-power estimate is HelioFITS
+Peek's choice. Both outputs are visualizations, not calibrated radiance.
 
 Needs numpy only (scripts/requirements-fixtures.txt). No random numbers: the input is a
 fixed integer pattern, rebuilt identically by the Swift tests (FilterFixture.input).
@@ -42,7 +42,7 @@ OUT = os.path.join("HelioFITSCore", "Tests", "HelioFITSCoreTests", "filters.json
 
 
 def fixture_input(w=40, h=32):
-    """Row 0 is the top row, as in a HelioFITS display buffer."""
+    """Row 0 is the top row, as in a HelioFITS Peek display buffer."""
     a = np.zeros((h, w), dtype=np.float64)
     for y in range(h):
         for x in range(w):

@@ -36,7 +36,7 @@ class FeedNotes(unittest.TestCase):
                               "Python hands you the array.")
 
     def test_unknown_version_uses_the_fallback(self):
-        self.assertEqual(rs.feed_notes(CHANGELOG, "9.9.9", "HelioFITS 9.9.9 (build 1)"), "HelioFITS 9.9.9 (build 1)")
+        self.assertEqual(rs.feed_notes(CHANGELOG, "9.9.9", "HelioFITS Peek 9.9.9 (build 1)"), "HelioFITS Peek 9.9.9 (build 1)")
 
 
 class RecordRelease(unittest.TestCase):

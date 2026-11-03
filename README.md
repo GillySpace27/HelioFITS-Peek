@@ -147,11 +147,11 @@ macOS caches icons.)
 <summary>If you can't use the App Store</summary>
 
 Some managed and institutional Macs block it. The notarized build is also attached
-to each [GitHub release](https://github.com/GillySpace27/HelioFITS/releases):
+to each [GitHub release](https://github.com/GillySpace27/HelioFITS-Peek/releases):
 download the zip, unzip it, drag `HelioFITS Peek.app` into `/Applications`, and launch it
 once so the extensions register. It opens without security warnings, but it does
 **not** self-update; watch the
-[releases feed](https://github.com/GillySpace27/HelioFITS/releases.atom) for new
+[releases feed](https://github.com/GillySpace27/HelioFITS-Peek/releases.atom) for new
 versions. The App Store is the supported channel; this is a fallback.
 
 </details>
@@ -183,7 +183,7 @@ SUVI · EIT · STEREO/SECCHI (EUVI, COR, HI) · PUNCH (including its polarized S
 cubes: a stack of polarization measurements in one file) · K‑Cor · TRACE · XRT.
 Instrument is recognized from `TELESCOP`/`INSTRUME`/`DETECTOR`; anything
 unrecognized falls back to a sensible grayscale stretch. Missing one?
-[Open an issue](https://github.com/GillySpace27/HelioFITS/issues): colormaps are
+[Open an issue](https://github.com/GillySpace27/HelioFITS-Peek/issues): colormaps are
 easy to add.
 
 ## Accessibility
@@ -199,15 +199,15 @@ very welcome via the issue tracker.
 
 ## Reporting bugs
 
-Open an issue: <https://github.com/GillySpace27/HelioFITS/issues>. Attaching (or
+Open an issue: <https://github.com/GillySpace27/HelioFITS-Peek/issues>. Attaching (or
 linking) a FITS file that reproduces the problem makes fixes much faster. If a
 readout ever disagrees with what sunpy tells you, I especially want to know.
 
 ## Building from source
 
 ```sh
-git clone https://github.com/GillySpace27/HelioFITS.git
-cd HelioFITS
+git clone https://github.com/GillySpace27/HelioFITS-Peek.git
+cd HelioFITS-Peek
 xcodebuild -project HelioFITS.xcodeproj -scheme HelioFITS -configuration Release \
   -destination 'platform=macOS,arch=arm64' build
 ```

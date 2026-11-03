@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ship HelioFITS: archive (Developer ID) -> notarize -> staple -> verify.
+# Ship HelioFITS Peek: archive (Developer ID) -> notarize -> staple -> verify.
 # One-time setup (stores your credentials in the keychain, run once):
 #   xcrun notarytool store-credentials HelioFITS-notary \
 #     --apple-id <your-apple-id> --team-id UB45PPC2JS \
@@ -95,4 +95,4 @@ rm -f "$ZIP"; ditto -c -k --keepParent "$APP" "$ZIP"
 ./lsclean.sh
 
 echo "==> Done. Ship: $APP  (or the re-zipped $ZIP)"
-echo "==> To publish:  gh release create v${VER}-build.${BUILD} $ZIP --title \"HelioFITS ${VER} (${BUILD})\" --generate-notes"
+echo "==> To publish:  gh release create v${VER}-build.${BUILD} $ZIP --title \"HelioFITS Peek ${VER} (${BUILD})\" --generate-notes"
