@@ -202,8 +202,18 @@ one build does not cover the next (SKILL.md "What it cannot finish without Gilly
 
 ## In flight
 
-Update this list when a branch merges or parks.
+Update this list when a branch merges or parks. Merge dates are UTC, from `gh pr list`.
 
+- PR #101 claude/readme-polish: merged as 2f3a5fa on 2026-11-02.
+- PR #100 claude/release-sync-site-pr: merged as 0a5d398 on 2026-11-03.
+- PR #99 claude/store-whats-new: merged as 911b11a on 2026-11-02.
+- PR #98 claude/release-1.5.1 (1.5.1 build 13, tag v1.5.1-build.13): merged as 7591223 on 2026-11-02.
+- PR #97 claude/colorbar-chip: merged as 4e208a0 on 2026-10-30.
+- PR #96 claude/folder-table: merged as 90e444b on 2026-10-30.
+- PR #95 claude/mas-spotlight-importer: merged as 748a593 on 2026-10-30.
+- PR #94 claude/peek-changelog-store-note: merged as 41f9c77 on 2026-10-30.
+- PR #93 claude/doi-badge-readme: merged as ca523a4 on 2026-10-29.
+- PRs #55 to #92: see `gh pr list --state merged`.
 - PR #54 claude/HF-5-real-fixtures: merged as 27ae573 on 2026-10-13.
 - PR #35 claude/ios-memory: merged as e1b7e12 on 2026-10-05.
 - PR #34 claude/rhef-ties: merged as 2c12f45 on 2026-09-29.
