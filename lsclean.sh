@@ -1,5 +1,5 @@
 #!/bin/bash
-# LaunchServices hygiene — run after ANY build that produces a HelioFITS Peek.app.
+# LaunchServices hygiene: run after ANY build that produces a HelioFITS Peek.app.
 #
 # This is the most recurring bug in the project, so it lives in one script that
 # ship.sh and every local install loop call.
