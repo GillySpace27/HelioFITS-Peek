@@ -67,11 +67,11 @@ public enum MultiscaleFilters {
 
     // MARK: WOW
 
-    /// Starlet scales used on a full-resolution frame. HelioFITS's choice; the
+    /// Starlet scales used on a full-resolution frame. HelioFITS Peek's choice; the
     /// reference package's default is not checked here.
     public static let wowScales = 6
 
-    /// Wavelets Optimized Whitening (Auchere et al. 2023) as HelioFITS reads it: a
+    /// Wavelets Optimized Whitening (Auchere et al. 2023) as HelioFITS Peek reads it: a
     /// starlet (B3-spline a trous) transform, each detail plane divided by its local
     /// RMS (the squared plane smoothed by the scaling function of the next level),
     /// and the whitened planes summed. Parity with the authors' `watroo` package is

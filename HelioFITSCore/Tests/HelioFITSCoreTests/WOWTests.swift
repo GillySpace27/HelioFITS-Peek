@@ -1,6 +1,6 @@
 //
 //  WOWTests.swift: Wavelets Optimized Whitening (Auchere et al. 2023, as HelioFITS
-//  reads it) against the numpy reference in filters.json, and the grid scaling (HF-19).
+//  Peek reads it) against the numpy reference in filters.json, and the grid scaling (HF-19).
 //  Parity with the authors' watroo package is not checked (see the script).
 //
 

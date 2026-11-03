@@ -17,7 +17,7 @@ from docs_check import strip_pointers  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_STORE_URL = "https://apps.apple.com/app/id6790952544"   # APP_ID in release_status.py
-RELEASES_URL = "https://github.com/GillySpace27/HelioFITS/releases"
+RELEASES_URL = "https://github.com/GillySpace27/HelioFITS-Peek/releases"
 EM_DASH = chr(0x2014)
 MAX_WHATS_NEW = 1000   # house limit from the HF-21 task file, not an Apple figure
 
@@ -29,7 +29,7 @@ def section(changelog, version):
 
 
 def footer():
-    return (f"Get HelioFITS on the Mac App Store: {APP_STORE_URL}\n"
+    return (f"Get HelioFITS Peek on the Mac App Store: {APP_STORE_URL}\n"
             f"Direct-download builds, when one is cut: {RELEASES_URL}")
 
 

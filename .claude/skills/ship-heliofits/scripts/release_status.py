@@ -57,7 +57,7 @@ HOW = {
     "changelog":   ("edit",  "Write the [{V}] section in CHANGELOG.md — long form, grouped Added/Changed/Fixed, issues linked."),
     "tag":         ("shell", "git tag -a v{V}-build.{B} -m \"{V} (build {B})\""),
     "tag_pushed":  ("shell", "git push && git push origin v{V}-build.{B}"),
-    "gh_release":  ("shell", "./ship.sh   # then: gh release create v{V}-build.{B} build/HelioFITS-{V}-b{B}.zip --title \"HelioFITS {V} (build {B})\" --notes-file <notes>"),
+    "gh_release":  ("shell", "./ship.sh   # then: gh release create v{V}-build.{B} build/HelioFITS-{V}-b{B}.zip --title \"HelioFITS Peek {V} (build {B})\" --notes-file <notes>"),
     "asc_version": ("api",   "Create the {V} version record in App Store Connect."),
     "asc_build":   ("api",   "Attach build {B} to the {V} version record."),
     "asc_notes":   ("api",   "Set What's New — the SHORT form, one headline sentence per fix."),
@@ -330,7 +330,7 @@ def render(version, build, done_flags, live_state):
     bar = "█" * filled + "░" * (20 - filled)
 
     GATED = {"submitted", "released"}
-    lines = [f"HelioFITS {version} (build {build}) — release progress",
+    lines = [f"HelioFITS Peek {version} (build {build}): release progress",
              f"[{bar}] {done_count}/{total}", ""]
     seen_incomplete = False
     for key, label in MILESTONES:
@@ -389,7 +389,7 @@ def record_release(live_state, version, build, changelog_text, today, site, run=
     tool = os.path.join(feed, "append_record.py")
     if not os.path.isfile(tool):
         return False, "record: %s not found; set SITE to the Website checkout" % tool
-    notes = feed_notes(changelog_text, version, "HelioFITS %s (build %s)" % (version, build))
+    notes = feed_notes(changelog_text, version, "HelioFITS Peek %s (build %s)" % (version, build))
     with tempfile.TemporaryDirectory() as d:
         nf = os.path.join(d, "notes.txt")
         with open(nf, "w", encoding="utf-8") as f:
@@ -398,18 +398,18 @@ def record_release(live_state, version, build, changelog_text, today, site, run=
                 "--date", today, "--channel", "mac-app-store", "--url", APP_STORE_URL, "--notes-file", nf]
         r = run(argv, capture_output=True, text=True)
     if r.returncode == 3:
-        return True, "record: HelioFITS %s build %s is already in the feed" % (version, build)
+        return True, "record: HelioFITS Peek %s build %s is already in the feed" % (version, build)
     if r.returncode != 0:
         return False, "record: writer failed (exit %d): %s" % (r.returncode, (r.stderr or "").strip()[-200:])
     r = run([sys.executable, os.path.join(feed, "build_feed.py")], capture_output=True, text=True)
     if r.returncode != 0:
         return False, "record: appended, but build_feed.py failed (exit %d): %s" % (r.returncode, (r.stderr or "").strip()[-200:])
     if not os.path.isfile(os.path.join(site, "tools", "release_pr.py")):
-        return True, ("record: appended HelioFITS %s build %s in %s; tools/release_pr.py is not in that checkout"
+        return True, ("record: appended HelioFITS Peek %s build %s in %s; tools/release_pr.py is not in that checkout"
                       " (pull the Website first), so commit and push it by hand" % (version, build, site))
     cmd = "cd %s && python3 tools/release_pr.py --product %s --version %s --build %s" % tuple(
         shlex.quote(str(x)) for x in (site, FEED_PRODUCT, version, build))
-    return True, ("record: appended HelioFITS %s build %s in %s; open the site pull request with (%s);"
+    return True, ("record: appended HelioFITS Peek %s build %s in %s; open the site pull request with (%s);"
                   " merging it publishes gilly.space" % (version, build, site, cmd))
 
 
@@ -454,7 +454,7 @@ if __name__ == "__main__":
         combined = {**done_flags, **live_state}
         snap = {
             "name": "ship-heliofits",
-            "title": f"HelioFITS {args.version} (build {args.build})",
+            "title": f"HelioFITS Peek {args.version} (build {args.build})",
             "checked_at": datetime.datetime.now(datetime.timezone.utc)
                             .isoformat(timespec="seconds"),
             "complete": sum(1 for k, _ in MILESTONES if combined.get(k)),

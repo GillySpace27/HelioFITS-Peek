@@ -1,9 +1,10 @@
 # HelioFITS Peek: App Store listing copy
 
-Paste-ready text for App Store Connect. Name **HelioFITS** (clear on the Mac App
-Store as of 2026‑07‑12 — only "QuickFits", CloudMakers' "FITS Preview", and the
-unrelated "Helio Fit" fitness app exist). Do NOT ship as "FITS Quick Look"
-(confusable with QuickFits; Apple may reject "Quick Look" in an app name).
+Paste-ready text for App Store Connect. Name **HelioFITS Peek** (see Name below). The
+earlier name, plain "HelioFITS", was clear on the Mac App Store as of 2026‑07‑12: only
+"QuickFits", CloudMakers' "FITS Preview", and the unrelated "Helio Fit" fitness app
+existed. Do NOT ship as "FITS Quick Look" (confusable with QuickFits; Apple may reject
+"Quick Look" in an app name).
 
 Primary category: **Utilities**. It is a Quick Look extension, a thumbnail
 generator; its job is teaching Finder a file type. (From 1.5.1 the Mac App Store build also carries the
@@ -144,7 +145,7 @@ Suggested set, in order:
 
 ## Positioning
 
-HelioFITS serves calibrated solar science data, where the colormap and header
+HelioFITS Peek serves calibrated solar science data, where the colormap and header
 metadata carry physical meaning. It complements — not competes with —
 astrophotography tools like QuickFits (debayer camera frames, export TIFF):
 different jobs, both good tools. We adopt the canonical `gov.nasa.gsfc.fits`

@@ -3,7 +3,7 @@
 # HelioFITSCore/CFITSIO.xcframework.
 #
 # The app links this ONE static library; it must be a fat binary so HelioFITS
-# ships as a universal app that runs on both Apple Silicon and Intel Macs. The
+# Peek ships as a universal app that runs on both Apple Silicon and Intel Macs. The
 # custom fitsshim.c is baked into the archive (the app calls fitsshim_* directly),
 # so it is compiled per-arch and `ar r`'d into each slice before the lipo.
 #

@@ -1,7 +1,7 @@
 //
 //  OrientationTests.swift — the displayed image must not be upside down.
 //
-//  HelioFITS 1.2 shipped to the App Store drawing EVERY image vertically
+//  HelioFITS Peek 1.2 (then named HelioFITS) shipped to the App Store drawing EVERY image vertically
 //  flipped. `render()` bakes the pixels correctly (north up, which is why
 //  "Save PNG" was always right), but FITSImageCanvas is a flipped view and the
 //  plain `NSImage.draw(in:)` ignores that, so the canvas inverted it. Nobody

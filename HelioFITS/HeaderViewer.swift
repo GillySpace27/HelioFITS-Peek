@@ -1,5 +1,5 @@
 // Native FITS-header viewer. Opened when a .fits file is handed to the app
-// (via the "View HDU header" Quick Action → `open -a HelioFITS`). The app
+// (via the "View HDU header" Quick Action, `open -b com.gillyspace27.HelioFITS`). The app
 // is sandboxed, so it can't shell out to python: the header is parsed in pure
 // Swift by FITSHeader.dump (HelioFITSCore/Sources/HelioFITSCore/FITSHeader.swift;
 // same 2880-byte-block / 80-char-card walk as tools/fitsdump.py, verified

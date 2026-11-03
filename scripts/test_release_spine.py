@@ -60,7 +60,7 @@ class Notes(unittest.TestCase):
 
     def test_footer_never_uses_releases_latest(self):
         self.assertNotIn("/latest", rn.footer())
-        self.assertTrue(rn.footer().splitlines()[0].startswith("Get HelioFITS on the Mac App Store"))
+        self.assertTrue(rn.footer().splitlines()[0].startswith("Get HelioFITS Peek on the Mac App Store"))
 
     def test_lint_catches_each_problem(self):
         self.assertEqual(rn.lint_whats_new("Faster previews."), [])

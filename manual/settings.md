@@ -1,6 +1,6 @@
 # Settings
 
-Open **HelioFITS ▸ Settings…** (⌘,).
+Open **HelioFITS Peek ▸ Settings…** (⌘,).
 
 ```{figure} ../docs/settings.png
 :width: 80%

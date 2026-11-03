@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Weekly public-facts watch for HelioFITS. Reads public endpoints only; posts nothing.
+"""Weekly public-facts watch for HelioFITS Peek. Reads public endpoints only; posts nothing.
 
 Usage:
   python3 scripts/watch.py [--check store landing assets cfitsio] [--landing-url URL ...]
@@ -263,7 +263,7 @@ def selftest():
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description="HelioFITS public-facts watch (read-only).")
+    p = argparse.ArgumentParser(description="HelioFITS Peek public-facts watch (read-only).")
     p.add_argument("--check", nargs="+", action="extend", choices=sorted(CHECKS),
                    help="checks to run (default: all)")
     p.add_argument("--landing-url", action="append", help="override the landing URLs (repeatable)")
