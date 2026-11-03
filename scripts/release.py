@@ -170,14 +170,14 @@ def main(argv=None, root=ROOT):
             return rc
         # The store build carries the importer (RELEASING.md step 6); Xcode's archive does not. Same
         # identity as the archived app, so the importer and the re-sealed app match; export re-signs both.
-        app = os.path.join(root, dest, "Products", "Applications", "HelioFITS.app")
+        app = os.path.join(root, dest, "Products", "Applications", "HelioFITS Peek.app")
         sign_id = signing_authority(app)
         if not sign_id:
             print(f"FAIL: cannot read the signing authority of {app}; importer not embedded", file=sys.stderr)
             return 1
         return subprocess.run(embed_cmd(root, app), cwd=root, env=dict(os.environ, SIGN_ID=sign_id)).returncode
     if a.step in ("verify", "prepare"):
-        app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS.app")
+        app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS Peek.app")
         problems, unchecked = verify_app(app, version, build)
         for u in unchecked:
             print("UNCHECKED:", u)
@@ -198,7 +198,7 @@ def main(argv=None, root=ROOT):
             return 0
         # Never upload an archive verify would fail, e.g. one archived by hand in Organizer, which has
         # no Spotlight importer (only the archive step embeds it).
-        app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS.app")
+        app = os.path.join(root, archive_path(version, build), "Products", "Applications", "HelioFITS Peek.app")
         problems, _ = verify_app(app, version, build)
         if problems:
             for q in problems:

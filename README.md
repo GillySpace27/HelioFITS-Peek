@@ -148,7 +148,7 @@ macOS caches icons.)
 
 Some managed and institutional Macs block it. The notarized build is also attached
 to each [GitHub release](https://github.com/GillySpace27/HelioFITS/releases):
-download the zip, unzip it, drag `HelioFITS.app` into `/Applications`, and launch it
+download the zip, unzip it, drag `HelioFITS Peek.app` into `/Applications`, and launch it
 once so the extensions register. It opens without security warnings, but it does
 **not** self-update; watch the
 [releases feed](https://github.com/GillySpace27/HelioFITS/releases.atom) for new
