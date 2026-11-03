@@ -14,6 +14,7 @@
 #                  watch self-tests, and the Spotlight importer on its ad hoc path.
 #   fixtures       ubuntu: scripts/make_fixtures.py --selftest, then regenerates the synthetic
 #                  fixtures and diffs them against HelioFITSTests/Fixtures (HF-5).
+#   docs           ubuntu: builds the user manual (manual/) with Sphinx, warnings as errors (DOCS-3).
 #   lint           swift format lint with .swift-format. Advisory: never blocks.
 #
 # Tests that need files only present on Gilly's Mac report as skipped, not passed.
@@ -223,3 +224,19 @@ jobs:
         run: |
           python3 scripts/make_fixtures.py --synthetic --tests-out "$RUNNER_TEMP/fixtures"
           diff -r -x Real "$RUNNER_TEMP/fixtures" HelioFITSTests/Fixtures
+
+  docs:
+    # The user manual (manual/, DOCS-3): Sphinx with warnings as errors, on the Python that Read the
+    # Docs uses (.readthedocs.yaml), so a broken page or link fails here before it fails there.
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Pinned inputs
+        run: python3 -m pip install -r manual/requirements.txt
+      - name: Build the manual (HTML, warnings as errors)
+        run: python3 -m sphinx -q -W --keep-going -b html manual "$RUNNER_TEMP/manual-html"

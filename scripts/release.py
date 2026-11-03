@@ -186,6 +186,9 @@ def main(argv=None, root=ROOT):
         if a.step == "prepare" and not problems:
             r = subprocess.run([sys.executable, os.path.join(HERE, "release-notes.py"), version, "--check-whats-new"], cwd=root)
             problems = ["release notes lint failed"] if r.returncode else []
+            # Docs reconcile (DOCS-3): warn only for now; it never blocks a release.
+            subprocess.run([sys.executable, os.path.join(HERE, "docs_check.py"), "--version", version, "--root", root],
+                           cwd=root)
         print("verify: " + ("FAIL" if problems else "ok" if not unchecked else "ok with UNCHECKED"))
         return 1 if problems else 0
     gates.require_confirm(a.confirm, gates.expected_text(a.step, version, build))
