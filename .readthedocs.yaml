@@ -1,0 +1,19 @@
+# Read the Docs builds the HelioFITS Peek user manual (manual/, DOCS-3): HTML for every version and a
+# PDF beside it. Project setup on readthedocs.org is Gilly's step; this file only describes the build.
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.12"
+
+sphinx:
+  configuration: manual/conf.py
+  fail_on_warning: true
+
+formats:
+  - pdf
+
+python:
+  install:
+    - requirements: manual/requirements.txt

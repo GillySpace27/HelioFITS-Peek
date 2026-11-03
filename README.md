@@ -192,9 +192,9 @@ The **viewer** window is keyboard‑ and VoiceOver‑friendly: the HDU picker an
 Copy/Save buttons are labeled and reachable, the FITS header is a selectable,
 VoiceOver‑navigable, ⌘F‑searchable text pane, and in the image the **↑/↓** arrows
 blink between layers, **⌘ +/−/0** zoom, and **⌘C** copies the pixel readout. Toolbar
-toggles announce their name and on/off state. Work still to do: a keyboard cursor
-for the hover readout and drag‑box statistics (today those are mouse‑driven), and
-honoring the system Larger‑Text setting. Feedback from assistive‑technology users is
+toggles announce their name and on/off state. **⌥ plus an arrow** moves a readout
+cursor in place of the mouse, **⌥⇧ plus an arrow** measures a box for statistics, and
+**Esc** clears them. Work still to do: honoring the system Larger‑Text setting. Feedback from assistive‑technology users is
 very welcome via the issue tracker.
 
 ## Reporting bugs

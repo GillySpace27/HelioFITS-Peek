@@ -35,3 +35,5 @@ HelioFITSCore/.swiftpm/
 
 # Fuzz build output: CFITSIO build, harness binaries, corpora, crash files (HF-11)
 Fuzz/out/
+# The user manual build (DOCS-3)
+manual/_build/

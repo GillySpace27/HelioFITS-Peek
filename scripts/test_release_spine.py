@@ -52,6 +52,12 @@ class Notes(unittest.TestCase):
         self.assertNotIn("old", s)
         self.assertIsNone(rn.section(self.LOG, "9.9.9"))
 
+    def test_section_drops_docs_pointers(self):
+        log = "## [1.4.0] - 2026-10-01\n\n- Faster. [docs: manual/quick-look.md]\n- Internal. [docs: none]\n"
+        s = rn.section(log, "1.4.0")
+        self.assertNotIn("[docs:", s)
+        self.assertIn("- Faster.\n- Internal.", s)
+
     def test_footer_never_uses_releases_latest(self):
         self.assertNotIn("/latest", rn.footer())
         self.assertTrue(rn.footer().splitlines()[0].startswith("Get HelioFITS on the Mac App Store"))
@@ -59,7 +65,7 @@ class Notes(unittest.TestCase):
     def test_lint_catches_each_problem(self):
         self.assertEqual(rn.lint_whats_new("Faster previews."), [])
         for text, word in [("Fixes #12", "issue"), ("see github.com/x", "github"),
-                           ("a " + rn.EM_DASH + " b", "em dash"), ("x" * 1001, "over"), ("  ", "empty")]:
+                           ("a " + rn.EM_DASH + " b", "em dash"), ("Faster. [docs: none]", "docs pointer"), ("x" * 1001, "over"), ("  ", "empty")]:
             self.assertTrue(any(word in b for b in rn.lint_whats_new(text)), text[:20])
 
     def test_cli_missing_file_and_missing_section_exit_1(self):

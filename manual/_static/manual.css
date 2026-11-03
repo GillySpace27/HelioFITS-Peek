@@ -1,0 +1,7 @@
+/* Small touches on top of Furo (DOCS-3, as in the HelioFITS Studio manual). */
+.sidebar-logo { max-width: 72px; }
+article img { border-radius: 6px; box-shadow: 0 2px 12px rgb(0 0 0 / 18%); }
+figure figcaption { font-size: 0.9em; color: var(--color-foreground-secondary); }
+table.docutils { font-size: 0.92em; }
+kbd, .menuselection { white-space: nowrap; }
+.menuselection { font-weight: 600; color: var(--color-brand-content); }

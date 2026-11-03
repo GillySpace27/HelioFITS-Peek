@@ -101,6 +101,17 @@ Gilly's machine, not in this repository).
    "is my bug fixed," not why. Write the changelog entry first, then compress
    each Fixed bullet to a single headline sentence for What's New. Do not
    paste the changelog into the store box or vice versa.
+
+   **Docs pointers (DOCS-3).** End each top-level bullet with where the change is
+   documented, `[docs: manual/quick-look.md]` (one or more paths, comma-separated, an
+   `#anchor` allowed) or `[docs: none]` for a change no reader needs. Update that page in
+   the same release: `scripts/docs_check.py` warns when a bullet has no pointer, names a
+   missing file, or names a file unchanged since the previous release tag;
+   `release.py prepare` runs it, warn only. The release notes, the What's New lint and
+   the manual's history page drop the pointers. After editing the changelog, run
+   `python3 scripts/build_manual_refs.py` so `manual/generated/history.md` matches;
+   `scripts/check.sh` fails until it does. The user manual is `manual/` (see
+   `manual/README.md`); Read the Docs builds HTML and a PDF from `.readthedocs.yaml`.
 5. **Commit + tag**: `git tag -a v<VER>-build.<N> -m "..."` and push the tag.
    The tag marks the exact source of the shipped binaries.
 

@@ -217,6 +217,20 @@ check_release_spine() {
 }
 CHECKS+=(check_release_spine)
 
+# The user manual's generated history page matches CHANGELOG.md, and the docs tools behave (DOCS-3).
+# Pure Python, no network, no Sphinx (the docs CI job builds the manual). The changelog's docs
+# pointers are only warned about, by scripts/docs_check.py in release.py prepare.
+# Shown failing with a line appended to CHANGELOG.md:
+#   FAIL check_manual: manual-refs: FAIL: manual/generated/history.md is out of date; run scripts/build_manual_refs.py
+check_manual() {
+  local out t
+  out="$(python3 scripts/build_manual_refs.py --check 2>&1)" || { grep -m1 'FAIL' <<<"$out"; return 1; }
+  for t in scripts/test_docs_check.py scripts/test_build_manual_refs.py; do
+    out="$(python3 "$t" 2>&1)" || { echo "$t: ${out##*$'\n'}"; return 1; }
+  done
+}
+CHECKS+=(check_manual)
+
 # ---- run ----
 status=0
 for c in "${CHECKS[@]}"; do

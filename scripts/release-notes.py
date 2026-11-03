@@ -12,6 +12,9 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from docs_check import strip_pointers  # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP_STORE_URL = "https://apps.apple.com/app/id6790952544"   # APP_ID in release_status.py
 RELEASES_URL = "https://github.com/GillySpace27/HelioFITS/releases"
@@ -20,9 +23,9 @@ MAX_WHATS_NEW = 1000   # house limit from the HF-21 task file, not an Apple figu
 
 
 def section(changelog, version):
-    """The `## [version]` section without its heading line, or None."""
+    """The `## [version]` section without its heading line or its [docs: ...] pointers, or None."""
     m = re.search(r"^## \[" + re.escape(version) + r"\][^\n]*\n(.*?)(?=^## \[|\Z)", changelog, re.S | re.M)
-    return m.group(1).strip("\n") if m else None
+    return strip_pointers(m.group(1)).strip("\n") if m else None
 
 
 def footer():
@@ -39,6 +42,8 @@ def lint_whats_new(text):
         bad.append("issue link (#123)")
     if "github.com" in text.lower():
         bad.append("github.com")
+    if "[docs:" in text:
+        bad.append("[docs: ...] docs pointer (the changelog's, not for the store)")
     if EM_DASH in text:
         bad.append("em dash")
     if len(text) > MAX_WHATS_NEW:
