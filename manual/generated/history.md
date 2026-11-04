@@ -4,13 +4,15 @@
 
 Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
 
-## [Unreleased]
+## [1.5.2] - 2026-11-04
 
 ### Changed
 
-- **The installed app is now named HelioFITS Peek.** The app in /Applications, in
-  Launchpad and in the Dock reads "HelioFITS Peek" instead of "HelioFITS". The bundle id,
-  settings and the executable name are unchanged.
+- **The installed app is now named HelioFITS Peek.** The app file in /Applications and
+  Launchpad, the name in the Dock and the name in the menu bar read "HelioFITS Peek"
+  instead of "HelioFITS". The bundle id, settings and the executable name are unchanged.
+- Error messages, exported-image and movie stamps, and the comments in copied Python
+  snippets say HelioFITS Peek.
 
 ## [1.5.1] - 2026-10-31
 
