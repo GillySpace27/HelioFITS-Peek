@@ -13,8 +13,9 @@ All notable changes to HelioFITS Peek are recorded here. Format follows
 - **The installed app is now named HelioFITS Peek.** The app file in /Applications and
   Launchpad, the name in the Dock and the name in the menu bar read "HelioFITS Peek"
   instead of "HelioFITS". The bundle id, settings and the executable name are unchanged.
+  [docs: manual/install.md]
 - Error messages, exported-image and movie stamps, and the comments in copied Python
-  snippets say HelioFITS Peek.
+  snippets say HelioFITS Peek. [docs: none]
 
 ## [1.5.1] - 2026-10-31
 

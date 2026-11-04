@@ -1,0 +1,2 @@
+- The app is now called HelioFITS Peek in the Applications folder, the Dock and the menu bar.
+- Error messages and the stamps on exported images and movies say HelioFITS Peek.
