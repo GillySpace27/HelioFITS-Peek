@@ -13,6 +13,15 @@
 
 #include "fits_header.h"
 
+// Processing records (.hfrec.json / .hfrec): hfrec_import.swift, built in by build.sh.
+extern Boolean hfrec_get_metadata(CFMutableDictionaryRef attributes, CFStringRef pathToFile);
+
+static Boolean is_record(CFStringRef contentTypeUTI, CFStringRef path) {
+    if (contentTypeUTI && CFStringCompare(contentTypeUTI, CFSTR("com.gillyspace27.hfrecord"), 0) == kCFCompareEqualTo)
+        return TRUE;
+    return path && (CFStringHasSuffix(path, CFSTR(".hfrec.json")) || CFStringHasSuffix(path, CFSTR(".hfrec")));
+}
+
 // ---------------------------------------------------------------------------
 // The importer proper: fill `attributes` from the FITS file at `pathToFile`.
 // ---------------------------------------------------------------------------
@@ -61,8 +70,9 @@ static Boolean GetMetadataForFile(void *thisInstance,
                                   CFMutableDictionaryRef attributes,
                                   CFStringRef contentTypeUTI,
                                   CFStringRef pathToFile) {
-    (void)thisInstance; (void)contentTypeUTI;
+    (void)thisInstance;
     if (!pathToFile) return FALSE;
+    if (is_record(contentTypeUTI, pathToFile)) return hfrec_get_metadata(attributes, pathToFile);
 
     char path[PATH_MAX];
     if (!CFStringGetCString(pathToFile, path, sizeof path, kCFStringEncodingUTF8))

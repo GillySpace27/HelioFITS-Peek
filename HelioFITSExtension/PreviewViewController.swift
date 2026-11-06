@@ -42,6 +42,8 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
     private var toolStack = NSStackView()
     private var compact = false
     private var statsFits = true
+    /// A processing record is on screen: no image, so the image controls stay hidden.
+    private var showingRecord = false
     /// The header drawer (HF-13): this layer's cards, pinned keywords first, one
     /// group at a time. Buttons only: whether the Space panel delivers keystrokes to
     /// a search field is unverified (the HF-13 spike), so there is no search here.
@@ -183,6 +185,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
 
     override func viewDidLayout() {
         super.viewDidLayout()
+        if showingRecord { return }
         // Finder never delivers clicks or mouse-move to a hosted extension view
         // in the COLUMN pane — only scroll. Hide controls that could never be
         // used there and lean on scroll-to-blink.
@@ -210,6 +213,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
 
     func preparePreviewOfFile(at url: URL, completionHandler handler: @escaping (Error?) -> Void) {
         logger.info("preparePreviewOfFile: \(url.path, privacy: .public)")
+        if HFRecord.isRecordName(url.lastPathComponent) { prepareRecord(at: url, handler); return }
         FITSRenderer.limitInputForExtension()   // before any read: refuse huge or gzip/PKZIP input
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }
@@ -234,6 +238,37 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
                 self.refresh()
                 self.canvas.flashHint(6)
                 self.logger.info("prepared \(m.count) HDU page(s)")
+                handler(nil)
+            }
+        }
+    }
+
+    /// A processing record (.hfrec.json sidecar): its own `report` lines when it carries them,
+    /// else the report generated as pyHelioFITS report.py lays it out. No image tools.
+    private func prepareRecord(at url: URL, _ handler: @escaping (Error?) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let result = Result { try HFRecord(contentsOf: url) }
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let record):
+                    let v = HFRecordReportView()
+                    v.translatesAutoresizingMaskIntoConstraints = false
+                    v.show(record, sidecarName: url.lastPathComponent, lines: record.reportLines)
+                    self.view.addSubview(v)
+                    NSLayoutConstraint.activate([
+                        v.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                        v.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                        v.topAnchor.constraint(equalTo: self.view.topAnchor),
+                        v.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+                    ])
+                    self.toolStack.isHidden = true
+                    self.tools.panel.isHidden = true
+                    self.canvas.isHidden = true
+                    self.showingRecord = true
+                case .failure(let error):
+                    self.showCard(title: url.lastPathComponent, body: "Not a readable processing record: \(error)")
+                }
                 handler(nil)
             }
         }

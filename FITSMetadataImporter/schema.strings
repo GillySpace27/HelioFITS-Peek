@@ -20,3 +20,24 @@
 
 "com_gillyspace27_fits_resolution"            = "Dimensions";
 "com_gillyspace27_fits_resolution.Description" = "Image size in pixels (NAXIS1 x NAXIS2 of the primary image HDU)";
+
+"com_gillyspace27_hfrec_producer"                 = "Made By";
+"com_gillyspace27_hfrec_producer.Description"     = "Program and version that wrote the processing record";
+
+"com_gillyspace27_hfrec_output"                   = "Exported File";
+"com_gillyspace27_hfrec_output.Description"       = "Name of the export the processing record describes";
+
+"com_gillyspace27_hfrec_labels"                   = "Layers";
+"com_gillyspace27_hfrec_labels.Description"       = "Dataset labels of the layers, top layer first";
+
+"com_gillyspace27_hfrec_instruments"              = "Instruments";
+"com_gillyspace27_hfrec_instruments.Description"  = "Observatory and instrument of each layer, top layer first";
+
+"com_gillyspace27_hfrec_layers"                   = "Layer Count";
+"com_gillyspace27_hfrec_layers.Description"       = "Number of layers in the processing record";
+
+"com_gillyspace27_hfrec_start"                    = "First Source Time";
+"com_gillyspace27_hfrec_start.Description"        = "Earliest observation time among the source files";
+
+"com_gillyspace27_hfrec_end"                      = "Last Source Time";
+"com_gillyspace27_hfrec_end.Description"          = "Latest observation time among the source files";

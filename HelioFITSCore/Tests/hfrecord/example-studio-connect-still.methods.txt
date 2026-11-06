@@ -1,0 +1,4 @@
+The image was produced with HelioFITS Studio <VERSION> (build <AppInfo.buildId()>, commit <AppInfo.commit()>) for 2025-09-21T20:32:00Z. PUNCH WFI+NFI Mosaic 530 Å CAM L3 (1 frame at 2025-09-21T20:32:00.000) was processed with Gamma (stretch), RHEF (image filter), RHEF (rhef upsilon). Proba-3 ASPIICS 5508 Å L3 (1 frame at 2025-09-21T20:31:11.394) was processed with Gamma (stretch). SDO AIA 193 Å L1 (1 frame at 2025-09-21T20:32:04.840) was processed with Gamma (stretch). RHEF output (the PUNCH layer) is a visualization, not a calibrated radiance. Display-referred render: pixel values are colours, not measured quantities.
+
+- Müller et al. (2017), Astronomy & Astrophysics, https://doi.org/10.1051/0004-6361/201730893
+- Gilly & Cranmer (2025), Solar Physics, https://doi.org/10.1007/s11207-025-02578-x

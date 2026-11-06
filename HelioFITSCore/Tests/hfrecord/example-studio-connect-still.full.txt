@@ -1,0 +1,129 @@
+HELIOFITS PROCESSING RECORD
+
+Made by:   HelioFITS Studio <VERSION> (build <AppInfo.buildId()>, commit <AppInfo.commit()>)
+Created:   2026-10-22T00:00:00Z
+Output:    still, connect_20250921T2032_aia-aspiics-punch.png, image/png, 2048 x 2048 px, 16-bit,
+           sRGB, display-referred (pixel values are colours)
+Scene:     time=2025-09-21T20:32:00Z, projection=<Display.mode>, viewpoint={"location": "Earth"},
+           overlays=[]
+
+LAYERS (3, top layer first)
+
+1. SDO AIA 193 Å L1
+    Dataset:   SDO AIA, level 1, 193 Å
+    Key:       sdo/aia/-/-/1/193
+    Data:      1 frame; 2025-09-21T20:32:04.840; 12.0 MB; source: heliad_library
+    Files:
+      aia.lev1.193A_2025_09_21T20_32_04.84Z.image_lev1.fits  sha256 1f09abb6d927
+    Processing, in order applied:
+      1. select_plane (decode)
+          parameters: plane=0
+      2. clip (decode)
+          parameters: clippingMode=Percentile05, clippingMin=-500, clippingMax=500
+          caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame
+                     go in resolved (Studio fills them at export; left null here).
+      3. stretch (decode): Gamma
+          parameters: scalingMode=Gamma, gamma=0.45454545454545453
+      4. levels (gpu)
+          parameters: brightOffset=0, brightScale=1
+      5. radial_gain (gpu)
+          parameters: enhanced=0
+      6. difference (gpu)
+      7. sharpen (gpu)
+          parameters: sharpen=0
+      8. colormap (gpu)
+          parameters: lut=SDO-AIA 193 Å, invert=false
+      9. channel_mask (gpu)
+          parameters: color={"red": true, "green": true, "blue": true}
+      10. geometric_mask (gpu)
+          parameters: innerMask=0, slitLeft=0, slitRight=1, sectorCenter=0, sectorWidth=0
+      11. opacity_blend (gpu)
+          parameters: opacity=1, blend=1
+    Caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame go in
+               resolved (Studio fills them at export; left null here).
+
+2. Proba-3 ASPIICS 5508 Å L3
+    Dataset:   Proba-3 ASPIICS, level 3, 5508 Å
+    Key:       proba-3/aspiics/-/-/3/5508
+    Data:      1 frame; 2025-09-21T20:31:11.394; file version 03; 16.8 MB; source: heliad_library
+    Files:
+      aspiics_bt_l3_20250921T203111_163040370004_v03.fits  sha256 a419e5b7a076
+    Processing, in order applied:
+      1. select_plane (decode)
+          parameters: plane=0
+      2. clip (decode)
+          parameters: clippingMode=Percentile05, clippingMin=-500, clippingMax=500
+          caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame
+                     go in resolved (Studio fills them at export; left null here).
+      3. stretch (decode): Gamma
+          parameters: scalingMode=Gamma, gamma=0.45454545454545453
+      4. levels (gpu)
+          parameters: brightOffset=0, brightScale=1
+      5. radial_gain (gpu)
+          parameters: enhanced=0
+      6. difference (gpu)
+      7. sharpen (gpu)
+          parameters: sharpen=0
+      8. colormap (gpu)
+          parameters: lut=ASPIICS WBF, invert=false
+      9. channel_mask (gpu)
+          parameters: color={"red": true, "green": true, "blue": true}
+      10. geometric_mask (gpu)
+          parameters: innerMask=0, slitLeft=0, slitRight=1, sectorCenter=0, sectorWidth=0
+      11. opacity_blend (gpu)
+          parameters: opacity=1, blend=1
+    Caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame go in
+               resolved (Studio fills them at export; left null here).
+
+3. PUNCH WFI+NFI Mosaic 530 Å CAM L3
+    Dataset:   PUNCH WFI+NFI Mosaic, product CAM, level 3, 530 Å
+    Key:       punch/wfi+nfi-mosaic/-/cam/3/530
+    Data:      1 frame; 2025-09-21T20:32:00.000; file version 0l; 25.3 MB; source: heliad_library
+    Files:
+      PUNCH_L3_CAM_20250921203200_v0l_ec8c0ee013a3.fits  sha256 ff1375465392
+    Processing, in order applied:
+      1. select_plane (decode)
+          parameters: plane=0
+      2. clip (decode)
+          parameters: clippingMode=Percentile05, clippingMin=-500, clippingMax=500
+          caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame
+                     go in resolved (Studio fills them at export; left null here).
+      3. stretch (decode): Gamma
+          parameters: scalingMode=Gamma, gamma=0.45454545454545453
+      4. image_filter (cpu): RHEF via hfstudio-java
+          parameters: filter=RHEF
+          caveat:    not a calibrated radiance
+          citation:  Gilly & Cranmer (2025), Solar Physics,
+                     https://doi.org/10.1007/s11207-025-02578-x
+      5. levels (gpu)
+          parameters: brightOffset=0, brightScale=1
+      6. radial_gain (gpu)
+          parameters: enhanced=0
+      7. difference (gpu)
+      8. sharpen (gpu)
+          parameters: sharpen=0
+      9. rhef_upsilon (gpu): RHEF via hfstudio-glsl
+          parameters: upsilonLow=0.6, upsilonHigh=0.4
+          citation:  Gilly & Cranmer (2025), Eq. 2 (as cited in imageCommon.frag)
+      10. colormap (gpu)
+          parameters: lut=PUNCH, invert=false
+      11. channel_mask (gpu)
+          parameters: color={"red": true, "green": true, "blue": true}
+      12. geometric_mask (gpu)
+          parameters: innerMask=0, slitLeft=0, slitRight=1, sectorCenter=0, sectorWidth=0
+      13. opacity_blend (gpu)
+          parameters: opacity=1, blend=1
+    Caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame go in
+               resolved (Studio fills them at export; left null here).
+    Caveat:    not a calibrated radiance
+
+CAVEATS
+  -          RHEF output (the PUNCH layer) is a visualization, not a calibrated radiance.
+  -          Display-referred render: pixel values are colours, not measured quantities.
+
+PLEASE CITE
+  -          Müller et al. (2017), Astronomy & Astrophysics,
+             https://doi.org/10.1051/0004-6361/201730893
+  -          Gilly & Cranmer (2025), Solar Physics, https://doi.org/10.1007/s11207-025-02578-x
+
+Record:    00000000-0000-4000-8000-000000000000 (hfrecord 1.0)
