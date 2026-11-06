@@ -1,0 +1,156 @@
+HELIOFITS PROCESSING RECORD
+
+Made by:   HelioFITS Studio <VERSION> (build <AppInfo.buildId()>, commit <AppInfo.commit()>)
+Created:   2026-11-04T12:00:00Z
+Warning:   made by a build with uncommitted changes
+Output:    still, connect_20250921T2032_aia-aspiics-punch.png, image/png, 2048 x 2048 px, 16-bit,
+           sRGB, display-referred (pixel values are colours)
+SHA-256:   abababababababababababababababababababababababababababababababab
+Scene:     time=2025-09-21T20:32:00Z, projection=<Display.mode>, viewpoint={"location": "Earth"},
+           overlays=[]
+
+LAYERS (3, top layer first)
+
+1. SDO AIA 193 Å L1
+    Dataset:   SDO AIA, level 1, 193 Å
+    Key:       sdo/aia/-/-/1/193
+    Data:      4 frames; 2025-09-21T20:30:00.000 to 2025-09-21T20:32:04.840; 24.0 MB; source:
+               helioviewer_api
+    Files:     4 files, first https://example.invalid/a.jp2, last fedcba987654 (hfcore record show
+               --full lists every file)
+    Set hash:  sha256 e5deb2ba6016fdc7150bd2097548d811ea16884d02438b0b9e74b652db718dae
+    Processing, in order applied:
+      1. select_plane (decode)
+          parameters: plane=0
+      2. clip (decode)
+          parameters: clippingMode=Percentile05, clippingMin=-500, clippingMax=500
+          caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame
+                     go in resolved (Studio fills them at export; left null here).
+      3. stretch (decode): Gamma
+          parameters: scalingMode=Gamma, gamma=0.45454545454545453
+      4. levels (gpu)
+          parameters: brightOffset=0, brightScale=1
+      5. radial_gain (gpu)
+          parameters: enhanced=0
+      6. difference (gpu)
+      7. sharpen (gpu)
+          parameters: sharpen=0
+      8. colormap (gpu)
+          parameters: lut=SDO-AIA 193 Å, invert=false
+      9. channel_mask (gpu)
+          parameters: color={"red": true, "green": true, "blue": true}
+      10. geometric_mask (gpu)
+          parameters: innerMask=0, slitLeft=0, slitRight=1, sectorCenter=0, sectorWidth=0
+      11. opacity_blend (gpu)
+          parameters: opacity=1, blend=1
+    Caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame go in
+               resolved (Studio fills them at export; left null here).
+
+2. 193 O'Brien Å layer  [hidden]
+    Dataset:   ASPIICS, level 3, 19.3 nm
+    Key:       proba-3/aspiics/-/-/3/5508
+    Data:      1 frame; 2025-09-21T20:31:11.394; file version 03; 16.8 MB; source: heliad_library
+    Files:
+      aspiics_bt_l3_20250921T203111_163040370004_v03.fits  sha256 a419e5b7a076
+    Processing, in order applied:
+      1. warp_drive (cpu) [automatic] [step not known to this reader]
+          parameters: factor=1e-05, big=1e+16, huge=12345678901234567890, list=[1, 2.5, "x\ty"],
+                      nested={"a": true, "b": "café \"q\""}
+          units:     factor=dimensionless
+          reference: previous frame (running difference)
+          varies:    factor, big
+      2. select_plane (decode)
+          parameters: plane=0
+      3. clip (decode)
+          parameters: clippingMode=Percentile05, clippingMin=-500, clippingMax=500
+          caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame
+                     go in resolved (Studio fills them at export; left null here).
+      4. stretch (decode): Gamma
+          parameters: scalingMode=Gamma, gamma=0.45454545454545453
+      5. levels (gpu)
+          parameters: brightOffset=0, brightScale=1
+      6. radial_gain (gpu)
+          parameters: enhanced=0
+      7. difference (gpu)
+      8. sharpen (gpu)
+          parameters: sharpen=0
+      9. colormap (gpu)
+          parameters: lut=ASPIICS WBF, invert=false
+      10. channel_mask (gpu)
+          parameters: color={"red": true, "green": true, "blue": true}
+      11. geometric_mask (gpu)
+          parameters: innerMask=0, slitLeft=0, slitRight=1, sectorCenter=0, sectorWidth=0
+      12. opacity_blend (gpu)
+          parameters: opacity=1, blend=1
+      13. difference (gpu): base difference
+          reference: base frame: source 0
+          varies:    over the movie
+      14. feather
+          reference: {"kind": "other", "x": 1}
+    Caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame go in
+               resolved (Studio fills them at export; left null here).
+    Caveat:
+
+3. PUNCH WFI+NFI Mosaic 530 Å CAM L3
+    Dataset:   PUNCH WFI+NFI Mosaic, product CAM, level 3, 530 Å
+    Key:       punch/wfi+nfi-mosaic/-/cam/3/530
+    Data:      120 frames; 2025-09-21T20:32:00.000 to 2025-09-21T20:48:00.000; file version 00, 01;
+               126.4 MB; source list shortened in the record; source: heliad_library
+    Files:     5 files, first PUNCH_L3_CAM_20250921204400_v00.fits, last
+               PUNCH_L3_CAM_20250921204800_v04.fits; 2 not found in the library (hfcore record show
+               --full lists every file)
+    Set hash:  sha256 78e80238e1904da69c2b3fbcc7fb0f748a60c706c009a9b3a892815e308f91ba
+    Processing, in order applied:
+      1. select_plane (decode)
+          parameters: plane=0
+      2. clip (decode)
+          parameters: clippingMode=Percentile05, clippingMin=-500, clippingMax=500
+          caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame
+                     go in resolved (Studio fills them at export; left null here).
+      3. stretch (decode): Gamma
+          parameters: scalingMode=Gamma, gamma=0.45454545454545453
+      4. image_filter (cpu): RHEF via hfstudio-java
+          parameters: filter=RHEF
+          caveat:    not a calibrated radiance
+          citation:  Gilly & Cranmer (2025), Solar Physics,
+                     https://doi.org/10.1007/s11207-025-02578-x
+      5. levels (gpu)
+          parameters: brightOffset=0, brightScale=1
+      6. radial_gain (gpu)
+          parameters: enhanced=0
+      7. difference (gpu)
+      8. sharpen (gpu)
+          parameters: sharpen=0
+      9. rhef_upsilon (gpu): RHEF via hfstudio-glsl
+          parameters: upsilonLow=0.6, upsilonHigh=0.4
+          citation:  Gilly & Cranmer (2025), Eq. 2 (as cited in imageCommon.frag)
+      10. colormap (gpu)
+          parameters: lut=PUNCH, invert=false
+      11. channel_mask (gpu)
+          parameters: color={"red": true, "green": true, "blue": true}
+      12. geometric_mask (gpu)
+          parameters: innerMask=0, slitLeft=0, slitRight=1, sectorCenter=0, sectorWidth=0
+      13. opacity_blend (gpu)
+          parameters: opacity=1, blend=1
+    Caveat:    Percentile05 ignores clippingMin/Max; the bounds Studio computed for this frame go in
+               resolved (Studio fills them at export; left null here).
+    Caveat:    not a calibrated radiance
+    Credit:    PUNCH is a NASA Small Explorer; 50% of credit & thanks to the "PUNCH" team #1.
+
+CAVEATS
+  -          RHEF output (the PUNCH layer) is a visualization, not a calibrated radiance.
+  -          Display-referred render: pixel values are colours, not measured quantities.
+  -          A very long caveat word word word word word word word word word word word word word
+             word word word word word word word word word word word word word word word word word
+             word word word word word word word word word word that has to wrap several times over
+             the hundred column width
+  -
+
+PLEASE CITE
+  -          Müller et al. (2017), Astronomy & Astrophysics,
+             https://doi.org/10.1051/0004-6361/201730893
+  -          Gilly & Cranmer (2025), Solar Physics, https://doi.org/10.1007/s11207-025-02578-x
+
+Rebuild:   made by a build with uncommitted changes; a Helioviewer layer cannot promise the same
+           pixels
+Record:    00000000-0000-4000-8000-000000000000 (hfrecord 1.0)

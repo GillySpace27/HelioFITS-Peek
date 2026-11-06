@@ -9,6 +9,7 @@
             <key>QLSupportedContentTypes</key>
             <array>
                 <string>gov.nasa.gsfc.fits</string>
+                <string>com.gillyspace27.hfrecord</string>
             </array>
             <key>QLThumbnailMinimumDimension</key>
             <integer>0</integer>

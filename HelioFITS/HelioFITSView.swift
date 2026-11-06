@@ -55,7 +55,8 @@ struct HomeView: View {
         .onDrop(of: [.fileURL], isTargeted: $targeted) { providers in
             for p in providers {
                 _ = p.loadObject(ofClass: URL.self) { url, _ in
-                    guard let url, fitsExtensions.contains(url.pathExtension.lowercased()) else { return }
+                    guard let url, fitsExtensions.contains(url.pathExtension.lowercased())
+                            || HFRecord.isRecordName(url.lastPathComponent) else { return }
                     DispatchQueue.main.async { HeaderWindowController.shared.present(fileURL: url) }
                 }
             }

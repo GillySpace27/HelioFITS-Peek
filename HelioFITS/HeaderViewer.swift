@@ -95,10 +95,12 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         panel.canChooseFiles = true
         panel.canChooseDirectories = true            // a folder opens as a movie (HF-14)
         panel.allowsMultipleSelection = false
-        panel.allowedContentTypes = ["fits", "fts", "fit", "fz"]
-            .compactMap { UTType(filenameExtension: $0) }
+        // Processing records too: by their type, and as JSON, since LaunchServices may type a
+        // two-part `.hfrec.json` name by its last extension only. present(fileURL:) routes them.
+        panel.allowedContentTypes = (["fits", "fts", "fit", "fz", "hfrec"].compactMap { UTType(filenameExtension: $0) }
+            + [RecordWindowController.recordType, .json].compactMap { $0 })
         panel.prompt = "Open"
-        panel.message = "Choose a FITS file, or a folder of FITS frames to play as a movie or list in a table."
+        panel.message = "Choose a FITS file, a folder of FITS frames to play as a movie or list in a table, or a processing record (.hfrec.json)."
         panel.begin { [weak self] resp in
             guard resp == .OK, let url = panel.url else { return }
             if url.hasDirectoryPath { self?.present(folderURL: url) } else { self?.present(fileURL: url) }
@@ -106,6 +108,11 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
     }
 
     func present(fileURL: URL) {
+        // A processing record (export sidecar) or any JSON opens as its readable report.
+        if HFRecord.isRecordName(fileURL.lastPathComponent) || fileURL.pathExtension.lowercased() == "json" {
+            RecordWindowController.shared.present(fileURL: fileURL)
+            return
+        }
         present(fileURL: fileURL, folder: nil, sequence: nil)
     }
 

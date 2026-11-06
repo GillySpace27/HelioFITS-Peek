@@ -14,6 +14,20 @@ class ThumbnailProvider: QLThumbnailProvider {
 
     override func provideThumbnail(for request: QLFileThumbnailRequest,
                                    _ handler: @escaping (QLThumbnailReply?, Error?) -> Void) {
+        if HFRecord.isRecordName(request.fileURL.lastPathComponent) {
+            // A processing record: a card with its layers' instruments, date and program.
+            do {
+                let record = try HFRecord(contentsOf: request.fileURL)
+                handler(QLThumbnailReply(contextSize: request.maximumSize) { ctx in
+                    record.drawCard(in: ctx, pixels: CGSize(width: ctx.width, height: ctx.height))
+                    return true
+                }, nil)
+            } catch {
+                log.error("record thumbnail FAILED: \(String(describing: error), privacy: .public)")
+                handler(nil, error)
+            }
+            return
+        }
         FITSRenderer.limitInputForExtension()   // before any read: refuse huge or gzip/PKZIP input
         let px = Int(max(request.maximumSize.width, request.maximumSize.height) * request.scale)
         log.info("thumbnail: \(request.fileURL.lastPathComponent, privacy: .public) @ \(px)px")

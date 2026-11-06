@@ -14,6 +14,13 @@
         <attribute name="com_gillyspace27_fits_exptime"  type="CFNumber"/>
         <attribute name="com_gillyspace27_fits_nhdus"    type="CFNumber"/>
         <attribute name="com_gillyspace27_fits_resolution" type="CFString"/>
+        <attribute name="com_gillyspace27_hfrec_producer" type="CFString"/>
+        <attribute name="com_gillyspace27_hfrec_output" type="CFString"/>
+        <attribute name="com_gillyspace27_hfrec_labels" type="CFString" multivalued="true"/>
+        <attribute name="com_gillyspace27_hfrec_instruments" type="CFString" multivalued="true"/>
+        <attribute name="com_gillyspace27_hfrec_layers" type="CFNumber"/>
+        <attribute name="com_gillyspace27_hfrec_start" type="CFDate"/>
+        <attribute name="com_gillyspace27_hfrec_end" type="CFDate"/>
     </attributes>
 
     <types>
@@ -38,6 +45,28 @@
                 com_gillyspace27_fits_dateobs
                 com_gillyspace27_fits_exptime
                 com_gillyspace27_fits_nhdus
+            </displayattrs>
+        </type>
+        <type name="com.gillyspace27.hfrecord">
+            <note>
+                Processing records (.hfrec.json sidecars) that HelioFITS Studio and pyHelioFITS
+                write beside an export.
+            </note>
+            <allattrs>
+                com_gillyspace27_hfrec_producer
+                com_gillyspace27_hfrec_output
+                com_gillyspace27_hfrec_labels
+                com_gillyspace27_hfrec_instruments
+                com_gillyspace27_hfrec_layers
+                com_gillyspace27_hfrec_start
+                com_gillyspace27_hfrec_end
+            </allattrs>
+            <displayattrs>
+                com_gillyspace27_hfrec_output
+                com_gillyspace27_hfrec_instruments
+                com_gillyspace27_hfrec_start
+                com_gillyspace27_hfrec_end
+                com_gillyspace27_hfrec_producer
             </displayattrs>
         </type>
     </types>

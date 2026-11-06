@@ -25,10 +25,26 @@ fi
 rm -rf "$BUILD"
 mkdir -p "$BUNDLE/Contents/MacOS" "$BUNDLE/Contents/Resources/English.lproj"
 
-clang -bundle -arch arm64 -arch x86_64 -isysroot "$SDK" -mmacosx-version-min=12.0 -O2 -Wall \
-    -o "$BUNDLE/Contents/MacOS/FITSMetadataImporter" \
-    "$SRC/main.c" "$SRC/fits_header.c" \
-    -framework CoreFoundation -framework CoreServices
+# The processing-record half is Swift: hfrec_import.swift plus HelioFITSCore's two Foundation-only
+# record files, so the importer reads a record exactly as Quick Look and the app do. swiftc links
+# each architecture (it brings the Swift runtime, which macOS 12 has in /usr/lib/swift), lipo joins them.
+CORE="$SRC/../HelioFITSCore/Sources/HelioFITSCore"
+OBJ="$BUILD/obj"
+mkdir -p "$OBJ"
+for ARCH in arm64 x86_64; do
+    T="$ARCH-apple-macos12.0"
+    clang -c -target "$T" -isysroot "$SDK" -O2 -Wall "$SRC/main.c" -o "$OBJ/main.$ARCH.o"
+    clang -c -target "$T" -isysroot "$SDK" -O2 -Wall "$SRC/fits_header.c" -o "$OBJ/fits_header.$ARCH.o"
+    swiftc -target "$T" -sdk "$SDK" -swift-version 5 -parse-as-library -O -wmo -module-name HFRecImporter \
+        -emit-object -o "$OBJ/hfrec.$ARCH.o" \
+        "$SRC/hfrec_import.swift" "$CORE/HFRecordJSON.swift" "$CORE/HFRecordReport.swift"
+    swiftc -target "$T" -sdk "$SDK" -emit-executable -Xlinker -bundle -o "$OBJ/FITSMetadataImporter.$ARCH" \
+        "$OBJ/main.$ARCH.o" "$OBJ/fits_header.$ARCH.o" "$OBJ/hfrec.$ARCH.o" \
+        -framework CoreFoundation -framework CoreServices
+done
+lipo -create -output "$BUNDLE/Contents/MacOS/FITSMetadataImporter" \
+    "$OBJ/FITSMetadataImporter.arm64" "$OBJ/FITSMetadataImporter.x86_64"
+rm -rf "$OBJ"
 
 cp "$SRC/Info.plist"      "$BUNDLE/Contents/Info.plist"
 cp "$SRC/schema.xml"      "$BUNDLE/Contents/Resources/schema.xml"

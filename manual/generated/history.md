@@ -4,6 +4,20 @@
 
 Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
 
+## [Unreleased]
+
+### Added
+
+- **Processing records read as reports.** The sidecar HelioFITS Studio and pyHelioFITS write
+  beside an export (`<export>.hfrec.json`) opens in the app as its readable report: every
+  layer's dataset, files, time range and processing steps, with buttons to copy the report,
+  a methods paragraph, the same as LaTeX or a Python script that opens the same sources, to
+  save that script, to list every source file and to reveal the exported file. The report is
+  the record's own, or one laid out exactly as pyHelioFITS `hfcore record show` does. A record
+  named `.hfrec` also gets a Quick Look preview, a Finder thumbnail card (instruments, date,
+  program) and Spotlight indexing; for `.hfrec.json` names Finder still uses its JSON handlers,
+  because macOS types a file by its last extension only.
+
 ## [1.5.2] - 2026-11-04
 
 ### Changed
