@@ -18,6 +18,13 @@ All notable changes to HelioFITS Peek are recorded here. Format follows
   date, program) and Spotlight indexing. The older `<export>.hfrec.json` name still opens in
   the app (File ▸ Open, drag and drop, Open With), but Finder gives it its JSON handlers,
   because macOS types a file by its last extension only. [docs: manual/viewer.md, manual/finder.md]
+- **Processing records show their picture.** When a record carries a small preview of its
+  export (the `preview` object HelioFITS Studio writes last in the sidecar: a PNG or JPEG of at
+  most 320 px), the record window and the Quick Look preview show it beside the header, above
+  the report, and the Finder thumbnail is that picture over a caption strip with the
+  instruments and date. A record without one falls back to the PNG or JPEG export it names,
+  where macOS lets Peek read that file, else to the card. A malformed preview means no
+  picture, never an error. [docs: manual/viewer.md, manual/finder.md]
 
 ## [1.5.2] - 2026-11-04
 

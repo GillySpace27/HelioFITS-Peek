@@ -69,6 +69,11 @@ or a Python script that opens the same sources, save that script, list every sou
 reveal the exported file. The exported file is the one the record names, else the record's own
 name without `.hfrec`.
 
+When the record carries a small picture of its export (HelioFITS Studio embeds one, at most
+320 px on a side), it sits beside the header line, above the report. A record without one shows
+the exported PNG or JPEG it names when macOS lets the viewer read that file; otherwise there is
+no picture, only the report.
+
 Older records are named `.hfrec.json`. The viewer opens them the same way, but Finder treats them
 as JSON, so double-click opens your JSON editor: use **File ▸ Open…**, drag and drop, or **Open
 With ▸ HelioFITS Peek**. Renaming `frame.png.hfrec.json` to `frame.png.hfrec` gives it the Quick

@@ -335,10 +335,14 @@ public indirect enum HFJSON: Equatable {
             i += 1   // opening quote
             var out = [UInt8]()
             while true {
+                // Copy each run of plain bytes in one step: a record's embedded preview is one
+                // string of up to ~90 KB of base64.
+                var j = i
+                while j < bytes.count, bytes[j] != UInt8(ascii: "\""), bytes[j] != UInt8(ascii: "\\") { j += 1 }
+                if j > i { out.append(contentsOf: bytes[i..<j]); i = j }
                 guard i < bytes.count else { throw fail("unterminated string") }
                 let c = bytes[i]
                 if c == UInt8(ascii: "\"") { i += 1; break }
-                if c != UInt8(ascii: "\\") { out.append(c); i += 1; continue }
                 i += 1
                 guard i < bytes.count else { throw fail("unterminated string") }
                 let e = bytes[i]; i += 1

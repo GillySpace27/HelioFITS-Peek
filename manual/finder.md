@@ -40,9 +40,13 @@ The Spotlight importer reads the header fields people search on (telescope, inst
 wavelength, observation date, exposure, dimensions, HDU count) into Finder's **Get Info** panel
 and makes them searchable in Spotlight, so you can find every 171 Å frame on a disk with a query.
 
-Processing records (`.hfrec`, see {doc}`viewer`) get the same treatment: a thumbnail card with
-their layers' instruments, date and program, a Quick Look preview of the report, and Spotlight
-fields for the exported file, layers, instruments, source times and program. Legacy `.hfrec.json`
+Processing records (`.hfrec`, see {doc}`viewer`) get the same treatment: a thumbnail, a Quick Look
+preview of the report, and Spotlight fields for the exported file, layers, instruments, source
+times and program. When the record carries a picture of its export, the thumbnail is that
+picture over a caption strip with the instruments and date, and the Quick Look preview shows it
+beside the header; otherwise the thumbnail is a card with the layers' instruments, date and
+program. Quick Look cannot read the exported file beside the record, so the picture has to be
+the one embedded in the record. Legacy `.hfrec.json`
 records are typed as JSON by macOS and get none of these.
 
 ## Choosing a layer for whole folders from Finder

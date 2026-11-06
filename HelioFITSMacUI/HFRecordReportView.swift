@@ -2,8 +2,9 @@
 //  HFRecordReportView.swift: a processing record (.hfrec, or legacy .hfrec.json) as its readable report, shared by
 //  the Quick Look preview and the viewer app's record window.
 //
-//  A header strip names the exported file and its layer count; below it the report, monospaced
-//  and selectable, with the section titles and layer titles set bold. The report text comes
+//  A header strip names the exported file and its layer count, with the record's preview picture
+//  (HFRecordPreview.swift) beside it when there is one; below them the report, monospaced and
+//  selectable, with the section titles and layer titles set bold. The report text comes
 //  from HFRecord (HelioFITSCore), the Swift port of pyHelioFITS report.py.
 //
 
@@ -13,6 +14,11 @@ import HelioFITSCore
 final class HFRecordReportView: NSView {
 
     let header = NSTextField(labelWithString: "")
+    /// The export's picture, at most `previewSide` points on its long side; hidden without one.
+    let previewView = NSImageView()
+    static let previewSide: CGFloat = 160
+    private var previewWidth: NSLayoutConstraint!
+    private var previewHeight: NSLayoutConstraint!
     let textView = NSTextView()
     let scroll = NSScrollView()
 
@@ -25,9 +31,21 @@ final class HFRecordReportView: NSView {
         header.textColor = Theme.color(Palette.captionInk)
         header.lineBreakMode = .byTruncatingMiddle
         header.isSelectable = true
-        header.translatesAutoresizingMaskIntoConstraints = false
         header.setAccessibilityLabel("Exported file and layer count")
-        addSubview(header)
+        header.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        previewView.imageScaling = .scaleProportionallyUpOrDown
+        previewView.isHidden = true
+        previewView.setAccessibilityLabel("Preview of the exported file")
+        previewWidth = previewView.widthAnchor.constraint(equalToConstant: Self.previewSide)
+        previewHeight = previewView.heightAnchor.constraint(equalToConstant: Self.previewSide)
+        // Stack views drop hidden views from the layout, so without a picture the header sits alone.
+        let top = NSStackView(views: [previewView, header])
+        top.orientation = .horizontal
+        top.alignment = .top
+        top.spacing = 12
+        top.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(top)
 
         scroll.hasVerticalScroller = true
         scroll.hasHorizontalScroller = true
@@ -50,12 +68,13 @@ final class HFRecordReportView: NSView {
         addSubview(scroll)
 
         NSLayoutConstraint.activate([
-            header.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
-            header.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -14),
-            header.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            previewWidth, previewHeight,
+            top.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
+            top.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -14),
+            top.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             scroll.leadingAnchor.constraint(equalTo: leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: trailingAnchor),
-            scroll.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 6),
+            scroll.topAnchor.constraint(equalTo: top.bottomAnchor, constant: 6),
             scroll.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
@@ -84,8 +103,19 @@ final class HFRecordReportView: NSView {
         return out
     }
 
-    func show(_ record: HFRecord, sidecarName: String, lines: [String]) {
+    /// `preview` is the record's picture (HFRecord.previewImage(sidecar:)), or nil for none.
+    func show(_ record: HFRecord, sidecarName: String, lines: [String], preview: CGImage? = nil) {
         header.stringValue = Self.headerText(record, sidecarName: sidecarName)
+        if let img = preview, img.width > 0, img.height > 0 {
+            let k = Self.previewSide / CGFloat(max(img.width, img.height))
+            previewWidth.constant = max(1, CGFloat(img.width) * k)
+            previewHeight.constant = max(1, CGFloat(img.height) * k)
+            previewView.image = NSImage(cgImage: img, size: NSSize(width: img.width, height: img.height))
+            previewView.isHidden = false
+        } else {
+            previewView.image = nil
+            previewView.isHidden = true
+        }
         textView.textStorage?.setAttributedString(Self.attributed(lines))
         textView.scroll(.zero)
     }

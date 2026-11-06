@@ -248,13 +248,15 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
     private func prepareRecord(at url: URL, _ handler: @escaping (Error?) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let result = Result { try HFRecord(contentsOf: url) }
+            // The embedded preview; the export beside the record only if the sandbox lets us read it.
+            let picture = (try? result.get())?.previewImage(sidecar: url)
             DispatchQueue.main.async {
                 guard let self else { return }
                 switch result {
                 case .success(let record):
                     let v = HFRecordReportView()
                     v.translatesAutoresizingMaskIntoConstraints = false
-                    v.show(record, sidecarName: url.lastPathComponent, lines: record.reportLines)
+                    v.show(record, sidecarName: url.lastPathComponent, lines: record.reportLines, preview: picture)
                     self.view.addSubview(v)
                     NSLayoutConstraint.activate([
                         v.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
