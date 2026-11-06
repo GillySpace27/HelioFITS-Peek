@@ -49,7 +49,7 @@
         </type>
         <type name="com.gillyspace27.hfrecord">
             <note>
-                Processing records (.hfrec.json sidecars) that HelioFITS Studio and pyHelioFITS
+                Processing records (.hfrec sidecars, or legacy .hfrec.json) that HelioFITS Studio and pyHelioFITS
                 write beside an export.
             </note>
             <allattrs>

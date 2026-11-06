@@ -21,7 +21,7 @@ struct HFRecordReportViewTests {
     func shows() throws {
         let r = try Self.record()
         let v = HFRecordReportView(frame: NSRect(x: 0, y: 0, width: 700, height: 500))
-        v.show(r, sidecarName: "x.png.hfrec.json", lines: r.reportLines)
+        v.show(r, sidecarName: "x.png.hfrec", lines: r.reportLines)
         #expect(v.header.stringValue == "connect_20250921T2032_aia-aspiics-punch.png, 3 layers")
         #expect(v.textView.string == r.reportLines.joined(separator: "\n"))
         #expect(v.textView.isSelectable && !v.textView.isEditable)
@@ -38,6 +38,7 @@ struct HFRecordReportViewTests {
     @Test("without an output file name the header uses the sidecar's name")
     func headerFallback() throws {
         let r = try HFRecord(data: Data(#"{"hfrecord": "1.0", "layers": [{}]}"#.utf8))
+        #expect(HFRecordReportView.headerText(r, sidecarName: "movie.mp4.hfrec") == "movie.mp4, 1 layer")
         #expect(HFRecordReportView.headerText(r, sidecarName: "movie.mp4.hfrec.json") == "movie.mp4, 1 layer")
     }
 }

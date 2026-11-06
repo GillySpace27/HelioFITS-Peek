@@ -112,8 +112,8 @@
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>hfrec.json</string>
 					<string>hfrec</string>
+					<string>hfrec.json</string>
 				</array>
 			</dict>
 		</dict>

@@ -95,12 +95,12 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         panel.canChooseFiles = true
         panel.canChooseDirectories = true            // a folder opens as a movie (HF-14)
         panel.allowsMultipleSelection = false
-        // Processing records too: by their type, and as JSON, since LaunchServices may type a
-        // two-part `.hfrec.json` name by its last extension only. present(fileURL:) routes them.
+        // Processing records too: `.hfrec` by its type, and the legacy `.hfrec.json` as JSON, since
+        // LaunchServices types a two-part name by its last extension only. present(fileURL:) routes them.
         panel.allowedContentTypes = (["fits", "fts", "fit", "fz", "hfrec"].compactMap { UTType(filenameExtension: $0) }
             + [RecordWindowController.recordType, .json].compactMap { $0 })
         panel.prompt = "Open"
-        panel.message = "Choose a FITS file, a folder of FITS frames to play as a movie or list in a table, or a processing record (.hfrec.json)."
+        panel.message = "Choose a FITS file, a folder of FITS frames to play as a movie or list in a table, or a processing record (.hfrec)."
         panel.begin { [weak self] resp in
             guard resp == .OK, let url = panel.url else { return }
             if url.hasDirectoryPath { self?.present(folderURL: url) } else { self?.present(fileURL: url) }

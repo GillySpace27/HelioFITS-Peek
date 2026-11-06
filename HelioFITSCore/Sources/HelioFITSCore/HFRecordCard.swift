@@ -1,5 +1,5 @@
 //
-//  HFRecordCard.swift: the Finder thumbnail of a processing record (.hfrec.json): a small card
+//  HFRecordCard.swift: the Finder thumbnail of a processing record (.hfrec): a small card
 //  with the layers' instruments (top layer first), the scene date and the program that made
 //  the export, instead of a generic JSON icon. Same charcoal card and gold band as the
 //  "FITS table" placeholder (FITSRenderer.drawTablePlaceholder).

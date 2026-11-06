@@ -1,4 +1,4 @@
-// RecordViewer.swift: the window for a processing record (.hfrec.json), the sidecar that
+// RecordViewer.swift: the window for a processing record (.hfrec, or legacy .hfrec.json), the sidecar that
 // HelioFITS Studio and pyHelioFITS write beside an export. It shows the readable report (the record's own
 // `report` lines, else the one HFRecord generates as pyHelioFITS report.py does) and copies or
 // saves it as a methods paragraph, LaTeX or a Python script, all generated in Swift: the
