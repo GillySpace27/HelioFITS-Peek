@@ -59,6 +59,21 @@ H.264 movie, an HEVC movie or an animated PNG, with the display recipe in the mo
 **File ▸ Export RHEF Movie…** does the same with every frame run through RHEF and stamped as such.
 Neither overwrites an existing file. Frames are a visualization, not a calibrated radiance.
 
+## Processing records
+
+HelioFITS Studio writes a processing record beside each export, named after it with `.hfrec`
+added: `frame.png.hfrec` describes `frame.png`. Double-click one, or open it with **File ▸
+Open…** or by dragging it onto the app, to see its report: every layer's dataset, source files,
+time range and processing steps. Buttons copy the report, a methods paragraph, the same as LaTeX
+or a Python script that opens the same sources, save that script, list every source file, and
+reveal the exported file. The exported file is the one the record names, else the record's own
+name without `.hfrec`.
+
+Older records are named `.hfrec.json`. The viewer opens them the same way, but Finder treats them
+as JSON, so double-click opens your JSON editor: use **File ▸ Open…**, drag and drop, or **Open
+With ▸ HelioFITS Peek**. Renaming `frame.png.hfrec.json` to `frame.png.hfrec` gives it the Quick
+Look preview, thumbnail and Spotlight fields below.
+
 ## Comparing two files
 
 **Compare** opens a menu: **Compare With File...** picks a second FITS file (B). Once one is

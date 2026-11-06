@@ -1,5 +1,5 @@
 //
-//  HFRecordReport.swift: readable renderings of a processing record (.hfrec.json), the sidecar
+//  HFRecordReport.swift: readable renderings of a processing record (.hfrec), the sidecar
 //  HelioFITS Studio and pyHelioFITS write beside an export.
 //
 //  A port of pyHelioFITS src/heliofits/core/report.py (and the display() rows of record.py
@@ -17,7 +17,10 @@ import Foundation
 public struct HFRecord {
     public let root: HFJSON
 
-    public static let sidecarSuffix = ".hfrec.json"
+    /// The sidecar suffix Studio writes: `<export>.hfrec`, one extension, so macOS types it
+    /// com.gillyspace27.hfrecord everywhere. `.hfrec.json` is the older name, still read.
+    public static let sidecarSuffix = ".hfrec"
+    public static let legacySidecarSuffix = ".hfrec.json"
     public static let width = 100
 
     public init(root: HFJSON) { self.root = root }
@@ -40,10 +43,10 @@ public struct HFRecord {
         try self.init(data: try Data(contentsOf: url))
     }
 
-    /// A name Peek treats as a processing record: `<export>.hfrec.json` or `<export>.hfrec`.
+    /// A name Peek treats as a processing record: `<export>.hfrec`, or the legacy `<export>.hfrec.json`.
     public static func isRecordName(_ name: String) -> Bool {
         let n = name.lowercased()
-        return n.hasSuffix(sidecarSuffix) || n.hasSuffix(".hfrec")
+        return n.hasSuffix(sidecarSuffix) || n.hasSuffix(legacySidecarSuffix)
     }
 
     // MARK: facts for headers, thumbnails and Spotlight
@@ -102,7 +105,8 @@ public struct HFRecord {
     }
 
     /// The export this sidecar describes, beside it: output.file_name, else the sidecar's name
-    /// without `.hfrec.json`, else the one file that starts with that stem (record.py _export_beside).
+    /// without `.hfrec` (or legacy `.hfrec.json`), else the one file that starts with that stem
+    /// (record.py _export_beside).
     public func exportBeside(sidecar: URL) -> URL? {
         let dir = sidecar.deletingLastPathComponent()
         let fm = FileManager.default
@@ -113,7 +117,7 @@ public struct HFRecord {
         if let n = outputFileName, isFile(dir.appendingPathComponent(n)) { return dir.appendingPathComponent(n) }
         let name = sidecar.lastPathComponent
         let lower = name.lowercased()
-        let suffix = lower.hasSuffix(Self.sidecarSuffix) ? Self.sidecarSuffix : (lower.hasSuffix(".hfrec") ? ".hfrec" : "")
+        let suffix = [Self.sidecarSuffix, Self.legacySidecarSuffix].first { lower.hasSuffix($0) } ?? ""
         guard !suffix.isEmpty else { return nil }
         let stem = String(name.dropLast(suffix.count))
         if isFile(dir.appendingPathComponent(stem)) { return dir.appendingPathComponent(stem) }

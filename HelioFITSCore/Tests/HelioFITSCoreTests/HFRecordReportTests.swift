@@ -127,4 +127,27 @@ struct HFRecordReportTests {
         try Data().write(to: dir.appendingPathComponent("other.png"))
         #expect(r.exportBeside(sidecar: side)?.lastPathComponent == "other.png")
     }
+
+    @Test("frame.png.hfrec and frame.png.hfrec.json both find frame.png", arguments: ["frame.png.hfrec", "frame.png.hfrec.json"])
+    func exportBesideBothNames(_ sidecarName: String) throws {
+        #expect(HFRecord.isRecordName(sidecarName))
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("hfrec-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let side = dir.appendingPathComponent(sidecarName)
+        try Data().write(to: dir.appendingPathComponent("frame.png"))
+        // By the stripped name, with no output.file_name.
+        try Data(#"{"hfrecord": "1.0"}"#.utf8).write(to: side)
+        #expect(try HFRecord(contentsOf: side).exportBeside(sidecar: side)?.lastPathComponent == "frame.png")
+        // output.file_name wins over the stripped name when that file exists.
+        try Data(#"{"hfrecord": "1.0", "output": {"file_name": "renamed.png"}}"#.utf8).write(to: side)
+        try Data().write(to: dir.appendingPathComponent("renamed.png"))
+        #expect(try HFRecord(contentsOf: side).exportBeside(sidecar: side)?.lastPathComponent == "renamed.png")
+    }
+
+    @Test("record names: .hfrec and legacy .hfrec.json, nothing else")
+    func recordNames() {
+        for n in ["a.png.hfrec", "A.PNG.HFREC", "a.mp4.hfrec.json"] { #expect(HFRecord.isRecordName(n), "\(n)") }
+        for n in ["a.json", "a.hfrec.txt", "hfrec.png"] { #expect(!HFRecord.isRecordName(n), "\(n)") }
+    }
 }

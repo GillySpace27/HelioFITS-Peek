@@ -129,6 +129,10 @@ and its FITS files become one: frames in DATE‑OBS order, a scrubber, a frame r
 and Diff as a running difference between neighbouring files, taken at full
 resolution. Nothing plays until you press Play.
 
+A **processing record** (the `<export>.hfrec` sidecar HelioFITS Studio writes beside an
+export) opens as a readable report of every layer's sources and processing steps, with a
+methods paragraph, LaTeX or a Python script to copy. Older `.hfrec.json` records open too.
+
 ---
 
 ## Install

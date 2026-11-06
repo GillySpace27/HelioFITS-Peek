@@ -1,5 +1,5 @@
 //
-//  HFRecordReportView.swift: a processing record (.hfrec.json) as its readable report, shared by
+//  HFRecordReportView.swift: a processing record (.hfrec, or legacy .hfrec.json) as its readable report, shared by
 //  the Quick Look preview and the viewer app's record window.
 //
 //  A header strip names the exported file and its layer count; below it the report, monospaced

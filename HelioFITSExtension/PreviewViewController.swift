@@ -243,7 +243,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         }
     }
 
-    /// A processing record (.hfrec.json sidecar): its own `report` lines when it carries them,
+    /// A processing record (.hfrec sidecar, or legacy .hfrec.json): its own `report` lines when it carries them,
     /// else the report generated as pyHelioFITS report.py lays it out. No image tools.
     private func prepareRecord(at url: URL, _ handler: @escaping (Error?) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in

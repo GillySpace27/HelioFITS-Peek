@@ -1,4 +1,4 @@
-// Spotlight attributes for a processing record (.hfrec.json / .hfrec), called from main.c.
+// Spotlight attributes for a processing record (.hfrec, or legacy .hfrec.json), called from main.c.
 //
 // build.sh compiles this file together with HelioFITSCore's HFRecordJSON.swift and
 // HFRecordReport.swift (Foundation only), so the importer reads a record exactly as the

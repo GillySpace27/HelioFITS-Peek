@@ -13,13 +13,13 @@
 
 #include "fits_header.h"
 
-// Processing records (.hfrec.json / .hfrec): hfrec_import.swift, built in by build.sh.
+// Processing records (.hfrec, or legacy .hfrec.json): hfrec_import.swift, built in by build.sh.
 extern Boolean hfrec_get_metadata(CFMutableDictionaryRef attributes, CFStringRef pathToFile);
 
 static Boolean is_record(CFStringRef contentTypeUTI, CFStringRef path) {
     if (contentTypeUTI && CFStringCompare(contentTypeUTI, CFSTR("com.gillyspace27.hfrecord"), 0) == kCFCompareEqualTo)
         return TRUE;
-    return path && (CFStringHasSuffix(path, CFSTR(".hfrec.json")) || CFStringHasSuffix(path, CFSTR(".hfrec")));
+    return path && (CFStringHasSuffix(path, CFSTR(".hfrec")) || CFStringHasSuffix(path, CFSTR(".hfrec.json")));
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 //
-//  HFRecordJSON.swift: an order-keeping JSON value for processing records (.hfrec.json).
+//  HFRecordJSON.swift: an order-keeping JSON value for processing records (.hfrec).
 //
 //  The readable report (HFRecordReport.swift) lists a record's scene and step parameters in the
 //  order the writer put them, as pyHelioFITS does with a Python dict. JSONSerialization loses
