@@ -1,8 +1,8 @@
 // RecordViewer.swift: the window for a processing record (.hfrec, or legacy .hfrec.json), the sidecar that
 // HelioFITS Studio and pyHelioFITS write beside an export. It shows the readable report (the record's own
-// `report` lines, else the one HFRecord generates as pyHelioFITS report.py does) and copies or
-// saves it as a methods paragraph, LaTeX or a Python script, all generated in Swift: the
-// sandboxed app cannot run Python.
+// `report` lines, else the one HFRecord generates as pyHelioFITS report.py does) beside the record's
+// preview picture, and copies or saves it as a methods paragraph, LaTeX or a Python script, all
+// generated in Swift: the sandboxed app cannot run Python.
 
 import AppKit
 import UniformTypeIdentifiers
@@ -20,6 +20,8 @@ final class RecordWindowController: NSObject, NSWindowDelegate {
         let view = HFRecordReportView()
         var full = false
         var scoped = false
+        /// The record's preview, else the PNG or JPEG export beside it when the sandbox allows.
+        lazy var preview: CGImage? = record.previewImage(sidecar: url)
         init(url: URL, record: HFRecord) { self.url = url; self.record = record }
         var lines: [String] { full ? Array(record.text(full: true).components(separatedBy: "\n").dropLast()) : record.reportLines }
     }
@@ -84,7 +86,7 @@ final class RecordWindowController: NSObject, NSWindowDelegate {
         c.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([c.view.widthAnchor.constraint(equalTo: root.widthAnchor)])
         win.contentView = root
-        c.view.show(record, sidecarName: url.lastPathComponent, lines: c.lines)
+        c.view.show(record, sidecarName: url.lastPathComponent, lines: c.lines, preview: c.preview)
 
         ctx[ObjectIdentifier(win)] = c
         win.center()
@@ -141,7 +143,7 @@ final class RecordWindowController: NSObject, NSWindowDelegate {
     @objc private func toggleFull(_ sender: NSButton) {
         guard let c = ctx(for: sender) else { return }
         c.full = sender.state == .on
-        c.view.show(c.record, sidecarName: c.url.lastPathComponent, lines: c.lines)
+        c.view.show(c.record, sidecarName: c.url.lastPathComponent, lines: c.lines, preview: c.preview)
     }
 
     /// The export sits beside its sidecar. The sandbox may hide the folder from the app, so when

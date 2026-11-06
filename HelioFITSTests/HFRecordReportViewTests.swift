@@ -35,6 +35,31 @@ struct HFRecordReportViewTests {
         #expect(font(at: "Made by:")?.isFixedPitch == true)
     }
 
+    @Test("the preview picture sits beside the header, and is hidden without one")
+    func preview() throws {
+        let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("HelioFITSCore/Tests/hfrecord/example-preview.hfrec.json")
+        let r = try HFRecord(contentsOf: url)
+        let img = try #require(r.previewImage(sidecar: url))
+        let v = HFRecordReportView(frame: NSRect(x: 0, y: 0, width: 700, height: 500))
+        v.show(r, sidecarName: url.lastPathComponent, lines: r.reportLines, preview: img)
+        v.layoutSubtreeIfNeeded()
+        #expect(!v.previewView.isHidden && v.previewView.image != nil)
+        #expect(v.previewView.frame.size == NSSize(width: HFRecordReportView.previewSide, height: HFRecordReportView.previewSide))
+        #expect(v.header.frame.minX > v.previewView.frame.maxX)
+        #expect(v.textView.string == r.reportLines.joined(separator: "\n"))
+        // HFREC_VIEW_PNG=<name> saves a picture of the view to the test host's (sandboxed) temp folder.
+        if let name = ProcessInfo.processInfo.environment["HFREC_VIEW_PNG"],
+           let rep = v.bitmapImageRepForCachingDisplay(in: v.bounds) {
+            v.cacheDisplay(in: v.bounds, to: rep)
+            let out = FileManager.default.temporaryDirectory.appendingPathComponent(name)
+            try? rep.representation(using: .png, properties: [:])?.write(to: out)
+            print("HFREC_VIEW_PNG: \(out.path)")
+        }
+        v.show(r, sidecarName: url.lastPathComponent, lines: r.reportLines)
+        #expect(v.previewView.isHidden && v.previewView.image == nil)
+    }
+
     @Test("without an output file name the header uses the sidecar's name")
     func headerFallback() throws {
         let r = try HFRecord(data: Data(#"{"hfrecord": "1.0", "layers": [{}]}"#.utf8))

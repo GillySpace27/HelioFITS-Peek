@@ -42,17 +42,7 @@ extension HFRecord {
         guard size >= 4 else { return }   // too small to read: the band and card say enough
         let pad = s * 0.08
         func draw(_ text: String, y: CGFloat, size: CGFloat, color: CGColor, bold: Bool = false) {
-            let font = CTFontCreateUIFontForLanguage(bold ? .emphasizedSystem : .system, size, nil)
-                ?? CTFontCreateWithName("Helvetica" as CFString, size, nil)
-            let attrs: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key(kCTFontAttributeName as String): font,
-                NSAttributedString.Key(kCTForegroundColorAttributeName as String): color,
-            ]
-            let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: attrs))
-            let ellipsis = CTLineCreateWithAttributedString(NSAttributedString(string: "\u{2026}", attributes: attrs))
-            let fit = CTLineCreateTruncatedLine(line, Double(w - 2 * pad), .end, ellipsis) ?? line
-            ctx.textPosition = CGPoint(x: pad, y: y)
-            CTLineDraw(fit, ctx)
+            Self.drawLine(text, in: ctx, x: pad, y: y, width: w - 2 * pad, size: size, color: color, bold: bold)
         }
         let ink = CGColor(srgbRed: 0.11, green: 0.11, blue: 0.13, alpha: 1)
         draw("PROCESSING RECORD", y: h - band + (band - size) / 2 + size * 0.15, size: size * 0.9, color: ink, bold: true)
@@ -66,5 +56,63 @@ extension HFRecord {
         var foot = pad
         if let p = lines.program { draw(p, y: foot, size: size * 0.85, color: dim); foot += size * 1.3 }
         if let d = lines.date, foot < y + size { draw(d, y: foot, size: size * 0.95, color: light) }
+    }
+
+    /// One line of text at (x, y), truncated with an ellipsis to `width`.
+    static func drawLine(_ text: String, in ctx: CGContext, x: CGFloat, y: CGFloat, width: CGFloat,
+                         size: CGFloat, color: CGColor, bold: Bool = false) {
+        let font = CTFontCreateUIFontForLanguage(bold ? .emphasizedSystem : .system, size, nil)
+            ?? CTFontCreateWithName("Helvetica" as CFString, size, nil)
+        let attrs: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key(kCTFontAttributeName as String): font,
+            NSAttributedString.Key(kCTForegroundColorAttributeName as String): color,
+        ]
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: attrs))
+        let ellipsis = CTLineCreateWithAttributedString(NSAttributedString(string: "\u{2026}", attributes: attrs))
+        let fit = CTLineCreateTruncatedLine(line, Double(width), .end, ellipsis) ?? line
+        ctx.textPosition = CGPoint(x: x, y: y)
+        CTLineDraw(fit, ctx)
+    }
+
+    /// The caption under a preview: the instruments, top layer first, joined with " + ".
+    public var captionInstruments: String {
+        let i = cardLines.instruments
+        return i.isEmpty ? "Processing record" : i.joined(separator: " + ")
+    }
+
+    /// The thumbnail for a record with a picture: the image fitted above a caption strip with the
+    /// instruments and the date. Without an image it is the plain card (drawCard).
+    public func drawThumbnail(in ctx: CGContext, pixels: CGSize, image: CGImage?) {
+        guard let image, image.width > 0, image.height > 0 else { drawCard(in: ctx, pixels: pixels); return }
+        let w = pixels.width, h = pixels.height, s = min(w, h)
+        ctx.saveGState()
+        defer { ctx.restoreGState() }
+        let card = CGPath(roundedRect: CGRect(x: 0, y: 0, width: w, height: h),
+                          cornerWidth: s * 0.06, cornerHeight: s * 0.06, transform: nil)
+        ctx.addPath(card)
+        ctx.setFillColor(CGColor(srgbRed: 0.11, green: 0.11, blue: 0.13, alpha: 1))
+        ctx.fillPath()
+        ctx.addPath(card)
+        ctx.clip()
+
+        let size = s * 0.075
+        let readable = size >= 4
+        let strip = readable ? size * 3.2 : 0
+        let area = CGRect(x: 0, y: strip, width: w, height: h - strip)
+        let k = min(area.width / CGFloat(image.width), area.height / CGFloat(image.height))
+        let iw = CGFloat(image.width) * k, ih = CGFloat(image.height) * k
+        ctx.interpolationQuality = .high
+        ctx.draw(image, in: CGRect(x: area.midX - iw / 2, y: area.midY - ih / 2, width: iw, height: ih))
+        guard readable else { return }
+        // A gold rule between picture and caption, the gold of the card's band.
+        ctx.setFillColor(CGColor(srgbRed: 0.98, green: 0.75, blue: 0.20, alpha: 1))
+        ctx.fill(CGRect(x: 0, y: strip - max(1, s * 0.01), width: w, height: max(1, s * 0.01)))
+        let pad = s * 0.06
+        let light = CGColor(gray: 0.92, alpha: 1), dim = CGColor(gray: 0.70, alpha: 1)
+        Self.drawLine(captionInstruments, in: ctx, x: pad, y: size * 1.75, width: w - 2 * pad,
+                      size: size * 1.05, color: light, bold: true)
+        if let d = cardLines.date {
+            Self.drawLine(d, in: ctx, x: pad, y: size * 0.55, width: w - 2 * pad, size: size * 0.95, color: dim)
+        }
     }
 }

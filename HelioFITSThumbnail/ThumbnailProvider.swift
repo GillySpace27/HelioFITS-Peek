@@ -15,11 +15,13 @@ class ThumbnailProvider: QLThumbnailProvider {
     override func provideThumbnail(for request: QLFileThumbnailRequest,
                                    _ handler: @escaping (QLThumbnailReply?, Error?) -> Void) {
         if HFRecord.isRecordName(request.fileURL.lastPathComponent) {
-            // A processing record: a card with its layers' instruments, date and program.
+            // A processing record: its preview picture over a caption strip (instruments, date),
+            // else a card with its layers' instruments, date and program.
             do {
                 let record = try HFRecord(contentsOf: request.fileURL)
+                let picture = record.previewImage(sidecar: request.fileURL)
                 handler(QLThumbnailReply(contextSize: request.maximumSize) { ctx in
-                    record.drawCard(in: ctx, pixels: CGSize(width: ctx.width, height: ctx.height))
+                    record.drawThumbnail(in: ctx, pixels: CGSize(width: ctx.width, height: ctx.height), image: picture)
                     return true
                 }, nil)
             } catch {
