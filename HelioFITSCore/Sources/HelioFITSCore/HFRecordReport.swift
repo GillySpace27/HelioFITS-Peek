@@ -355,7 +355,7 @@ public struct HFRecord {
     /// The plain text report: one block for the file, one for the scene, one per layer.
     public func text(full: Bool = false) -> String {
         let view = display()
-        var out = ["HELIOFITS PROCESSING RECORD", ""]
+        var out = ["HELIOFITS SUITE PROCESSING RECORD", ""]
         out += Self.wrap("Made by:", view.producer.isEmpty ? "unknown program" : view.producer, 0)
         if let c = view.created, !c.isEmpty { out += Self.wrap("Created:", c, 0) }
         if view.dirty { out += Self.wrap("Warning:", "made by a build with uncommitted changes", 0) }
@@ -620,7 +620,7 @@ public struct HFRecord {
     /// Lines the viewers set as headings: the all-capital section titles and "N. layer" titles.
     public static func isHeading(_ line: String) -> Bool {
         guard let f = line.unicodeScalars.first, f != " " else { return false }
-        if line == "HELIOFITS PROCESSING RECORD" || line == "CAVEATS" || line == "PLEASE CITE" { return true }
+        if line == "HELIOFITS SUITE PROCESSING RECORD" || line == "CAVEATS" || line == "PLEASE CITE" { return true }
         if line.hasPrefix("LAYERS (") { return true }
         let digits = line.prefix { $0.isASCII && $0.isNumber }
         return !digits.isEmpty && line.dropFirst(digits.count).hasPrefix(". ")

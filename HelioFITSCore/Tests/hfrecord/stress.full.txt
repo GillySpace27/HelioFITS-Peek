@@ -1,4 +1,4 @@
-HELIOFITS PROCESSING RECORD
+HELIOFITS SUITE PROCESSING RECORD
 
 Made by:   HelioFITS Studio <VERSION> (build <AppInfo.buildId()>, commit <AppInfo.commit()>)
 Created:   2026-11-04T12:00:00Z
