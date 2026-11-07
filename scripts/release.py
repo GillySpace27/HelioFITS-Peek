@@ -40,20 +40,12 @@ def xcconfig(root=ROOT):
     return v[0], b[0]
 
 
-LSREGISTER = ("/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework"
-              "/Support/lsregister")
-INTERMEDIATE_APPS = os.path.expanduser(
-    "~/Library/Developer/Xcode/DerivedData/HelioFITS-*/Build/Intermediates.noindex/ArchiveIntermediates"
-    "/HelioFITS/InstallationBuildProductsLocation/Applications/HelioFITS Peek.app")
-
-
 def unregister_intermediates():
-    """Unregister the archive's DerivedData copy from LaunchServices, never fatal. A stale record of it
-    made the thumbnail service pick that copy for .hfrec and fall back to a generic icon (2026-11-06)."""
-    import glob
-    for app in glob.glob(INTERMEDIATE_APPS):
-        subprocess.run([LSREGISTER, "-u", app], capture_output=True)
-        print(f"==> unregistered {app}")
+    """Unregister every stale Launch Services copy of the app (the archive's DerivedData intermediate, ditto
+    backups, the Trash), never fatal. A stale record made the thumbnail service pick a dead copy for .hfrec
+    and fall back to a generic icon (2026-11-06). The paths come from lsregister's dump because the
+    intermediate is moved into the .xcarchive and no longer exists on disk."""
+    subprocess.run([os.path.join(HERE, "lsunregister-stale.sh")])
 
 
 def archive_path(version, build):
