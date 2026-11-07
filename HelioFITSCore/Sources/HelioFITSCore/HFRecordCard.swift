@@ -58,15 +58,26 @@ extension HFRecord {
         if let d = lines.date, foot < y + size { draw(d, y: foot, size: size * 0.95, color: light) }
     }
 
-    /// One line of text at (x, y), truncated with an ellipsis to `width`.
-    static func drawLine(_ text: String, in ctx: CGContext, x: CGFloat, y: CGFloat, width: CGFloat,
-                         size: CGFloat, color: CGColor, bold: Bool = false) {
+    static func attributes(size: CGFloat, color: CGColor, bold: Bool) -> [NSAttributedString.Key: Any] {
         let font = CTFontCreateUIFontForLanguage(bold ? .emphasizedSystem : .system, size, nil)
             ?? CTFontCreateWithName("Helvetica" as CFString, size, nil)
-        let attrs: [NSAttributedString.Key: Any] = [
+        return [
             NSAttributedString.Key(kCTFontAttributeName as String): font,
             NSAttributedString.Key(kCTForegroundColorAttributeName as String): color,
         ]
+    }
+
+    /// The width of `text` set in one line at `size`.
+    static func textWidth(_ text: String, size: CGFloat, bold: Bool) -> CGFloat {
+        let attrs = attributes(size: size, color: CGColor(gray: 0, alpha: 1), bold: bold)
+        let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: attrs))
+        return CGFloat(CTLineGetTypographicBounds(line, nil, nil, nil))
+    }
+
+    /// One line of text at (x, y), truncated with an ellipsis to `width`.
+    static func drawLine(_ text: String, in ctx: CGContext, x: CGFloat, y: CGFloat, width: CGFloat,
+                         size: CGFloat, color: CGColor, bold: Bool = false) {
+        let attrs = attributes(size: size, color: color, bold: bold)
         let line = CTLineCreateWithAttributedString(NSAttributedString(string: text, attributes: attrs))
         let ellipsis = CTLineCreateWithAttributedString(NSAttributedString(string: "\u{2026}", attributes: attrs))
         let fit = CTLineCreateTruncatedLine(line, Double(width), .end, ellipsis) ?? line
@@ -78,6 +89,20 @@ extension HFRecord {
     public var captionInstruments: String {
         let i = cardLines.instruments
         return i.isEmpty ? "Processing record" : i.joined(separator: " + ")
+    }
+
+    /// The caption's instrument line and font size for a strip `width` wide: every instrument at
+    /// `size`, shrunk to as little as 70 % of it to fit; else "<top layer> + N more" the same way;
+    /// else that text at the smallest size, which drawLine then truncates.
+    public func captionFit(width: CGFloat, size: CGFloat) -> (text: String, size: CGFloat) {
+        let all = instruments
+        var texts = [captionInstruments]
+        if all.count > 1 { texts.append("\(all[0]) + \(all.count - 1) more") }
+        let sizes = stride(from: size, through: size * 0.7, by: -size * 0.05)
+        for text in texts {
+            for z in sizes where Self.textWidth(text, size: z, bold: true) <= width { return (text, z) }
+        }
+        return (texts.last!, size * 0.7)
     }
 
     /// The thumbnail for a record with a picture: the image fitted above a caption strip with the
@@ -109,8 +134,9 @@ extension HFRecord {
         ctx.fill(CGRect(x: 0, y: strip - max(1, s * 0.01), width: w, height: max(1, s * 0.01)))
         let pad = s * 0.06
         let light = CGColor(gray: 0.92, alpha: 1), dim = CGColor(gray: 0.70, alpha: 1)
-        Self.drawLine(captionInstruments, in: ctx, x: pad, y: size * 1.75, width: w - 2 * pad,
-                      size: size * 1.05, color: light, bold: true)
+        let fit = captionFit(width: w - 2 * pad, size: size * 1.05)
+        Self.drawLine(fit.text, in: ctx, x: pad, y: size * 1.75, width: w - 2 * pad,
+                      size: fit.size, color: light, bold: true)
         if let d = cardLines.date {
             Self.drawLine(d, in: ctx, x: pad, y: size * 0.55, width: w - 2 * pad, size: size * 0.95, color: dim)
         }
