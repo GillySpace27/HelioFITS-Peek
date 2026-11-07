@@ -52,6 +52,7 @@ class ThumbnailProvider: QLThumbnailProvider {
                 ? FITSPreviewModel.rhefCover(path: path, maxSide: max(px, 64)) : nil
             let img = cover ?? r.image
             let dkist = FITSRenderer.dkistSpectrogram(path: path, width: r.natW)
+            let slit = dkist == nil ? nil : FITSRenderer.dkistSlit(path: path, alongPixels: r.natH)
             let label = dkist?.thumbnailLabel ?? FITSRenderer.thumbnailLabel(fromHeader: r.header)
             let pages = FITSRenderer.pageCount(path: path)
             let scale = min(request.maximumSize.width / CGFloat(img.width),
@@ -66,6 +67,7 @@ class ThumbnailProvider: QLThumbnailProvider {
                                          width: CGFloat(ctx.width), height: CGFloat(ctx.height)))
                 FITSRenderer.decorateThumbnail(ctx, label: label, pages: pages)
                 if let dkist { FITSRenderer.drawSpectralTicks(ctx, ticks: dkist.ticks) }
+                if let slit { FITSRenderer.drawSlitInset(ctx, slit: slit) }
                 return true
             }, nil)
         } catch {
