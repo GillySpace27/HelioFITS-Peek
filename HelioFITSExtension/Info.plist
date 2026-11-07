@@ -19,6 +19,7 @@
             <array>
                 <string>gov.nasa.gsfc.fits</string>
                 <string>com.gillyspace27.hfrecord</string>
+                <string>com.gillyspace27.asdf</string>
             </array>
             <key>QLSupportsSearchableItems</key>
             <false/>

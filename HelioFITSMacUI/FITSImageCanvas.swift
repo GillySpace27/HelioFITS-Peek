@@ -53,6 +53,8 @@ final class FITSImageCanvas: NSView {
     // MARK: compare and rings (HF-15)
     /// Rings and spokes to draw over the image; nil draws none.
     var rings: SolarRings? { didSet { needsDisplay = true } }
+    /// Wavelength ticks along the top edge of a DKIST spectrograph frame; nil draws none.
+    var spectrogram: DKISTSpectrogram? { didSet { needsDisplay = true } }
     /// The second file, already registered onto this image's grid by helioprojective
     /// coordinates (`FITSPreviewModel.registeredCompareImage`), and how it is shown.
     var compareImage: NSImage? { didSet { updateBlinkTimer(); needsDisplay = true } }
@@ -813,6 +815,7 @@ final class FITSImageCanvas: NSView {
         }
 
         if let r = rings { drawRings(r) }
+        if let s = spectrogram { drawSpectralTicks(s) }
         drawCrosshair()
         if let k = keyCursor, let c = viewPoint(u: k.u, v: k.v) {
             let arm: CGFloat = 9
@@ -827,6 +830,24 @@ final class FITSImageCanvas: NSView {
             cross.stroke()
         }
         NSGraphicsContext.current?.restoreGraphicsState()
+    }
+
+    /// Wavelength ticks and numbers along the top edge of the image (flipped view: minY is the top).
+    private func drawSpectralTicks(_ s: DKISTSpectrogram) {
+        guard let r = imageRect() else { return }
+        let font = Theme.mono(10)
+        let ink = Theme.color(Palette.ringInk)
+        for tick in s.ticks {
+            let x = r.minX + CGFloat(tick.t) * r.width
+            guard contentBox().insetBy(dx: 12, dy: 0).contains(NSPoint(x: x, y: r.minY + 1)) else { continue }
+            let p = NSBezierPath()
+            p.move(to: NSPoint(x: x, y: r.minY)); p.line(to: NSPoint(x: x, y: r.minY + 6))
+            p.lineWidth = 1.2
+            ink.setStroke()
+            p.stroke()
+            let w = (tick.label as NSString).size(withAttributes: [.font: font]).width
+            chip(tick.label, at: NSPoint(x: x - (w + 12) / 2, y: r.minY + 8), font: font, anchorTop: true)
+        }
     }
 
     /// Rings and spokes from the solar WCS. Dark underline, then colour on top, like
