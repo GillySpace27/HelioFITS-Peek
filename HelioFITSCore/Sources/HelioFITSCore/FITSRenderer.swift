@@ -654,6 +654,7 @@ public enum FITSRenderer {
             let u = u0.lowercased().hasPrefix("angstrom") ? "Å" : u0
             parts.append(wl == wl.rounded() ? "\(Int(wl)) \(u)" : "\(wl) \(u)")
         }
+        if let d = DKISTSpectrogram.make(cards: cards, width: r.natW) { parts.append(d.caption) }
         if let cmap = r.header.split(separator: "\n")
             .first(where: { $0.hasPrefix("COLORMAP") })?
             .dropFirst(9).trimmingCharacters(in: .whitespaces) {

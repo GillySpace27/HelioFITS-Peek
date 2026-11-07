@@ -386,6 +386,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         canvas.limb = compact ? nil : model.limbCircle()
         canvas.colorbar = (compact || !SharedSettings.showsColorbar()) ? nil : model.colorbar()
         canvas.rings = (model.ringsOn && !compact) ? model.rings() : nil
+        canvas.spectrogram = compact ? nil : model.spectrogram()
         if let p = model.page {
             canvas.natSize = CGSize(width: p.res.natW, height: p.res.natH)
         }

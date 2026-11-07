@@ -539,6 +539,7 @@ final class HeaderWindowController: NSObject, NSWindowDelegate {
         c.canvas.limb = c.model.limbCircle()
         c.canvas.colorbar = SharedSettings.showsColorbar() ? c.model.colorbar() : nil
         c.canvas.rings = c.model.ringsOn ? c.model.rings() : nil
+        c.canvas.spectrogram = c.model.spectrogram()
         // Compare: the second image already lined up on this one's grid. Image first,
         // then mode, so the canvas never sees a mode with nothing to show.
         let cmp = c.model.canvasCompare()
@@ -944,6 +945,7 @@ extension HeaderWindowController {
                     c.canvas.readout = nil
                     c.canvas.limb = nil
                     c.canvas.rings = nil
+                    c.canvas.spectrogram = nil
                     c.canvas.compareImage = nil
                     c.canvas.compareMode = nil
                     let f = seq.frames[next]
