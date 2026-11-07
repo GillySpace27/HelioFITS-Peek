@@ -17,6 +17,7 @@ struct DKISTSpectrogramTests {
         ("WAVEBAND", "'Fe XIII (1074.7 nm)'"), ("WAVEMIN", "1072.520337238266"), ("WAVEMAX", "1076.471922893242"),
         ("CTYPE1", "'AWAV-GRA'"), ("CUNIT1", "'nm'"), ("CRPIX1", "452"),
         ("CRVAL1", "1074.5005109811143"), ("CDELT1", "0.004380915360283906"),
+        ("CNNUMSCN", "1"), ("CNNMEAS", "5290"), ("CNMODNST", "1"),
     ]
 
     static func cardText(_ extra: [(String, String)] = [], drop: Set<String> = []) -> String {
@@ -43,8 +44,24 @@ struct DKISTSpectrogramTests {
     @Test("caption and thumbnail label repeat the header")
     func labels() throws {
         let d = try #require(DKISTSpectrogram.make(cards: Self.cardText(), width: 902))
-        #expect(d.caption == "CRYO-NIRSP DRMSEL  ·  2025-03-25 19:24:33 UT  ·  Fe XIII (1074.7 nm)  ·  1072.52 to 1076.47 nm")
+        #expect(d.caption == "CRYO-NIRSP DRMSEL  ·  2025-03-25 19:24:33 UT  ·  Spec SaS TS  ·  Fe XIII (1074.7 nm)  ·  1072.52 to 1076.47 nm")
         #expect(d.thumbnailLabel == "CRYO-NIRSP DRMSEL")
+    }
+
+    @Test("observing type: dashboard rules on CNNUMSCN, CNNMEAS, CNMODNST; absent keys give none")
+    func modes() throws {
+        func mode(_ scans: String, _ meas: String, _ mods: String) throws -> String? {
+            let c = Self.cardText([("CNNUMSCN", scans), ("CNNMEAS", meas), ("CNMODNST", mods)],
+                                  drop: ["CNNUMSCN", "CNNMEAS", "CNMODNST"])
+            return try #require(DKISTSpectrogram.make(cards: c, width: 902)).mode
+        }
+        #expect(try mode("1", "5290", "1") == "Spec SaS TS")      // DRMSEL
+        #expect(try mode("4860", "1", "1") == "Spec Rast Int")    // YQUTFH
+        #expect(try mode("91", "6", "8") == "Pol Rast Int")       // ELDAQL
+        #expect(try mode("91", "2", "8") == "Pol Rast Int")       // AKZOGG
+        let none = Self.cardText(drop: ["CNNUMSCN"])
+        #expect(try #require(DKISTSpectrogram.make(cards: none, width: 902)).mode == nil)
+        #expect(try #require(DKISTSpectrogram.make(cards: none, width: 902)).caption.contains("SaS") == false)
     }
 
     @Test("no DKIST frame, no overlay: missing DSETID, non-wavelength axis, wrong unit, zero scale")
