@@ -83,6 +83,13 @@ Gilly's machine, not in this repository).
          CODE_SIGN_STYLE=Manual AD_HOC_CODE_SIGNING_ALLOWED=YES
        ./lsclean.sh
 
+   The archive steps clean up after themselves too: `ship.sh` and `release.py archive`
+   run `lsregister -u` on the archive's DerivedData copy
+   (`DerivedData/HelioFITS-*/Build/Intermediates.noindex/ArchiveIntermediates/HelioFITS/InstallationBuildProductsLocation/Applications/HelioFITS Peek.app`)
+   as soon as the archive finishes, non-fatal, one `==> unregistered` line each. On
+   2026-11-06 a stale record of that copy made the thumbnail service pick it for `.hfrec`,
+   fail to launch it ("not found in LS database") and fall back to a generic icon.
+
    If `libcfitsio.a` changed, run the suite on **both** arches — the Intel
    slice is built separately and is otherwise never exercised on this Mac:
 
