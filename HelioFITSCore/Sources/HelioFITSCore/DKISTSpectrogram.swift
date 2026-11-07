@@ -30,6 +30,8 @@ public struct DKISTSpectrogram: Equatable {
     public let waveband: String?
     public let waveMinNM: Double?
     public let waveMaxNM: Double?
+    /// "Spec SaS TS", "Spec Rast Int" or "Pol Rast Int"; nil when CNNUMSCN, CNNMEAS or CNMODNST is missing.
+    public let mode: String?
     public let ticks: [Tick]
 
     /// Longest tick list drawn: keeps the overlay cheap and the text legible.
@@ -57,11 +59,20 @@ public struct DKISTSpectrogram: Equatable {
         let beg = FITSRenderer.cardVal(cards, "DATE-BEG").map {
             String($0.replacingOccurrences(of: "T", with: " ").prefix(19)) + " UT"
         }
+        // Observing type by the rules of the dashboard's characterize_datasets.py, read from the dataset-wide
+        // header keys: modulator states > 1 is polarimetric, more than one scan position is a raster, and
+        // repeated measurements at a single position are a time series. Checked against the dashboard's
+        // own labels for DRMSEL, YQUTFH, ELDAQL and AKZOGG; other CryoNIRSP modes are not verified.
+        var mode: String?
+        if let scans = FITSRenderer.cardNum(cards, "CNNUMSCN"), let meas = FITSRenderer.cardNum(cards, "CNNMEAS"),
+           let mods = FITSRenderer.cardNum(cards, "CNMODNST") {
+            mode = "\(mods > 1 ? "Pol" : "Spec") \(scans > 1 ? "Rast" : "SaS") \(meas > 1 && scans == 1 ? "TS" : "Int")"
+        }
         return DKISTSpectrogram(
             instrument: FITSRenderer.cardVal(cards, "INSTRUME") ?? "DKIST", datasetID: dset, start: beg,
             waveband: FITSRenderer.cardVal(cards, "WAVEBAND"),
             waveMinNM: FITSRenderer.cardNum(cards, "WAVEMIN"), waveMaxNM: FITSRenderer.cardNum(cards, "WAVEMAX"),
-            ticks: ticks)
+            mode: mode, ticks: ticks)
     }
 
     /// 1, 2 or 5 times a power of ten: the smallest that gives five ticks or fewer across `span`.
@@ -78,10 +89,11 @@ public struct DKISTSpectrogram: Equatable {
     }
 
     /// Full line for the Quick Look caption, e.g.
-    /// "CRYO-NIRSP DRMSEL  ·  2025-03-25 19:24:33 UT  ·  Fe XIII (1074.7 nm)  ·  1072.52 to 1076.47 nm".
+    /// "CRYO-NIRSP DRMSEL  ·  2025-03-25 19:24:33 UT  ·  Spec SaS TS  ·  Fe XIII (1074.7 nm)  ·  1072.52 to 1076.47 nm".
     public var caption: String {
         var parts = ["\(instrument) \(datasetID)"]
         if let start { parts.append(start) }
+        if let mode { parts.append(mode) }
         if let waveband { parts.append(waveband) }
         if let lo = waveMinNM, let hi = waveMaxNM, hi > lo {
             parts.append(String(format: "%.2f to %.2f nm", lo, hi))
