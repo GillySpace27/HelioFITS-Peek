@@ -117,6 +117,23 @@
 				</array>
 			</dict>
 		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>ASDF (Advanced Scientific Data Format)</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.gillyspace27.asdf</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>asdf</string>
+				</array>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -214,6 +214,17 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
     func preparePreviewOfFile(at url: URL, completionHandler handler: @escaping (Error?) -> Void) {
         logger.info("preparePreviewOfFile: \(url.path, privacy: .public)")
         if HFRecord.isRecordName(url.lastPathComponent) { prepareRecord(at: url, handler); return }
+        if DKISTDataset.isASDFName(url.lastPathComponent) {
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                let ds = DKISTDataset.read(url: url)
+                DispatchQueue.main.async {
+                    self?.showCard(title: url.lastPathComponent,
+                                   body: ds?.summaryText ?? "No DKIST dataset inventory found in this ASDF file.")
+                    handler(nil)
+                }
+            }
+            return
+        }
         FITSRenderer.limitInputForExtension()   // before any read: refuse huge or gzip/PKZIP input
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }

@@ -30,6 +30,15 @@ class ThumbnailProvider: QLThumbnailProvider {
             }
             return
         }
+        if DKISTDataset.isASDFName(request.fileURL.lastPathComponent) {
+            // A DKIST dataset ASDF: a card from its inventory; anything else gets the generic icon.
+            guard let ds = DKISTDataset.read(url: request.fileURL) else { handler(nil, CocoaError(.fileReadCorruptFile)); return }
+            handler(QLThumbnailReply(contextSize: request.maximumSize) { ctx in
+                ds.drawCard(in: ctx, pixels: CGSize(width: ctx.width, height: ctx.height))
+                return true
+            }, nil)
+            return
+        }
         FITSRenderer.limitInputForExtension()   // before any read: refuse huge or gzip/PKZIP input
         let px = Int(max(request.maximumSize.width, request.maximumSize.height) * request.scale)
         log.info("thumbnail: \(request.fileURL.lastPathComponent, privacy: .public) @ \(px)px")
