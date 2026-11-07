@@ -22,6 +22,7 @@ struct DKISTDatasetTests {
         inventory_not: 1
       inventory:
           aoLocked: 0
+          averageDatasetTemporalSampling: 0.9081463306863303
           datasetId: DRMSEL
           endTime: '2025-03-25T20:44:37.523443'
           frameCount: 5290
@@ -52,7 +53,7 @@ struct DKISTDatasetTests {
         #expect(d.stokes == ["I"])
         #expect(d.targets == ["activecorona"])
         #expect(d.waveMinNM == 1072.520337238266)
-        #expect(d.lines == ["2025-03-25 19:24\u{2013}20:44 UT", "5290 frames", "Fe XIII (1074.7 nm)",
+        #expect(d.lines == ["2025-03-25 19:24\u{2013}20:44 UT", "5290 frames at 0.91 s", "duration 1h 20m 03s", "Fe XIII (1074.7 nm)",
                             "Stokes I", "activecorona", "1072.52 to 1076.47 nm"])
         #expect(d.title == "CRYO-NIRSP DRMSEL")
     }

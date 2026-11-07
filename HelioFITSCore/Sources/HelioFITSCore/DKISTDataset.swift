@@ -19,6 +19,8 @@ public struct DKISTDataset: Equatable {
     public var start: String?
     public var end: String?
     public var frameCount: Int?
+    /// averageDatasetTemporalSampling, seconds between frames as the data center states it.
+    public var cadenceSeconds: Double?
     public var spectralLines: [String] = []
     public var stokes: [String] = []
     public var targets: [String] = []
@@ -75,7 +77,8 @@ public struct DKISTDataset: Equatable {
         guard let id = scalar("datasetId") else { return nil }
         return DKISTDataset(
             datasetID: id, instrument: scalar("instrumentName"), start: scalar("startTime"), end: scalar("endTime"),
-            frameCount: scalar("frameCount").flatMap { Int($0) }, spectralLines: list("spectralLines"),
+            frameCount: scalar("frameCount").flatMap { Int($0) },
+            cadenceSeconds: scalar("averageDatasetTemporalSampling").flatMap { Double($0) }, spectralLines: list("spectralLines"),
             stokes: list("stokesParameters"), targets: list("targetTypes"),
             waveMinNM: scalar("wavelengthMin").flatMap { Double($0) },
             waveMaxNM: scalar("wavelengthMax").flatMap { Double($0) })
@@ -85,6 +88,21 @@ public struct DKISTDataset: Equatable {
 
     /// "2025-03-25 19:24 UT" from an ISO time, to the minute.
     static func shortTime(_ t: String) -> String { String(t.replacingOccurrences(of: "T", with: " ").prefix(16)) + " UT" }
+
+    /// End minus start from the inventory times (both UT, no zone written), nil if either is missing or odd.
+    public var durationSeconds: Double? {
+        guard let s = start, let e = end else { return nil }
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        guard let a = f.date(from: s + "Z"), let b = f.date(from: e + "Z"), b > a else { return nil }
+        return b.timeIntervalSince(a)
+    }
+
+    /// "1h 20m 03s", dropping leading zero units.
+    static func hms(_ sec: Double) -> String {
+        let t = Int(sec.rounded()), h = t / 3600, m = t % 3600 / 60, s = t % 60
+        return h > 0 ? String(format: "%dh %02dm %02ds", h, m, s) : m > 0 ? String(format: "%dm %02ds", m, s) : "\(s)s"
+    }
 
     /// The header line: "CRYO-NIRSP DRMSEL".
     public var title: String { [instrument, datasetID].compactMap { $0 }.joined(separator: " ") }
@@ -99,7 +117,12 @@ public struct DKISTDataset: Equatable {
                 out.append(a.prefix(10) == b.prefix(10) ? "\(a.dropLast(3))\u{2013}\(b.dropFirst(11))" : "\(a) to \(b)")
             } else { out.append(Self.shortTime(s)) }
         }
-        if let n = frameCount { out.append("\(n) frames") }
+        if let n = frameCount {
+            var s = "\(n) frames"
+            if let c = cadenceSeconds, c > 0 { s += String(format: " at %.2f s", c) }
+            out.append(s)
+        }
+        if let d = durationSeconds { out.append("duration " + Self.hms(d)) }
         if !spectralLines.isEmpty { out.append(spectralLines.joined(separator: ", ")) }
         if !stokes.isEmpty { out.append("Stokes " + stokes.joined(separator: ", ")) }
         if !targets.isEmpty { out.append(targets.joined(separator: ", ")) }
