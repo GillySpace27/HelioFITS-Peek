@@ -63,6 +63,16 @@ xcodebuild -project HelioFITS.xcodeproj -scheme HelioFITS \
 
 cp -R "$ARCH/Products/Applications/HelioFITS Peek.app" "$APP"
 
+# The archive also registers its DerivedData intermediate copy with LaunchServices. A stale
+# record of it once made the thumbnail service pick that copy for .hfrec, fail to launch it
+# ("not found in LS database") and draw a generic icon (2026-11-06). Unregister it now.
+LSREG=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+for a in "$HOME"/Library/Developer/Xcode/DerivedData/HelioFITS-*/Build/Intermediates.noindex/ArchiveIntermediates/HelioFITS/InstallationBuildProductsLocation/Applications/"HelioFITS Peek.app"; do
+  [ -e "$a" ] || continue
+  "$LSREG" -u "$a" 2>/dev/null || true
+  echo "==> unregistered $a"
+done
+
 # Versioned artifact name, so two releases' zips can never be confused and the
 # GitHub Release upload can't grab a stale file.
 VER=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist")

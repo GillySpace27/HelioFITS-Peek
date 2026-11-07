@@ -205,6 +205,24 @@ struct HFRecordPreviewTests {
         let tiny = try Self.render(r, 16, image: img)
         #expect(tiny.makeImage()?.width == 16)
 
+        // The caption fits the strip: shrunk, or the top layer and "+ N more", never cut mid-name.
+        for side in [64, 128, 256, 512, 1024] {
+            let s = CGFloat(side) * 0.075, width = CGFloat(side) * (1 - 2 * 0.06)
+            let fit = r.captionFit(width: width, size: s * 1.05)
+            #expect(fit.size <= s * 1.05 && fit.size >= s * 1.05 * 0.7 - 1e-9, "\(side)")
+            #expect(["SDO AIA + Proba-3 ASPIICS + PUNCH WFI+NFI Mosaic", "SDO AIA + 2 more"].contains(fit.text),
+                    "\(side): \(fit.text)")
+            #expect(HFRecord.textWidth(fit.text, size: fit.size, bold: true) <= width, "\(side): \(fit.text)")
+        }
+        // Wide enough: every instrument at full size. Too narrow even for the short form: smallest size.
+        let full = r.captionFit(width: 10_000, size: 20)
+        #expect(full.text == r.captionInstruments && full.size == 20)
+        let narrow = r.captionFit(width: 5, size: 20)
+        #expect(narrow.text == "SDO AIA + 2 more" && abs(narrow.size - 14) < 1e-9)
+        // One instrument has no short form.
+        let one = try HFRecord(data: Data(#"{"hfrecord": "1.0", "layers": [{"dataset": {"instrument": "AIA", "observatory": "SDO"}}]}"#.utf8))
+        #expect(one.captionFit(width: 5, size: 20).text == one.captionInstruments)
+
         if let path = ProcessInfo.processInfo.environment["HFREC_THUMB_PNG"],
            let dest = CGImageDestinationCreateWithURL(URL(fileURLWithPath: path) as CFURL, "public.png" as CFString, 1, nil) {
             CGImageDestinationAddImage(dest, out, nil)

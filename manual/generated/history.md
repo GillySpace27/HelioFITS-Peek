@@ -4,7 +4,7 @@
 
 Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
 
-## [Unreleased]
+## [1.5.2] - 2026-11-04
 
 ### Added
 
@@ -22,11 +22,11 @@ Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
   export (the `preview` object HelioFITS Studio writes last in the sidecar: a PNG or JPEG of at
   most 320 px), the record window and the Quick Look preview show it beside the header, above
   the report, and the Finder thumbnail is that picture over a caption strip with the
-  instruments and date. A record without one falls back to the PNG or JPEG export it names,
-  where macOS lets Peek read that file, else to the card. A malformed preview means no
+  instruments and date (in a smaller font when they are long, or as the top layer and how
+  many more, "SDO AIA + 2 more", when even that does not fit). A record without one falls
+  back to the PNG or JPEG export it names, where macOS lets Peek read that file, else to the
+  card. A malformed preview means no
   picture, never an error.
-
-## [1.5.2] - 2026-11-04
 
 ### Changed
 
