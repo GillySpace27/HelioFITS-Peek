@@ -167,6 +167,13 @@ check_release_gates() {
 }
 CHECKS+=(check_release_gates)
 
+# lsunregister-stale.sh unregisters the copies outside /Applications (stubbed lsregister, nothing real).
+check_lsunregister() {
+  local out
+  out="$(bash scripts/test_lsunregister.sh 2>&1)" || { grep -m1 '^FAIL' <<<"$out" || echo "scripts/test_lsunregister.sh failed"; return 1; }
+}
+CHECKS+=(check_lsunregister)
+
 # HelioFITSCore/CFITSIO.stamp records what build-universal.sh baked into
 # CFITSIO.xcframework. fitsshim.c is in no Xcode target, so an edited shim does
 # nothing until the library is rebuilt (1.3.0 shipped a dead ASPIICS branch that way).

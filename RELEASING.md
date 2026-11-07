@@ -84,11 +84,16 @@ Gilly's machine, not in this repository).
        ./lsclean.sh
 
    The archive steps clean up after themselves too: `ship.sh` and `release.py archive`
-   run `lsregister -u` on the archive's DerivedData copy
-   (`DerivedData/HelioFITS-*/Build/Intermediates.noindex/ArchiveIntermediates/HelioFITS/InstallationBuildProductsLocation/Applications/HelioFITS Peek.app`)
-   as soon as the archive finishes, non-fatal, one `==> unregistered` line each. On
-   2026-11-06 a stale record of that copy made the thumbnail service pick it for `.hfrec`,
-   fail to launch it ("not found in LS database") and fall back to a generic icon.
+   run `scripts/lsunregister-stale.sh` as soon as the archive finishes. It reads
+   `lsregister -dump` and runs `lsregister -u` on every copy of the app outside
+   `/Applications` (the archive's `ArchiveIntermediates/.../HelioFITS Peek.app`, backups,
+   the Trash), non-fatal, one `==> unregistered` line each. It reads the dump rather than
+   globbing the disk because `xcodebuild archive` moves the intermediate into the
+   `.xcarchive`: the record outlives the file. On 2026-11-06 such a stale record made the
+   thumbnail service pick the dead copy for `.hfrec`, fail to launch it ("not found in LS
+   database") and fall back to a generic icon. A backup copy made with `ditto` registers
+   itself too, so after copying the app anywhere, run the script (or `lsregister -u` on the
+   copy) before judging Quick Look or thumbnails.
 
    If `libcfitsio.a` changed, run the suite on **both** arches — the Intel
    slice is built separately and is otherwise never exercised on this Mac:
