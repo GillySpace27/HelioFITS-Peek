@@ -197,7 +197,7 @@ public final class FITSPreviewModel {
                 caption: FITSRenderer.caption(res: r, cards: cards,
                                               index: (slots.firstIndex { $0 == (h, plane) } ?? 0) + 1,
                                               of: slots.count),
-                lut: key.flatMap { FITSColormaps.lut($0) }))
+                lut: r.tableKey.flatMap { FITSColormaps.lut($0) }))
         }
         // Start on the HDU the folder rule / global default selects (plane 0).
         let want = FITSRenderer.resolveAutoHDU(path: path,
@@ -1085,10 +1085,10 @@ public final class FITSPreviewModel {
     private func displayLines(_ q: String) -> String {
         guard let p = page, let recipe = displayRecipe() else { return "m.peek()  # opens a quick-look plot" }
         let plot: String
-        if let c = Self.sunpyColormap(p.res.cmapKey) {
+        if let c = Self.sunpyColormap(p.res.tableKey) {
             plot = "m.plot(norm=norm, cmap=\"\(c)\")"
         } else {
-            plot = "m.plot(norm=norm)   # HelioFITS Peek draws this with its own \(p.res.cmapKey ?? "") table, "
+            plot = "m.plot(norm=norm)   # HelioFITS Peek draws this with its own \(p.res.tableKey ?? "") table, "
                 + "which sunpy does not carry"
         }
         func num(_ x: Double) -> String { String(format: "%g", x) }

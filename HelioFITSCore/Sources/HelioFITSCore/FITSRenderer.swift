@@ -63,6 +63,15 @@ public enum FITSRenderer {
         // limits from a different population of pixels and shifting the contrast.
         public let lo: Float; public let hi: Float; public let gam: Float
         public let cmapKey: String?
+        /// nil: draw with `cmapKey`, the table the header picked. Otherwise the table the user's
+        /// colortable preferences chose instead, or "gray". `cmapKey` stays the data kind: it
+        /// decides the magnetogram stretch, never the colours.
+        public var display: String? = nil
+        /// The table to draw with, after the user's preferences: nil is grayscale.
+        public var tableKey: String? {
+            guard let d = display else { return cmapKey }
+            return d == ColormapPrefs.gray ? nil : d
+        }
 
         /// PNG encoding of `image`, for writing a file or attaching to a reply.
         public func pngData() throws -> Data { try FITSRenderer.finalizePNG(image) }
@@ -251,7 +260,8 @@ public enum FITSRenderer {
     #endif
 
     public static func render(path: String, maxSide: Int = FITSRenderer.maxSide, hdu: Int? = nil,
-                       plane: Int = 0, lowMemory: Bool = lowMemoryDefault) throws -> Result {
+                       plane: Int = 0, lowMemory: Bool = lowMemoryDefault,
+                       colormaps: ColormapPrefs? = nil) throws -> Result {
         var w: Int = 0, h: Int = 0, step: Int = 1
         var pixPtr: UnsafeMutablePointer<Float>? = nil
         var hdrPtr: UnsafeMutablePointer<CChar>? = nil
@@ -294,7 +304,10 @@ public enum FITSRenderer {
         }
 
         // Instrument colormap: map stretched gray through the sunpy LUT.
-        if let key = cmapKey, let lut = FITSColormaps.lut(key) {
+        // The user's colortable choice changes the colours only; `cmapKey` stays the data kind.
+        let shown = (colormaps ?? ColormapPrefs.current()).resolve(autoKey: cmapKey)
+        let display: String? = shown == cmapKey ? nil : (shown ?? ColormapPrefs.gray)
+        if let key = shown, let lut = FITSColormaps.lut(key) {
             var rgba = [UInt8](repeating: 255, count: ow * oh * 4)
             for i in 0..<(ow * oh) {
                 let v = Int(bytes[i]) * 3
@@ -305,12 +318,12 @@ public enum FITSRenderer {
             let img = try makeImage(rgba: rgba, width: ow, height: oh)
             return Result(image: img, header: header + "COLORMAP  \(key)\n", width: ow, height: oh,
                           natW: w, natH: h, factor: factor,
-                          lo: lo, hi: hi, gam: gam, cmapKey: key)
+                          lo: lo, hi: hi, gam: gam, cmapKey: cmapKey, display: display)
         }
         let img = try makeImage(gray: bytes, width: ow, height: oh)
         return Result(image: img, header: header, width: ow, height: oh,
                       natW: w, natH: h, factor: factor,
-                      lo: lo, hi: hi, gam: gam, cmapKey: cmapKey)
+                      lo: lo, hi: hi, gam: gam, cmapKey: cmapKey, display: display)
     }
 
 

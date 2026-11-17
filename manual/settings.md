@@ -30,6 +30,19 @@ Thumbnails
   icon size, at some cost per icon. Use **Refresh icons** on a folder rule to redraw existing
   thumbnails.
 
+Colortables
+: Which colortable each instrument is drawn with. **Automatic**, the default, picks the table from
+  the file's header, as before. Under **Instruments**, choose a table for a whole instrument (for
+  example every AIA channel) or open it to choose one channel; a channel's choice wins over its
+  instrument's. **Grayscale** forces grey, and **Files with no recognised instrument** colours files
+  the header gives no table. **Reset All** returns to Automatic, and **Export…** and **Import…** save
+  and restore the choices as a small JSON file, to keep them across a reinstall or move them to
+  another Mac. The viewer and Quick Look follow a change at once; use **Refresh icons** on a folder
+  rule to redraw existing thumbnails. A choice changes the colours only: the stretch and, for
+  magnetograms, the symmetric limits are unchanged. Choices are stored in the same shared settings
+  as the rest of this window and survive app updates; a copy saved by a newer version is never
+  overwritten by an older one.
+
 Pinned keywords
 : A comma-separated list of header keywords (for example `EXPTIME, WAVELNTH`) shown after the
   caption in the viewer and in Quick Look when the layer has them. **Save Keywords** keeps them.
