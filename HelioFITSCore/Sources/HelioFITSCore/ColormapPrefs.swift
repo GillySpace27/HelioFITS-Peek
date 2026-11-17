@@ -28,6 +28,16 @@ public struct ColormapPrefs: Equatable, Codable, Sendable {
 
     public init() {}
 
+    /// Every key optional, so a file that lacks one (an older, newer or hand-edited export) still
+    /// reads instead of coming back unreadable and being overwritten.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        schema = try c.decodeIfPresent(Int.self, forKey: .schema) ?? 0
+        channel = try c.decodeIfPresent([String: String].self, forKey: .channel) ?? [:]
+        family = try c.decodeIfPresent([String: String].self, forKey: .family) ?? [:]
+        fallback = try c.decodeIfPresent(String.self, forKey: .fallback)
+    }
+
     public var isEmpty: Bool { channel.isEmpty && family.isEmpty && fallback == nil }
 
     /// The table key to draw with, or nil for grayscale. `autoKey` is `colormapKey(fromHeader:)`.
