@@ -163,6 +163,8 @@ Gilly's machine, not in this repository).
    `build/HelioFITS-<VER>-b<N>.zip`. The store archive (step 6) carries the
    importer too since 2026-10-29.
 11. Publish it: the script prints the exact `gh release create` command.
+    Then bump the Homebrew cask `Casks/hfpeek.rb` in `GillySpace27/homebrew-tap` (`version "<VER>,<N>"` and the
+    zip's sha256); the tap's README has the steps and why Peek is in a tap. Skip it for a store-only release.
 
 ## How much review to expect
 

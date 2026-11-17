@@ -158,6 +158,11 @@ once so the extensions register. It opens without security warnings, but it does
 [releases feed](https://github.com/GillySpace27/HelioFITS-Peek/releases.atom) for new
 versions. The App Store is the supported channel; this is a fallback.
 
+With Homebrew: `brew tap GillySpace27/tap` once, then `brew install hfpeek` (one line:
+`brew install --cask GillySpace27/tap/hfpeek`); `brew upgrade --cask hfpeek` updates it. If a newer
+Homebrew refuses the tap as untrusted, run `brew trust gillyspace27/tap` first. It installs this direct
+download, so use it instead of the App Store copy, not beside it.
+
 </details>
 
 ### Getting FITS files to try
