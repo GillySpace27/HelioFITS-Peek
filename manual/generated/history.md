@@ -28,6 +28,14 @@ Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
   card. A malformed preview means no
   picture, never an error.
 
+- **DKIST CryoNIRSP thumbnails and Quick Look.** One CryoNIRSP frame is a spectrogram, so its
+  Finder thumbnail and Quick Look preview now carry a spectrogram label and wavelength ticks, and
+  a caption saying the observing type (Spec or Pol, SaS or Rast, TS or Int) when the file's
+  keywords give it. A DKIST dataset `.asdf` file gets a thumbnail and a Quick Look card from its
+  inventory. The Finder thumbnail also draws a small locator of the slit on the solar disk, from
+  the frame's coordinates; the disk radius is nominal (963 arcsec) unless the file gives
+  `RSUN_ARC`, and the locator says so. The Quick Look view has no locator.
+
 ### Changed
 
 - **The installed app is now named HelioFITS Peek.** The app file in /Applications and
