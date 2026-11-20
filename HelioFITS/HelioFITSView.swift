@@ -192,6 +192,8 @@ struct SettingsView: View {
     @State private var pins = ""
     @State private var rhefCovers = false
     @State private var rhefFullRes = false
+    @State private var cmaps = ColormapPrefs()
+    @State private var cmapStatus = ""
 
     var body: some View {
         Form {
@@ -267,6 +269,42 @@ struct SettingsView: View {
             }
 
             Section {
+                DisclosureGroup("Instruments") {
+                    ForEach(ColormapPrefs.families, id: \.id) { f in
+                        if f.tables.count > 1 {
+                            DisclosureGroup {
+                                ForEach(f.tables, id: \.self) { t in
+                                    colortablePicker(ColormapPrefs.label(forTable: t),
+                                                     selection: channelBinding(t), automatic: "Automatic")
+                                }
+                            } label: {
+                                colortablePicker("\(f.label) (all)", selection: familyBinding(f.id),
+                                                 automatic: "Automatic")
+                            }
+                        } else {
+                            colortablePicker(f.label, selection: familyBinding(f.id), automatic: "Automatic")
+                        }
+                    }
+                }
+                colortablePicker("Files with no recognised instrument", selection: fallbackBinding,
+                                 automatic: "Grayscale")
+                HStack {
+                    Button("Export…", action: exportColortables)
+                    Button("Import…", action: importColortables)
+                    Spacer()
+                    Button("Reset All", role: .destructive) { cmaps = ColormapPrefs(); saveCmaps() }
+                        .disabled(cmaps.isEmpty)
+                }
+            } header: {
+                Text("Colortables")
+            } footer: {
+                Text(cmapStatus.isEmpty
+                     ? "Automatic picks the table from the file's header. A choice for a whole instrument applies to every channel unless a channel has its own. Previews and the viewer follow at once; use “Refresh icons” on a folder rule to redraw existing thumbnails. A visualization, not a calibrated radiance."
+                     : cmapStatus)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
                 TextField("Keywords", text: $pins, prompt: Text("EXPTIME, WAVELNTH"))
                     .font(.system(size: 13, design: .monospaced))
                     .onSubmit(savePins)
@@ -299,6 +337,70 @@ struct SettingsView: View {
         pins = SharedSettings.pinnedKeywords(in: d).joined(separator: ", ")
         rhefCovers = d.bool(forKey: SharedSettings.rhefCoversKey)
         rhefFullRes = d.bool(forKey: SharedSettings.rhefFullResKey)
+        let stored = ColormapPrefs.load(from: d)
+        cmaps = stored.prefs
+        if stored.status == .newerSchema {
+            cmapStatus = "These colortable choices were saved by a newer HelioFITS Peek. They are read but not changed here."
+        }
+    }
+
+    // MARK: Colortables
+
+    private func colortablePicker(_ title: String, selection: Binding<String>, automatic: String) -> some View {
+        Picker(title, selection: selection) {
+            Text(automatic).tag("")
+            if automatic != "Grayscale" { Text("Grayscale").tag(ColormapPrefs.gray) }
+            ForEach(ColormapPrefs.families, id: \.id) { f in
+                Section(f.label) {
+                    ForEach(f.tables, id: \.self) { Text(ColormapPrefs.label(forTable: $0)).tag($0) }
+                }
+            }
+        }
+    }
+
+    private func familyBinding(_ id: String) -> Binding<String> {
+        Binding(get: { cmaps.family[id] ?? "" },
+                set: { cmaps.family[id] = $0.isEmpty ? nil : $0; saveCmaps() })
+    }
+
+    private func channelBinding(_ id: String) -> Binding<String> {
+        Binding(get: { cmaps.channel[id] ?? "" },
+                set: { cmaps.channel[id] = $0.isEmpty ? nil : $0; saveCmaps() })
+    }
+
+    private var fallbackBinding: Binding<String> {
+        Binding(get: { cmaps.fallback ?? "" },
+                set: { cmaps.fallback = $0.isEmpty ? nil : $0; saveCmaps() })
+    }
+
+    private func saveCmaps() {
+        cmapStatus = cmaps.save()
+            ? "Saved. Previews and the viewer use it from now on; “Refresh icons” redraws a folder's thumbnails."
+            : "Not saved: the stored choices come from a newer HelioFITS Peek."
+    }
+
+    private func exportColortables() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.json]
+        panel.nameFieldStringValue = "HelioFITS Peek colortables.json"
+        panel.begin { resp in
+            guard resp == .OK, let url = panel.url else { return }
+            do { try cmaps.encoded().write(to: url, options: .atomic); cmapStatus = "Exported to \(url.lastPathComponent)." }
+            catch { cmapStatus = "Export failed: \(error.localizedDescription)" }
+        }
+    }
+
+    private func importColortables() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.json]
+        panel.canChooseDirectories = false
+        panel.begin { resp in
+            guard resp == .OK, let url = panel.url else { return }
+            do {
+                cmaps = try ColormapPrefs.importing(Data(contentsOf: url))
+                saveCmaps()
+            } catch { cmapStatus = "Import failed: \(error.localizedDescription)" }
+        }
     }
 
     private func saveFullRes() {

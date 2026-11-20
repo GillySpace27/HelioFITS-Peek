@@ -4,6 +4,17 @@
 
 Every release of HelioFITS Peek, newest first, as CHANGELOG.md records it.
 
+## [Unreleased]
+
+### Added
+
+- **Colortable preferences.** Settings has a Colortables section: choose the table for a whole
+  instrument or for one channel, force grayscale, colour files the header gives no table,
+  reset, and export or import the choices as a JSON file. Automatic (the header's table) stays
+  the default, and the stretch and the magnetogram limits are unchanged. The choices live in the
+  shared settings under a new versioned key, so Quick Look and Finder thumbnails follow them and
+  they survive app updates.
+
 ## [1.5.2] - 2026-11-04
 
 ### Added

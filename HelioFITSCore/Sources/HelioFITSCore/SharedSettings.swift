@@ -23,6 +23,8 @@ public enum SharedSettings {
     /// (Gilly, 2026-10-26): the strip takes 84 points on the left and pushes the image off
     /// center.
     public static let colorbarKey = "showColorbar"           // Bool
+    /// The user's colortable choices (`ColormapPrefs`): versioned JSON in one key. Append-only.
+    public static let colormapPrefsKey = "colormapPrefs"     // Data
     public static var suite: UserDefaults? { UserDefaults(suiteName: suiteName) }
 
     /// Whether hosts draw the colorbar strip. False when the key is absent or the suite is.
