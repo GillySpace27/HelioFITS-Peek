@@ -17,6 +17,8 @@
 [![tests](https://github.com/GillySpace27/HelioFITS-Peek/actions/workflows/tests.yml/badge.svg)](https://github.com/GillySpace27/HelioFITS-Peek/actions/workflows/tests.yml)
 &nbsp;
 [![License: BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue.svg)](LICENSE)
+&nbsp;
+[![Docs](https://app.readthedocs.org/projects/heliofits-peek/badge/?version=latest)](https://heliofits-peek.readthedocs.io/)
 &nbsp;·&nbsp; macOS 14.5+ (universal: Apple Silicon & Intel)
 &nbsp;·&nbsp; Free & open source
 &nbsp;·&nbsp; No network access
